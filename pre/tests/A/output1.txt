@@ -1,0 +1,7 @@
+21371300
+should be 66: 66
+should still be 66: 66
+5! should be 120: 120
+Arithmetic should be -13: -13
+i should be 2: 2
+1, 2, 42003, 4, 66
