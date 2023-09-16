@@ -3,10 +3,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 project(ToMiCompiler)
 
-# pre-task: Syntax test
-add_subdirectory(pre)
-
-# main project
+# source files
 file(GLOB_RECURSE SRC_LIST CONFIGURE_DEPENDS tomic/src/*.cpp)
 
 # final target

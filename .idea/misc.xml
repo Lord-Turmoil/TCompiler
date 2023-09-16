@@ -6,5 +6,8 @@
       <file path="$PROJECT_DIR$/tomic/include" />
       <file path="$PROJECT_DIR$/tomic/src" />
     </sourceRoots>
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/pre/publish" />
+    </excludeRoots>
   </component>
 </project>
