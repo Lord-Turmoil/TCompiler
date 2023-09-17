@@ -1,7 +1,12 @@
 21371300
-should be 66: 66
-should still be 66: 66
-5! should be 120: 120
-Arithmetic should be -13: -13
-i should be 2: 2
-1, 2, 42003, 4, 66
+getint() = 66
+a = 99, a * 2 + 3 mod 1 * 5 = 198
+test_io() complete
+a[0] = 1
+b[0][0] = 1
+test_array() complete
+test_for() complete
+A B C D E
+Short circuit (||): 66
+test_if() complete
+test_function() complete

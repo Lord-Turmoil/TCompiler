@@ -56,9 +56,10 @@ int main()
     int n_66 = n_33 * _constB;
     int n_99 = _f2(n_33, n_66);
     printf("n_99: %d\n", n_99);
+    printf("_f2 return: %d\n", _f2(n_33, n_66));
 
     // 1, 0
-    while (n_11 > 0)
+    for (; n_11 > 0; )
     {
         n_11 = n_11 / 10;
         printf("n_11: %d\n", n_11);
