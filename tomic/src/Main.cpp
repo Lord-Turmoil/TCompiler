@@ -5,9 +5,12 @@
  */
 
 #include <cstdio>
+#include <mioc/ServiceContainer.h>
 
 int main()
 {
+    auto container = mioc::ServiceContainer::New();
+
     printf("Hello there!\n");
 
     return 0;

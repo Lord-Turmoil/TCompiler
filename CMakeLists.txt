@@ -9,6 +9,8 @@ file(GLOB_RECURSE SRC_LIST CONFIGURE_DEPENDS tomic/src/*.cpp)
 # final target
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_LIST})
 
-# include directories
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC mioc/include)  # IoC Lib
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC tomic/include)
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE tomic/include)
+
+# IoC dependency
+add_subdirectory(mioc)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mioc)
