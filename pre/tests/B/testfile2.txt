@@ -4,96 +4,45 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-/*
- * For logic expressions.
- */
-
-// ==================== Decl
-
-/*
- * try to cover Cond/Exp
- */
-
-const int _true = 1;
-const int _false = 0;
-const int _boolean[2] = { 0, 1 };
-
-// ==================== FuncDef
-int return_true()
+void print_1d(int arr[])
 {
-    return _true;
+    printf("1D: %d %d\n", arr[0], arr[1]);
 }
 
-int return_false()
+void print_2d(int arr[][4])  // [2][4]
 {
-    return _false;
+    printf("2D: %d %d\n", arr[0][0], arr[1][3]);
 }
 
-// ==================== MainFuncDef
 int main()
 {
+    const int _kArrA[4] = { 1, 2, 3, 4 };
+    const int _kArrB[2] = { 1, 2 }, _kArrC[2] = { 3, 4 };
+    const int _kArrD[2][2 + 2] = {
+            { 1,     2,     3, 4 },
+            { 4 + 1, 2 * 3, 7, 8 }
+    };
+
+    int arrA[4] = { 1, 2, 3, 4 };
+    int _arrB[2] = { 1, 2 }, _arrC[2] = { 3, 4 };
+    int arrD[4 / 2][2 * 2 + 0] = {
+            { 5 / 2 - 1, 2, 3, 4 },
+            { 5,         6, 7, 8 }
+    };
+    int _arrE[3][3];
+
     printf("21371300\n");
 
-    // RelExp
-    if (_true)
-    {
-        printf("UnaryExp -> PrimaryExp -> LVal\n");
-    }
-    if ((((_true + _false))))
-    {
-        printf("UnaryExp -> PrimaryExp -> (Exp)\n");
-    }
-    if (4)
-    {
-        printf("UnaryExp -> PrimaryExp -> Number\n");
-    }
-    if (!return_false())
-    {
-        printf("UnaryExp -> Ident | UnaryOp\n");
-    }
+    print_1d(arrA);
+    print_2d(arrD);
+    print_1d(arrD[0]);
 
-    if (_true != return_true())
-    {
-    }
-    else
-    {
-        printf("OrExp -> AndExp -> EqExp -> EqExp\n");
-    }
+    arrA[0] = 66;
+    arrD[1 / 2][3 % 3] = 99;
 
-    // Rel -> Add
-    if (3 * 2 + 4 * (5 + 6) * _boolean[0])
-    {
-        printf("RelExp -> AddExp\n");
-    }
-
-    // all RelExp
-    if (3 * 2 > 66)
-    {
-    }
-    else if (66 < 3 * 2 + 5)
-    {
-    }
-    else if (_boolean[1] <= _boolean[0] * 66)
-    {
-    }
-    else if (_boolean[0] >= _boolean[1] * 99 - 66)
-    {
-    }
-    else
-    {
-        printf("OrExp -> AndExp -> EqExp -> RelExp\n");
-    }
-
-    if (_boolean[0] != _boolean[1] && _true != _false)
-    {
-        printf("And\n");
-    }
-    else
-        ;
-    if (_boolean[0] == _boolean[1] || _true != _false)
-    {
-        printf("Or\n");
-    }
+    print_1d(arrA);
+    print_2d(arrD);
+    print_1d(arrD[0]);
 
     return 0;
 }

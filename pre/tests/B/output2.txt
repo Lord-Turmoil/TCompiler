@@ -1,10 +1,7 @@
 21371300
-UnaryExp -> PrimaryExp -> LVal
-UnaryExp -> PrimaryExp -> (Exp)
-UnaryExp -> PrimaryExp -> Number
-UnaryExp -> Ident | UnaryOp
-OrExp -> AndExp -> EqExp -> EqExp
-RelExp -> AddExp
-OrExp -> AndExp -> EqExp -> RelExp
-And
-Or
+1D: 1 2
+2D: 1 8
+1D: 1 2
+1D: 66 2
+2D: 99 8
+1D: 99 2
