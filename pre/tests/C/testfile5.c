@@ -10,24 +10,6 @@
 
 // ==================== Decl
 
-const int D1 = 2;
-const int D2 = 4;
-
-const int _kArrA[4] = { 1, 2, 3, 4 };
-const int _kArrB[2] = { 1, 2 }, _kArrC[2] = { 3, 4 };
-const int _kArrD[2][2 + 2] = {
-        { 1,     2,     3, 4 },
-        { 4 + 1, 2 * 3, 7, 8 }
-};
-
-int _arrA[4] = { 1, 2, 3, 4 };
-int _arrB[2] = { 1, 2 }, _arrC[2] = { 3, 4 };
-int _arrD[4 / 2][2 * 2 + 0] = {
-        { 5 / 2 - 1, 2, 3, 4 },
-        { 5,         6, 7, 8 }
-};
-int _arrE[3][3];
-
 // ==================== FuncDef
 
 int get_66() { return 66; }
@@ -36,6 +18,7 @@ void test_add_exp()
 {
     // expression
     int a, b, c;
+    a = 2 * 3;
     a = (1 + 2 * (3 + 4));
     b = a;
     a = 4;
@@ -74,11 +57,20 @@ void test_or_exp()
 
     if (_true == _false);
     if (_true != _false);
+
+    if (_true == 1 && _false == 0);
+    if (_false == 1 || _true == 0);
 }
 
 // ==================== MainFuncDef
 int main()
 {
+    const int _ka = 1;
+    const int _kb = 2, _kc = 3;
+    int _a = 1;
+    int _b = 2, _c = 3;
+    int _d;
+
     printf("21371300\n");
 
     test_add_exp();

@@ -50,12 +50,15 @@ int main()
     }
     {
         // single
-        ;
+        f1();
     }
     {
         // multiple
-        ;;
+        f1();
+        f2();
+        ;
     }
+    ;
 
     return 0;
 }

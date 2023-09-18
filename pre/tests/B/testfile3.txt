@@ -26,39 +26,40 @@ int main()
     {
         printf("2 * 2 = 4\n");
     }
+    if (1);
 
 
     ////////// for test
     int i = 0;
-    for (i = 0; i < 5; i = i + 1)
+    for (i = 0; i < 3; i = i + 1)
     {
         i = i;
     }
 
     // missing one stmt
     i = 0;
-    for (; i < 5; i = i + 1);
+    for (; i < 3; i = i + 1);
     for (i = 0;; i = i + 1)
     {
-        if (i == 5) break;
+        if (i == 3) break;
     }
-    for (i = 0; i < 5;)
+    for (i = 0; i < 3;)
         i = i + 1;
 
     // missing two stmt's
     i = 0;
     for (;; i = i + 1)
     {
-        if (i == 5) break;
+        if (i == 3) break;
     }
     i = 0;
-    for (; i < 5;)
+    for (; i < 3;)
     {
         i = i + 1;
     }
     for (i = 0;;)
     {
-        if (i == 5) break;
+        if (i == 3) break;
         i = i + 1;
     }
 
@@ -66,7 +67,7 @@ int main()
     i = 0;
     for (;;)
     {
-        if (i == 5) break;
+        if (i == 3) break;
         i = i + 1;
     }
 
