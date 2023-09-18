@@ -59,9 +59,9 @@ int main()
     printf("_f2 return: %d\n", _f2(n_33, n_66));
 
     // 1, 0
-    for (; n_11 > 0; )
+    for (; n_11 > 0;)
     {
-        n_11 = n_11 / 10;
+        n_11 = n_11 / 10 + (5 - 5);
         printf("n_11: %d\n", n_11);
     }
 
@@ -72,16 +72,19 @@ int main()
         printf("temp: %d\n", temp);
         continue;
     }
-    for (temp = 1; ; temp = temp - 1)
+    for (temp = 1;; temp = temp - 1)
     {
         if (temp == 0)
             break;
     }
-    for (temp = 0; ; )
+    for (temp = 0;;)
     {
         break;
     }
-    for (; ; )
+    for (;; temp = temp - 1) break;
+    for (; 0;);
+    for (temp = 0;;) break;
+    for (;;)
     {
         printf("Empty for\n");
         break;

@@ -107,10 +107,14 @@ void test_if()
     if (3 * 4 - _var_a + return_true())
         printf("E\n");
 
-    if (a * 1< 5);
+    if (a * 1 < 5);
     else if (a <= 5 * 6 + 7);
     else if (1 - 5 * 4 > a % 1);
     else if (5 * 5 - 25 >= 985);
+    else if (5 + 5 > 4 == 4 + 4 < 5);
+    else if (5 >= 5 != 4 <= 4);
+    else if (0 || 1 && 0);
+    else if (1 && 0 || 0 && 0);
     else
         printf("RelExp passed\n");
 

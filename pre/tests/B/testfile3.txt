@@ -13,18 +13,18 @@
 const int D1 = 2;
 const int D2 = 4;
 
-const int _kArrA[4] = { 1, 2, 3, 4 };
-const int _kArrB[2] = { 1, 2 }, _kArrC[2] = { 3, 4 };
+const int _kArrA[4] = {1, 2, 3, 4};
+const int _kArrB[2] = {1, 2}, _kArrC[2] = {3, 4};
 const int _kArrD[2][2 + 2] = {
-        { 1, 2, 3, 4 },
-        { 4 + 1, 2 * 3, 7, 8 }
+        {1,     2,     3, 4},
+        {4 + 1, 2 * 3, 7, 8}
 };
 
-int _arrA[4] = { 1, 2, 3, 4 };
-int _arrB[2] = { 1, 2 }, _arrC[2] = { 3, 4 };
+int _arrA[4] = {1, 2, 3, 4};
+int _arrB[2] = {1, 2}, _arrC[2] = {3, 4};
 int _arrD[4 / 2][2 * 2 + 0] = {
-        { 5 / 2 - 1, 2, 3, 4 },
-        { 5, 6, 7, 8 }
+        {5 / 2 - 1, 2, 3, 4},
+        {5,         6, 7, 8}
 };
 int _arrE[3][3];
 
@@ -44,6 +44,11 @@ void two_dimentional(int arr[][4])
 // ==================== MainFuncDef
 int main()
 {
+    int _ia1[4][4];
+    int _ia2[2][2] = {{1, 2},
+                      {3, 4}};
+    int _ia3[2][2] = {{1, 2}, {3, 4}}, _ia4[2][2] = {{1, 2}, {3, 4}};
+
     printf("21371300\n");
 
     one_dimentional(_arrA); // 1, 2
