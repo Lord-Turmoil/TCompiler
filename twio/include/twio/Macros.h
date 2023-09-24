@@ -18,7 +18,7 @@
 #define _TWIO_FOR_WIN32 0
 #endif
 
-#ifdef ENABLE_ASSERT
+#ifdef TWIO_ENABLE_ASSERT
 #include <cassert>
 #define TWIO_ASSERT(expression) assert(expression)
 #define TWIO_PANIC(expression) assert(false && (expression))
