@@ -3,6 +3,7 @@
 #include <twio/stream/FileOutputStream.h>
 #include <twio/utils/FileUtil.h>
 #include <cstdio>   // EOF
+#include <cstring>
 
 TWIO_BEGIN
 
