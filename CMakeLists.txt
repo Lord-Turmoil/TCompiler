@@ -14,3 +14,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE tomic/include)
 # IoC dependency
 add_subdirectory(mioc)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mioc)
+
+# Twio Dependency
+add_subdirectory(twio)
+target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC twio)
