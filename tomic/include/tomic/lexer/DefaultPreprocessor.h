@@ -42,7 +42,7 @@ private:
     twio::IReaderPtr _reader;
     twio::IWriterPtr _writer;
 
-    static const char FILLING = '?';
+    static const char FILLING = ' ';
 
     enum class StateType
     {

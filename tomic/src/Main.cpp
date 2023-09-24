@@ -11,17 +11,22 @@
 
 using namespace tomic;
 
+const char INPUT_FILE[] = "testfile.txt";
+const char OUTPUT_FILE[] = "output.txt";
+
 int main()
 {
     RegisterComponents();
 
     auto container = mioc::SingletonContainer::GetContainer();
 
+    auto reader = twio::Reader::New(twio::FileInputStream::New(INPUT_FILE));
+    auto writer = twio::Writer::New(twio::FileOutputStream::New(OUTPUT_FILE));
+
     auto preprocessor = container->Resolve<IPreprocessor>();
-    auto reader = twio::Reader::New(twio::FileInputStream::New("in.c"));
-    auto writer = twio::Writer::New(twio::FileOutputStream::New("out.c"));
+
     preprocessor->SetReader(reader)->SetWriter(writer)->Process();
-    preprocessor.reset();
+    preprocessor.reset();   // release memory
 
     return 0;
 }
