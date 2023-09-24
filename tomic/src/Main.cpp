@@ -4,15 +4,24 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <cstdio>
-#include <mioc/ServiceContainer.h>
-#include <Twio.h>
+#include <mioc.h>
+#include <twio.h>
+#include <tomic.h>
+#include <Startup.h>
+
+using namespace tomic;
 
 int main()
 {
-    auto container = mioc::ServiceContainer::New();
+    RegisterComponents();
 
-    printf("Hello there!\n");
+    auto container = mioc::SingletonContainer::GetContainer();
+
+    auto preprocessor = container->Resolve<IPreprocessor>();
+    auto reader = twio::Reader::New(twio::FileInputStream::New("in.c"));
+    auto writer = twio::Writer::New(twio::FileOutputStream::New("out.c"));
+    preprocessor->SetReader(reader)->SetWriter(writer)->Process();
+    preprocessor.reset();
 
     return 0;
 }
