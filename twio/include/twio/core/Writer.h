@@ -5,8 +5,8 @@
 #ifndef _TWIO_WRITER_H_
 #define _TWIO_WRITER_H_
 
-#include <twio/core/IWriter.h>
-#include <twio/stream/IStream.h>
+#include "../core/IWriter.h"
+#include "../stream/IStream.h"
 
 TWIO_BEGIN
 

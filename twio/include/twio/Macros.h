@@ -18,12 +18,15 @@
 #define _TWIO_FOR_WIN32 0
 #endif
 
-#ifdef TWIO_ENABLE_ASSERT
+#define ENABLE_ASSERT
+
+#ifdef ENABLE_ASSERT
 #include <cassert>
 #define TWIO_ASSERT(expression) assert(expression)
 #define TWIO_PANIC(expression) assert(false && (expression))
 #else
 #define TWIO_ASSERT(...)
+#define TWIO_PANIC(expression)
 #endif
 
 // Align size to 8 bytes.

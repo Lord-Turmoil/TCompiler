@@ -5,8 +5,8 @@
 #ifndef _TWIO_STREAM_H_
 #define _TWIO_STREAM_H_
 
-#include <twio/Macros.h>
-#include <twio/stream/RedirectRequest.h>
+#include "../Common.h"
+#include "../stream/RedirectRequest.h"
 #include <memory>
 
 TWIO_BEGIN

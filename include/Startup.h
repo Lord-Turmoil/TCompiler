@@ -7,8 +7,6 @@
 #ifndef _TOMIC_STARTUP_H_
 #define _TOMIC_STARTUP_H_
 
-#include "tomic/Defines.h"
-
 void RegisterComponents();
 
 #endif

@@ -1,25 +1,22 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include <twio/utils/FileUtil.h>
+#define _CRT_SECURE_NO_WARNINGS
+
+#include "../../include/twio/utils/FileUtil.h"
 
 #if _TWIO_FOR_WIN32
 // ... To be continued... :(
 #else
 #include <unistd.h>
+#include <fcntl.h>
 #endif
 
 TWIO_BEGIN
 
 FILE* OpenFile(const char* path, const char* mode)
 {
-    FILE* fp;
-
-    const int ret = fopen_s(&fp, path, mode);
-    if (ret != 0)
-    {
-        return nullptr;
-    }
-
+    FILE* fp = fopen(path, mode);
+    
     return fp;
 }
 
@@ -40,7 +37,7 @@ bool IsReadOnly(FILE* fp)
 #else
 bool IsReadOnly(FILE* fp)
 {
-    int fd = fileno(file);
+    int fd = fileno(fp);
     int mode = fcntl(fd, F_GETFL);
 
     return mode == 32768;
@@ -56,7 +53,7 @@ bool IsWriteOnly(FILE* fp)
 #else
 bool IsWriteOnly(FILE* fp)
 {
-    int fd = fileno(file);
+    int fd = fileno(fp);
     int mode = fcntl(fd, F_GETFL);
 
     return mode == 32769;

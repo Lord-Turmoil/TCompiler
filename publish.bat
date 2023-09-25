@@ -2,4 +2,4 @@
 
 @ECHO OFF
 
-jar -cfM publish.zip mioc tomic twio CMakeLists.txt
+jar -cfM "../publish.zip" include src tomic mioc twio

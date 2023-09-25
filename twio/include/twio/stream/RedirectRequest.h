@@ -5,7 +5,6 @@
 #ifndef _TWIO_REDIRECT_REQUEST_H_
 #define _TWIO_REDIRECT_REQUEST_H_
 
-#include <twio/Macros.h>
 #include <memory>
 
 TWIO_BEGIN

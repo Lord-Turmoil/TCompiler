@@ -7,7 +7,7 @@
 #ifndef _TOMIC_ILEXICAL_ANALYSER_H_
 #define _TOMIC_ILEXICAL_ANALYSER_H_
 
-#include <tomic/Defines.h>
+#include "../Defines.h"
 
 TOMIC_BEGIN
 

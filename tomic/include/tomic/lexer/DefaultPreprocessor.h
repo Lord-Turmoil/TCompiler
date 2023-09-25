@@ -7,8 +7,8 @@
 #ifndef _TOMIC_DEFAULT_PREPROCESSOR_H_
 #define _TOMIC_DEFAULT_PREPROCESSOR_H_
 
-#include<tomic/Defines.h>
-#include <tomic/lexer/IPreprocessor.h>
+#include "../Defines.h"
+#include "../lexer/IPreprocessor.h"
 
 TOMIC_BEGIN
 

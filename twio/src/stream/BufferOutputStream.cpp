@@ -1,9 +1,10 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include <twio/stream/BufferOutputStream.h>
+#include "../../include/twio/stream/BufferOutputStream.h"
 #include <cstring>
 
 TWIO_BEGIN
+
 
 const size_t BufferOutputStream::DEFAULT_BLOCK_SIZE = 1024;
 

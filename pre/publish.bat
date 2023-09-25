@@ -21,6 +21,6 @@ SETLOCAL EnableDelayedExpansion
 CD %dstDir%
 SET fileList=
 FOR /r %%F IN (*.txt) DO SET fileList=!fileList! %%~nxF
-jar -cfM task-1.zip %fileList%
+jar -cfM "../../../pre-publish.zip" %fileList%
 
 CD %curDir%

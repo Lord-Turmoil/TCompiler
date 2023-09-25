@@ -7,4 +7,4 @@ file(GLOB_RECURSE SRC_LIST CONFIGURE_DEPENDS src/*.cpp)
 # Add source to this project's executable.
 add_library(mioc STATIC ${SRC_LIST} "src/ServiceContainer.cpp")
 
-target_include_directories(mioc PUBLIC include)
+# target_include_directories(mioc PUBLIC include)

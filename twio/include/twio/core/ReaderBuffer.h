@@ -3,7 +3,7 @@
 #ifndef _TWIO_READER_BUFFER_H_
 #define _TWIO_READER_BUFFER_H_
 
-#include <twio/Macros.h>
+#include "../Common.h"
 
 TWIO_BEGIN
 

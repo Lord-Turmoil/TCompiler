@@ -3,8 +3,8 @@
 #ifndef _TWIO_IREADER_H_
 #define _TWIO_IREADER_H_
 
-#include <twio/Macros.h>
-#include <twio/stream/IStream.h>
+#include "../Common.h"
+#include "../stream/IStream.h"
 #include <memory>
 
 TWIO_BEGIN

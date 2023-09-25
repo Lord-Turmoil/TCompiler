@@ -7,7 +7,7 @@
 #ifndef _TOMIC_TOKEN_H_
 #define _TOMIC_TOKEN_H_
 
-#include <tomic/Defines.h>
+#include "../../Defines.h"
 #include <string>
 
 TOMIC_BEGIN

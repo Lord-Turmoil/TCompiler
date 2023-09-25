@@ -5,9 +5,9 @@
 #ifndef _TWIO_ADVANCED_READER_H_
 #define _TWIO_ADVANCED_READER_H_
 
-#include <twio/core/IReader.h>
-#include <twio/core/ReaderBuffer.h>
-#include <twio/stream/IStream.h>
+#include "../core/IReader.h"
+#include "../core/ReaderBuffer.h"
+#include "../stream/IStream.h"
 #include <memory>
 #include <stack>
 
