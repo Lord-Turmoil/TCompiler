@@ -12,14 +12,16 @@
 
 TOMIC_BEGIN
 
-enum class TokenKind
+enum class TokenType
 {
+    TK_UNKNOWN,        // unknown token
+
     TK_IDENTIFIER,     // identifier
     TK_NUMBER,         // integer constant
-    TK_FORMAT,         // format string
+    TK_FORMAT,         // format string, e.g. "a = %d"
     TK_MAIN,           // main
     TK_RETURN,         // return
-    TK_GET_INT,        // getint
+    TK_GETINT,        // getint
     TK_PRINTF,         // printf
 
     TK_IF,             // if
@@ -60,13 +62,22 @@ enum class TokenKind
     TK_RIGHT_BRACKET,  // ]
 };
 
+// For now, memory layout is not considered.
 struct Token
 {
-    TokenKind kind;
-    std::string value;
-    int lineNo;
-    int charNo;
+    TokenType type;     // The type of the token.
+
+    std::string lexeme; // The actual string that is read from the source code.
+
+    int lineNo; // The line number of the token.
+    int charNo; // The character number of the token.
 };
+
+// For example, the Token for 'int' can be:
+// { TK_INT, "int", 1, 1 }
+// The Token for 'number' can be:
+// { TK_IDENT, "number", 3, 5 }
+
 
 TOMIC_END
 
