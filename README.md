@@ -8,4 +8,6 @@ _"Pass the point of no return, the final threshold."_
 
 ---
 
+[![Build](https://github.com/Lord-Turmoil/ToMiCompiler/actions/workflows/cmake-multi-platform.yml/badge.svg?branch=main)](https://github.com/Lord-Turmoil/ToMiCompiler/actions/workflows/cmake-multi-platform.yml)
+
 To Be Continued...
