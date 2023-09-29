@@ -1,6 +1,7 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include "../../include/twio/core/Writer.h"
+#include <twio/core/Writer.h>
+#include <cstdarg>
 
 TWIO_BEGIN
 
@@ -29,6 +30,17 @@ size_t Writer::Write(const char* buffer)
 size_t Writer::Write(char ch)
 {
     return _stream->Write(ch);
+}
+
+size_t Writer::Write(const char* format, ...)
+{
+    va_list argv;
+
+    va_start(argv, format);
+    auto result = _stream->Write(format, argv);
+    va_end(argv);
+
+    return result;
 }
 
 IOutputStreamPtr Writer::Stream() const

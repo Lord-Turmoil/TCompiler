@@ -5,8 +5,8 @@
 #ifndef _TWIO_BUFFER_OUTPUT_STREAM_H_
 #define _TWIO_BUFFER_OUTPUT_STREAM_H_
 
-#include "../Common.h"
-#include "../stream/IStream.h"
+#include <twio/Common.h>
+#include <twio/stream/IStream.h>
 #include <memory>
 
 TWIO_BEGIN
@@ -34,6 +34,7 @@ public:
     size_t Write(const char* buffer, size_t size) override;
     size_t Write(const char* buffer) override;
     size_t Write(char ch) override;
+    size_t Write(const char* format, va_list argv) override;
 
     RedirectRequestPtr Yield() override;
 

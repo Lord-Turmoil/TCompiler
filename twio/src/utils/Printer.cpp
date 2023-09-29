@@ -1,6 +1,6 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include "../../include/twio/utils/Printer.h"
+#include <twio/utils/Printer.h>
 #include <cstdio>   // EOF
 
 TWIO_BEGIN

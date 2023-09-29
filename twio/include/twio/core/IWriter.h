@@ -6,8 +6,8 @@
 #define _TWIO_IWRITER_H_
 
 #include <memory>
-#include "../Common.h"
-#include "../stream/IStream.h"
+#include <twio/Common.h>
+#include <twio/stream/IStream.h>
 
 TWIO_BEGIN
 
@@ -25,6 +25,9 @@ public:
 
     // Write a character to output stream.
     virtual size_t Write(char ch) = 0;
+
+    // Write formatted string to output stream.
+    virtual size_t Write(const char* format, ...) = 0;
 
     // Dangerous method, use with caution.
     virtual IOutputStreamPtr Stream() const = 0;

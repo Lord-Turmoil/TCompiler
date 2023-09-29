@@ -5,8 +5,8 @@
 #ifndef _TWIO_WRITER_H_
 #define _TWIO_WRITER_H_
 
-#include "../core/IWriter.h"
-#include "../stream/IStream.h"
+#include <twio/core/IWriter.h>
+#include <twio/stream/IStream.h>
 
 TWIO_BEGIN
 
@@ -22,6 +22,8 @@ public:
     size_t Write(const char* buffer, size_t size) override;
     size_t Write(const char* buffer) override;
     size_t Write(char ch) override;
+
+    size_t Write(const char* format, ...) override;
 
     IOutputStreamPtr Stream() const override;
 

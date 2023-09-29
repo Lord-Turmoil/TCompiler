@@ -1,7 +1,7 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include "../../include/twio/stream/FileOutputStream.h"
-#include "../../include/twio/utils/FileUtil.h"
+#include <twio/stream/FileOutputStream.h>
+#include <twio/utils/FileUtil.h>
 #include <cstdio>   // EOF
 #include <cstring>
 
@@ -84,6 +84,11 @@ size_t FileOutputStream::Write(char ch)
     const int ret = fputc(ch, _fp);
 
     return (ret == EOF) ? 0 : 1;
+}
+
+size_t FileOutputStream::Write(const char* format, va_list argv)
+{
+    return static_cast<size_t>(vfprintf(_fp, format, argv));
 }
 
 TWIO_END

@@ -1,6 +1,6 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include "../../include/twio/core/AdvancedReader.h"
+#include <twio/core/AdvancedReader.h>
 #include <cstdio>   // EOF
 
 TWIO_BEGIN
@@ -60,9 +60,9 @@ int AdvancedReader::Read()
     }
 
     const int ch = _stream->Read();
-    _Push(ch);  // EOF will be pushed too.
     if (ch != EOF)
     {
+        _Push(ch);
         _MoveForward(ch);
     }
 

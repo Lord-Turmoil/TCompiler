@@ -5,8 +5,8 @@
 #ifndef _TWIO_FILE_OUTPUT_STREAM_H_
 #define _TWIO_FILE_OUTPUT_STREAM_H_
 
-#include "../Common.h"
-#include "../stream/IStream.h"
+#include <twio/Common.h>
+#include <twio/stream/IStream.h>
 #include <cstdio>
 #include <memory>
 
@@ -46,6 +46,7 @@ public:
     size_t Write(const char* buffer, size_t size) override;
     size_t Write(const char* buffer) override;
     size_t Write(char ch) override;
+    size_t Write(const char* format, va_list argv) override;
 
 private:
     FILE* _fp;

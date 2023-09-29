@@ -18,8 +18,6 @@
 #define _TWIO_FOR_WIN32 0
 #endif
 
-#define ENABLE_ASSERT
-
 #ifdef ENABLE_ASSERT
 #include <cassert>
 #define TWIO_ASSERT(expression) assert(expression)

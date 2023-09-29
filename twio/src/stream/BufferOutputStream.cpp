@@ -1,6 +1,8 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include "../../include/twio/stream/BufferOutputStream.h"
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <twio/stream/BufferOutputStream.h>
 #include <cstring>
 
 TWIO_BEGIN
@@ -70,6 +72,19 @@ size_t BufferOutputStream::Write(char ch)
     _buffer[_next++] = ch;
 
     return 1;
+}
+
+size_t BufferOutputStream::Write(const char* format, va_list argv)
+{
+    static char buffer[DEFAULT_BLOCK_SIZE];
+    const size_t count = vsprintf(buffer, format, argv);
+
+    if (count > DEFAULT_BLOCK_SIZE)
+    {
+        TWIO_ASSERT(false && "Buffer overflow!");
+    }
+
+    return Write(buffer, count);
 }
 
 RedirectRequestPtr BufferOutputStream::Yield()
