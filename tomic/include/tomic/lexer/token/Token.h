@@ -9,19 +9,21 @@
 
 #include "../../Defines.h"
 #include <string>
+#include <memory>
 
 TOMIC_BEGIN
 
 enum class TokenType
 {
     TK_UNKNOWN,        // unknown token
+    TK_TERMINATOR,     // terminator
 
     TK_IDENTIFIER,     // identifier
     TK_NUMBER,         // integer constant
     TK_FORMAT,         // format string, e.g. "a = %d"
     TK_MAIN,           // main
     TK_RETURN,         // return
-    TK_GETINT,        // getint
+    TK_GETINT,         // getint
     TK_PRINTF,         // printf
 
     TK_IF,             // if
@@ -71,7 +73,24 @@ struct Token
 
     int lineNo; // The line number of the token.
     int charNo; // The character number of the token.
+
+    Token(TokenType type, std::string lexeme, int lineNo = 0, int charNo = 0)
+            : type(type), lexeme(lexeme), lineNo(lineNo), charNo(charNo)
+    {
+    }
+
+    static std::shared_ptr<Token> New(TokenType type, std::string lexeme, int lineNo = 0, int charNo = 0)
+    {
+        return std::make_shared<Token>(type, std::move(lexeme), lineNo, charNo);
+    }
+
+    static std::shared_ptr<Token> New(TokenType type)
+    {
+        return std::make_shared<Token>(type, "", 0, 0);
+    }
 };
+
+using TokenPtr = std::shared_ptr<Token>;
 
 // For example, the Token for 'int' can be:
 // { TK_INT, "int", 1, 1 }

@@ -8,6 +8,7 @@
     </sourceRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/pre/publish" />
+      <file path="$PROJECT_DIR$/works" />
     </excludeRoots>
   </component>
 </project>

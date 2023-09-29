@@ -5,7 +5,7 @@
  */
 
 #include "../../include/tomic/Defines.h"
-#include "../../include/tomic/lexer/DefaultPreprocessor.h"
+#include "../../include/tomic/lexer/impl/DefaultPreprocessor.h"
 
 TOMIC_BEGIN
 
@@ -31,13 +31,13 @@ void DefaultPreprocessor::Process()
     } while (ch != EOF);
 }
 
-DefaultPreprocessor* DefaultPreprocessor::SetReader(twio::IReaderPtr&& reader)
+DefaultPreprocessor* DefaultPreprocessor::SetReader(twio::IReaderPtr reader)
 {
     _reader = std::move(reader);
     return this;
 }
 
-DefaultPreprocessor* DefaultPreprocessor::SetWriter(twio::IWriterPtr&& writer)
+DefaultPreprocessor* DefaultPreprocessor::SetWriter(twio::IWriterPtr writer)
 {
     _writer = std::move(writer);
     return this;

@@ -7,8 +7,8 @@
 #ifndef _TOMIC_DEFAULT_PREPROCESSOR_H_
 #define _TOMIC_DEFAULT_PREPROCESSOR_H_
 
-#include "../Defines.h"
-#include "../lexer/IPreprocessor.h"
+#include "../../Defines.h"
+#include "../../lexer/IPreprocessor.h"
 
 TOMIC_BEGIN
 
@@ -22,8 +22,8 @@ public:
 
     void Process() override;
 
-    DefaultPreprocessor* SetReader(twio::IReaderPtr&& reader) override;
-    DefaultPreprocessor* SetWriter(twio::IWriterPtr&& writer) override;
+    DefaultPreprocessor* SetReader(twio::IReaderPtr reader) override;
+    DefaultPreprocessor* SetWriter(twio::IWriterPtr writer) override;
 
     twio::IReaderPtr GetReader() const override { return _reader; }
 

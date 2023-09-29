@@ -21,8 +21,8 @@ public:
 
     virtual void Process() = 0;
 
-    virtual IPreprocessor* SetReader(twio::IReaderPtr&& reader) = 0;
-    virtual IPreprocessor* SetWriter(twio::IWriterPtr&& writer) = 0;
+    virtual IPreprocessor* SetReader(twio::IReaderPtr reader) = 0;
+    virtual IPreprocessor* SetWriter(twio::IWriterPtr writer) = 0;
 
     virtual twio::IReaderPtr GetReader() const = 0;
     virtual twio::IWriterPtr GetWriter() const = 0;
