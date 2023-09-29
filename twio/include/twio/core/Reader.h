@@ -3,9 +3,9 @@
 #ifndef _TWIO_READER_H_
 #define _TWIO_READER_H_
 
-#include <twio/core/IReader.h>
-#include <twio/core/ReaderBuffer.h>
-#include <twio/stream/IStream.h>
+#include "../../twio/core/IReader.h"
+#include "../../twio/core/ReaderBuffer.h"
+#include "../../twio/stream/IStream.h"
 
 #include <memory>
 

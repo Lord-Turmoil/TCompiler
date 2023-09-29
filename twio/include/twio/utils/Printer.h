@@ -5,10 +5,10 @@
 #ifndef _TWIO_PRINTER_H_
 #define _TWIO_PRINTER_H_
 
-#include <twio/Common.h>
-#include <twio/core/IReader.h>
-#include <twio/core/IWriter.h>
-#include <twio/utils/IPrinter.h>
+#include "../../twio/Common.h"
+#include "../../twio/core/IReader.h"
+#include "../../twio/core/IWriter.h"
+#include "../../twio/utils/IPrinter.h"
 
 #include <memory>
 
