@@ -11,3 +11,8 @@
 
 #include "tomic/lexer/token/ITokenMapper.h"
 #include "tomic/lexer/token/DefaultTokenMapper.h"
+
+#include "tomic/lexer/ILexicalAnalyser.h"
+#include "tomic/lexer/impl/DefaultLexicalAnalyser.h"
+#include "tomic/lexer/ILexicalParser.h"
+#include "tomic/lexer/impl/DefaultLexicalParser.h"

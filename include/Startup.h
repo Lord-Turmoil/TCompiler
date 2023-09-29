@@ -7,6 +7,10 @@
 #ifndef _TOMIC_STARTUP_H_
 #define _TOMIC_STARTUP_H_
 
+#include "../twio/include/twio.h"
+
 void RegisterComponents();
+
+void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter);
 
 #endif

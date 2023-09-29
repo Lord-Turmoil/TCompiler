@@ -117,6 +117,7 @@ void DefaultTokenMapper::_InitTypeToLexeme()
 void DefaultTokenMapper::_InitTypeToDescription()
 {
     _typeToDescription[TokenType::TK_UNKNOWN] = "UNKNOWN";
+    _typeToDescription[TokenType::TK_IDENTIFIER] = "IDENFR";
     _typeToDescription[TokenType::TK_NUMBER] = "INTCON";
     _typeToDescription[TokenType::TK_FORMAT] = "STRCON";
     _typeToDescription[TokenType::TK_MAIN] = "MAINTK";
@@ -139,7 +140,7 @@ void DefaultTokenMapper::_InitTypeToDescription()
     _typeToDescription[TokenType::TK_AND] = "AND";
     _typeToDescription[TokenType::TK_OR] = "OR";
     _typeToDescription[TokenType::TK_PLUS] = "PLUS";
-    _typeToDescription[TokenType::TK_MINUS] = "MINUS";
+    _typeToDescription[TokenType::TK_MINUS] = "MINU";
     _typeToDescription[TokenType::TK_MULTIPLY] = "MULT";
     _typeToDescription[TokenType::TK_DIVIDE] = "DIV";
     _typeToDescription[TokenType::TK_MOD] = "MOD";

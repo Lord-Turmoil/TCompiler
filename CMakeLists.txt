@@ -7,9 +7,7 @@ project(ToMiCompiler)
 file(GLOB_RECURSE SRC_LIST CONFIGURE_DEPENDS tomic/include/*.h tomic/src/*.cpp include/*.h src/*.cpp)
 
 # final target
-add_executable(${CMAKE_PROJECT_NAME} ${SRC_LIST}
-        tomic/include/tomic/utils/StringUtil.h
-        tomic/src/utils/StringUtil.cpp)
+add_executable(${CMAKE_PROJECT_NAME} ${SRC_LIST})
 
 # target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE tomic/include)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE TOMIC_ENABLE_ASSERT)

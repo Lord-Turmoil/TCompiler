@@ -13,7 +13,7 @@
 using namespace tomic;
 
 const char LOCAL_INPUT_FILE[] = "in.c";
-const char LOCAL_OUTPUT_FILE[] = "out.c";
+const char LOCAL_OUTPUT_FILE[] = "out.txt";
 const char INPUT_FILE[] = "testfile.txt";
 const char OUTPUT_FILE[] = "output.txt";
 
@@ -34,15 +34,10 @@ int main(int argc, char* argv[])
 
     RegisterComponents();
 
-    auto container = mioc::SingletonContainer::GetContainer();
-
     auto reader = twio::Reader::New(twio::FileInputStream::New(input));
     auto writer = twio::Writer::New(twio::FileOutputStream::New(output));
 
-    auto preprocessor = container->Resolve<IPreprocessor>();
-
-    preprocessor->SetReader(reader)->SetWriter(writer)->Process();
-    preprocessor.reset();   // release memory
+    Compile(reader, writer);
 
     return 0;
 }

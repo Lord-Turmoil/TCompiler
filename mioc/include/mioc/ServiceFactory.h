@@ -5,7 +5,7 @@
 #ifndef _MIOC_SERVICE_FACTORY_H_
 #define _MIOC_SERVICE_FACTORY_H_
 
-#include "Macros.h"
+#include "../mioc/Macros.h"
 
 #include <functional>
 #include <memory>
@@ -22,38 +22,87 @@ public:
 
 inline IServiceFactory::~IServiceFactory() = default;
 
+template<typename TService>
+using ServiceProvider = std::function<std::shared_ptr<TService>()>;
 
 // Transient service factory will create a new instance every time.
 template<typename TService>
 class ServiceFactory : public IServiceFactory
 {
 public:
-    explicit ServiceFactory(const std::function<std::shared_ptr<TService>()>& provider)
-        : _provider(provider)
+    explicit ServiceFactory(const ServiceProvider<TService>& provider)
+            : _provider(provider)
     {
+    }
+
+    ServiceFactory(const ServiceFactory&) = default;
+    ServiceFactory& operator=(const ServiceFactory&) = default;
+
+    ServiceFactory(ServiceFactory&& other) noexcept
+    {
+        _provider = std::move(other._provider);
+    }
+
+    ServiceFactory& operator=(ServiceFactory&& other) noexcept
+    {
+        if (this != &other)
+        {
+            _provider = std::move(other._provider);
+        }
+        return *this;
     }
 
     ~ServiceFactory() override = default;
 
     virtual std::shared_ptr<TService> Resolve()
     {
-        return _provider();
+        return _provider ? _provider() : nullptr;
     }
 
+protected:
+    // Used by SingletonServiceFactory when instance is directly provided.
+    ServiceFactory() = default;
+
 private:
-    std::function<std::shared_ptr<TService>()> _provider;
+    ServiceProvider<TService> _provider;
 };
 
 
 // Singleton service factory will create only one instance.
 template<typename TService>
-class SingletonServiceFactory : public ServiceFactory<TService>
+class SingletonServiceFactory final : public ServiceFactory<TService>
 {
 public:
-    explicit SingletonServiceFactory(const std::function<std::shared_ptr<TService>()>& provider)
-        : ServiceFactory<TService>(provider)
+    explicit SingletonServiceFactory(const ServiceProvider<TService>& provider)
+            : ServiceFactory<TService>(provider)
     {
     }
+
+    explicit SingletonServiceFactory(std::shared_ptr<TService> instance)
+            : ServiceFactory<TService>()
+    {
+        _instance = std::move(instance);
+    }
+
+    SingletonServiceFactory(const SingletonServiceFactory&) = default;
+    SingletonServiceFactory& operator=(const SingletonServiceFactory&) = default;
+
+    SingletonServiceFactory(SingletonServiceFactory&& other) noexcept
+            : ServiceFactory<TService>(std::move(other))
+    {
+        _instance = std::move(other._instance);
+    }
+
+    SingletonServiceFactory& operator=(SingletonServiceFactory&& other) noexcept
+    {
+        if (this != &other)
+        {
+            ServiceFactory<TService>::operator=(std::move(other));
+            _instance = std::move(other._instance);
+        }
+        return *this;
+    }
+
 
     ~SingletonServiceFactory() override = default;
 
@@ -63,6 +112,7 @@ public:
         {
             _instance = ServiceFactory<TService>::Resolve();
         }
+
         return _instance;
     }
 

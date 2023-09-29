@@ -92,13 +92,6 @@ TokenPtr DefaultLexicalAnalyser::_Next()
         TOMIC_ASSERT(false && "No task is registered to analyse the given character.");
     }
 
-    if (token->type == TokenType::TK_UNKNOWN)
-    {
-        // TODO: Add error handling.
-        TOMIC_ASSERT(false && "Unknown token.");
-        return nullptr;
-    }
-
     return token;
 }
 
