@@ -11,12 +11,15 @@ Reader::Reader(IInputStreamPtr stream) : _stream(std::move(stream))
     TWIO_ASSERT(_stream != nullptr);
 }
 
+
 std::shared_ptr<Reader> Reader::New(const IInputStreamPtr& stream)
 {
     return std::make_shared<Reader>(stream);
 }
 
+
 Reader::~Reader() = default;
+
 
 size_t Reader::Read(char* buffer, size_t size)
 {
@@ -43,6 +46,7 @@ size_t Reader::Read(char* buffer, size_t size)
     return bufferRead + streamRead;
 }
 
+
 int Reader::Read()
 {
     if (_HasNext())
@@ -59,15 +63,18 @@ int Reader::Read()
     return ch;
 }
 
+
 int Reader::Rewind()
 {
     return _Pop();
 }
 
+
 IInputStreamPtr Reader::Stream() const
 {
     return _stream;
 }
+
 
 void Reader::Close()
 {
@@ -76,5 +83,6 @@ void Reader::Close()
         _stream->Close();
     }
 }
+
 
 TWIO_END

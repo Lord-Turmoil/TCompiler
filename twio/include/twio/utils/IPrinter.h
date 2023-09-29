@@ -20,6 +20,7 @@ public:
     virtual bool IsReady() const = 0;
 };
 
+
 inline IPrinter::~IPrinter() = default;
 
 using IPrinterPtr = std::shared_ptr<IPrinter>;

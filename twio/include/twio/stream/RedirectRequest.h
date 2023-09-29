@@ -17,22 +17,27 @@ enum class RedirectProtocol
     SRP_FILE
 };
 
+
 struct RedirectRequest
 {
     RedirectProtocol protocol;
     std::unique_ptr<char[]> buffer;
+
 
     RedirectRequest(RedirectProtocol protocol, std::unique_ptr<char[]> buffer)
         : protocol(protocol), buffer(std::move(buffer))
     {
     }
 
+
     static std::shared_ptr<RedirectRequest> New(RedirectProtocol protocol, std::unique_ptr<char[]> buffer)
     {
         return std::make_shared<RedirectRequest>(protocol, std::move(buffer));
     }
 
+
     RedirectRequest(RedirectRequest& other) = delete;
+
 
     RedirectRequest(RedirectRequest&& other) noexcept
     {
@@ -40,7 +45,9 @@ struct RedirectRequest
         buffer = std::move(other.buffer);
     }
 
+
     RedirectRequest& operator=(RedirectRequest& other) = delete;
+
 
     RedirectRequest& operator=(RedirectRequest&& other) noexcept
     {
@@ -54,8 +61,10 @@ struct RedirectRequest
         return *this;
     }
 
+
     ~RedirectRequest() = default;
 };
+
 
 using RedirectRequestPtr = std::shared_ptr<RedirectRequest>;
 

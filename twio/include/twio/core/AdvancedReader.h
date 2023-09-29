@@ -46,6 +46,7 @@ private:
     int _charNo;
 };
 
+
 using AdvancedReaderPtr = std::shared_ptr<AdvancedReader>;
 
 

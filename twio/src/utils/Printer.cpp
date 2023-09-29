@@ -12,11 +12,13 @@ Printer::Printer(IReaderPtr reader, IWriterPtr writer)
     TWIO_ASSERT(_writer != nullptr);
 }
 
+
 Printer::Printer(Printer&& other) noexcept
 {
     _reader = std::move(other._reader);
     _writer = std::move(other._writer);
 }
+
 
 Printer& Printer::operator=(Printer&& other) noexcept
 {
@@ -29,10 +31,12 @@ Printer& Printer::operator=(Printer&& other) noexcept
     return *this;
 }
 
+
 std::shared_ptr<Printer> Printer::New(IReaderPtr reader, IWriterPtr writer)
 {
     return std::make_shared<Printer>(std::move(reader), std::move(writer));
 }
+
 
 void Printer::Print()
 {
@@ -45,9 +49,11 @@ void Printer::Print()
     }
 }
 
+
 bool Printer::IsReady() const
 {
     return _reader && _writer;
 }
+
 
 TWIO_END

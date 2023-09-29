@@ -26,6 +26,7 @@ public:
     virtual void Close() = 0;
 };
 
+
 inline IReader::~IReader() = default;
 
 using IReaderPtr = std::shared_ptr<IReader>;
@@ -39,6 +40,7 @@ public:
     virtual int Line() const = 0;
     virtual int Char() const = 0;
 };
+
 
 inline IAdvancedReader::~IAdvancedReader() = default;
 

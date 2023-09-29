@@ -37,6 +37,7 @@ private:
     IWriterPtr _writer;
 };
 
+
 using PrinterPtr = std::shared_ptr<Printer>;
 
 TWIO_END

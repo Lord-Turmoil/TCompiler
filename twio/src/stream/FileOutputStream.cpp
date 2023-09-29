@@ -15,6 +15,7 @@ FileOutputStream::FileOutputStream(FILE* fp, bool takeOver)
     // TWIO_ASSERT(IsWriteOnly(_fp));
 }
 
+
 FileOutputStream::FileOutputStream(const char* path)
 {
     _fp = OpenFile(path, "w");
@@ -25,25 +26,30 @@ FileOutputStream::FileOutputStream(const char* path)
     _takeOver = true;
 }
 
+
 std::shared_ptr<FileOutputStream> New(FILE* fp, bool takeOver)
 {
     return std::make_shared<FileOutputStream>(fp, takeOver);
 }
+
 
 std::shared_ptr<FileOutputStream> FileOutputStream::New(FILE* fp, bool takeOver)
 {
     return std::make_shared<FileOutputStream>(fp, takeOver);
 }
 
+
 std::shared_ptr<FileOutputStream> FileOutputStream::New(const char* path)
 {
     return std::make_shared<FileOutputStream>(path);
 }
 
+
 FileOutputStream::~FileOutputStream()
 {
     Close();
 }
+
 
 void FileOutputStream::Close()
 {
@@ -57,16 +63,19 @@ void FileOutputStream::Close()
     }
 }
 
+
 bool FileOutputStream::IsReady() const
 {
     return _fp != nullptr;
 }
+
 
 size_t FileOutputStream::Write(const char* buffer, size_t size)
 {
     TWIO_ASSERT(IsReady());
     return fwrite(buffer, sizeof(char), size, _fp);
 }
+
 
 size_t FileOutputStream::Write(const char* buffer)
 {
@@ -77,6 +86,7 @@ size_t FileOutputStream::Write(const char* buffer)
     return Write(buffer, size);
 }
 
+
 size_t FileOutputStream::Write(char ch)
 {
     TWIO_ASSERT(IsReady());
@@ -86,9 +96,11 @@ size_t FileOutputStream::Write(char ch)
     return (ret == EOF) ? 0 : 1;
 }
 
+
 size_t FileOutputStream::Write(const char* format, va_list argv)
 {
     return static_cast<size_t>(vfprintf(_fp, format, argv));
 }
+
 
 TWIO_END

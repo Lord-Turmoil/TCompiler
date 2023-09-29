@@ -33,6 +33,7 @@ private:
     IOutputStreamPtr _stream;
 };
 
+
 using WriterPtr = std::shared_ptr<Writer>;
 
 TWIO_END

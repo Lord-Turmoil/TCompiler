@@ -9,6 +9,7 @@
 #include <twio/stream/IStream.h>
 #include <cstdio>
 #include <memory>
+#include <cstdarg>
 
 TWIO_BEGIN
 
@@ -52,6 +53,7 @@ private:
     FILE* _fp;
     bool _takeOver;
 };
+
 
 using FileOutputStreamPtr = std::shared_ptr<FileOutputStream>;
 

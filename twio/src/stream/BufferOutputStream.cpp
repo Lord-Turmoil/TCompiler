@@ -4,11 +4,13 @@
 
 #include <twio/stream/BufferOutputStream.h>
 #include <cstring>
+#include <cstdio>
 
 TWIO_BEGIN
 
 
 const size_t BufferOutputStream::DEFAULT_BLOCK_SIZE = 1024;
+
 
 BufferOutputStream::BufferOutputStream(size_t size)
 {
@@ -17,15 +19,18 @@ BufferOutputStream::BufferOutputStream(size_t size)
     _next = 0;
 }
 
+
 std::shared_ptr<BufferOutputStream> BufferOutputStream::New(size_t size)
 {
     return std::make_shared<BufferOutputStream>(size);
 }
 
+
 BufferOutputStream::~BufferOutputStream()
 {
     Close();
 }
+
 
 void BufferOutputStream::Close()
 {
@@ -37,10 +42,12 @@ void BufferOutputStream::Close()
     }
 }
 
+
 bool BufferOutputStream::IsReady() const
 {
     return _buffer != nullptr;
 }
+
 
 size_t BufferOutputStream::Write(const char* buffer, size_t size)
 {
@@ -55,6 +62,7 @@ size_t BufferOutputStream::Write(const char* buffer, size_t size)
     return size;
 }
 
+
 size_t BufferOutputStream::Write(const char* buffer)
 {
     TWIO_ASSERT(IsReady());
@@ -63,6 +71,7 @@ size_t BufferOutputStream::Write(const char* buffer)
 
     return Write(buffer, size);
 }
+
 
 size_t BufferOutputStream::Write(char ch)
 {
@@ -73,6 +82,7 @@ size_t BufferOutputStream::Write(char ch)
 
     return 1;
 }
+
 
 size_t BufferOutputStream::Write(const char* format, va_list argv)
 {
@@ -87,6 +97,7 @@ size_t BufferOutputStream::Write(const char* format, va_list argv)
     return Write(buffer, count);
 }
 
+
 RedirectRequestPtr BufferOutputStream::Yield()
 {
     TWIO_ASSERT(IsReady());
@@ -96,6 +107,7 @@ RedirectRequestPtr BufferOutputStream::Yield()
 
     return RedirectRequest::New(RedirectProtocol::SRP_BUFFER, std::move(_buffer));
 }
+
 
 void BufferOutputStream::_EnsureBufferSize(size_t size)
 {

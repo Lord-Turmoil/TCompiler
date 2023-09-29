@@ -33,6 +33,7 @@ private:
     IInputStreamPtr _stream;
 };
 
+
 using ReaderPtr = std::shared_ptr<Reader>;
 
 

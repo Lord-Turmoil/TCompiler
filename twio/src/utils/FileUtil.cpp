@@ -16,9 +16,10 @@ TWIO_BEGIN
 FILE* OpenFile(const char* path, const char* mode)
 {
     FILE* fp = fopen(path, mode);
-    
+
     return fp;
 }
+
 
 void CloseFile(FILE* fp)
 {

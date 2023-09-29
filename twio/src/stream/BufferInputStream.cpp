@@ -19,6 +19,7 @@ BufferInputStream::BufferInputStream(const char* buffer, size_t size)
     memcpy(_buffer.get(), buffer, size);
 }
 
+
 BufferInputStream::BufferInputStream(const char* buffer) : _next(0)
 {
     _size = strlen(buffer);
@@ -27,14 +28,17 @@ BufferInputStream::BufferInputStream(const char* buffer) : _next(0)
     memcpy(_buffer.get(), buffer, _size);
 }
 
+
 BufferInputStream::BufferInputStream() : _size(0), _next(0)
 {
 }
+
 
 BufferInputStream::BufferInputStream(RedirectRequestPtr request)
 {
     Accept(std::move(request));
 }
+
 
 BufferInputStream::BufferInputStream(BufferInputStream&& other) noexcept
 {
@@ -42,6 +46,7 @@ BufferInputStream::BufferInputStream(BufferInputStream&& other) noexcept
     _size = other._size;
     _next = other._next;
 }
+
 
 BufferInputStream& BufferInputStream::operator=(BufferInputStream&& other) noexcept
 {
@@ -56,25 +61,30 @@ BufferInputStream& BufferInputStream::operator=(BufferInputStream&& other) noexc
     return *this;
 }
 
+
 std::shared_ptr<BufferInputStream> BufferInputStream::New(const char* buffer, size_t size)
 {
     return std::make_shared<BufferInputStream>(buffer, size);
 }
+
 
 std::shared_ptr<BufferInputStream> BufferInputStream::New(const char* buffer)
 {
     return std::make_shared<BufferInputStream>(buffer);
 }
 
+
 std::shared_ptr<BufferInputStream> BufferInputStream::New(RedirectRequestPtr request)
 {
     return std::make_shared<BufferInputStream>(std::move(request));
 }
 
+
 BufferInputStream::~BufferInputStream()
 {
     Close();
 }
+
 
 void BufferInputStream::Close()
 {
@@ -82,10 +92,12 @@ void BufferInputStream::Close()
     _buffer.reset();
 }
 
+
 bool BufferInputStream::IsReady() const
 {
     return _buffer != nullptr;
 }
+
 
 size_t BufferInputStream::Read(char* buffer, size_t size)
 {
@@ -104,6 +116,7 @@ size_t BufferInputStream::Read(char* buffer, size_t size)
     return size;
 }
 
+
 size_t BufferInputStream::Read(char* buffer)
 {
     TWIO_ASSERT(IsReady());
@@ -120,6 +133,7 @@ size_t BufferInputStream::Read(char* buffer)
     return 1;
 }
 
+
 int BufferInputStream::Read()
 {
     TWIO_ASSERT(IsReady());
@@ -132,6 +146,7 @@ int BufferInputStream::Read()
 
     return _buffer[_next++];
 }
+
 
 void BufferInputStream::Accept(RedirectRequestPtr request)
 {
@@ -148,5 +163,6 @@ void BufferInputStream::Accept(RedirectRequestPtr request)
     _size = strlen(_buffer.get());
     _next = 0;
 }
+
 
 TWIO_END

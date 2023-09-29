@@ -8,6 +8,7 @@
 #include <twio/Common.h>
 #include <twio/stream/IStream.h>
 #include <memory>
+#include <cstdarg>
 
 TWIO_BEGIN
 
@@ -48,6 +49,7 @@ private:
     size_t _size;
     size_t _next;
 };
+
 
 using BufferOutputStreamPtr = std::shared_ptr<BufferOutputStream>;
 

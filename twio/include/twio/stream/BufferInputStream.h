@@ -59,6 +59,7 @@ private:
     size_t _next;
 };
 
+
 using BufferInputStreamPtr = std::shared_ptr<BufferInputStream>;
 
 

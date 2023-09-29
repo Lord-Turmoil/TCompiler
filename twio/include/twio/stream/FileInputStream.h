@@ -52,6 +52,7 @@ private:
     bool _takeOver;
 };
 
+
 using FileInputStreamPtr = std::shared_ptr<FileInputStream>;
 
 

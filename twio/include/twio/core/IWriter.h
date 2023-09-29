@@ -35,6 +35,7 @@ public:
     virtual void Close() = 0;
 };
 
+
 inline IWriter::~IWriter() = default;
 
 using IWriterPtr = std::shared_ptr<IWriter>;

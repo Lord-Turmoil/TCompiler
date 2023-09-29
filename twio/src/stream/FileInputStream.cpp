@@ -14,6 +14,7 @@ FileInputStream::FileInputStream(FILE* fp, bool takeOver)
     // TWIO_ASSERT(IsReadOnly(_fp));
 }
 
+
 FileInputStream::FileInputStream(const char* path)
 {
     _fp = OpenFile(path, "r");
@@ -24,6 +25,7 @@ FileInputStream::FileInputStream(const char* path)
     _takeOver = true;
 }
 
+
 FileInputStream::FileInputStream(FileInputStream&& other) noexcept
 {
     _fp = other._fp;
@@ -31,6 +33,7 @@ FileInputStream::FileInputStream(FileInputStream&& other) noexcept
 
     other._fp = nullptr;
 }
+
 
 FileInputStream& FileInputStream::operator=(FileInputStream&& other) noexcept
 {
@@ -47,20 +50,24 @@ FileInputStream& FileInputStream::operator=(FileInputStream&& other) noexcept
     return *this;
 }
 
+
 std::shared_ptr<FileInputStream> FileInputStream::New(FILE* fp, bool takeOver)
 {
     return std::make_shared<FileInputStream>(fp, takeOver);
 }
+
 
 std::shared_ptr<FileInputStream> FileInputStream::New(const char* path)
 {
     return std::make_shared<FileInputStream>(path);
 }
 
+
 FileInputStream::~FileInputStream()
 {
     Close();
 }
+
 
 void FileInputStream::Close()
 {
@@ -74,10 +81,12 @@ void FileInputStream::Close()
     }
 }
 
+
 bool FileInputStream::IsReady() const
 {
     return _fp != nullptr;
 }
+
 
 size_t FileInputStream::Read(char* buffer, size_t size)
 {
@@ -86,6 +95,7 @@ size_t FileInputStream::Read(char* buffer, size_t size)
     buffer[count] = '\0';
     return count;
 }
+
 
 size_t FileInputStream::Read(char* buffer)
 {
@@ -108,11 +118,13 @@ size_t FileInputStream::Read(char* buffer)
     return 1;
 }
 
+
 int FileInputStream::Read()
 {
     TWIO_ASSERT(IsReady());
 
     return fgetc(_fp);
 }
+
 
 TWIO_END

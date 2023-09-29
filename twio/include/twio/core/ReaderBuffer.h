@@ -13,6 +13,7 @@ const size_t READER_BUFFER_SIZE = 1024;
 
 #define _SCALE_TO_READER_BUFFER_SIZE(size) ((size) & ((READER_BUFFER_SIZE) - 1))
 
+
 // Reader buffer is actually a stack.
 class ReaderBuffer
 {

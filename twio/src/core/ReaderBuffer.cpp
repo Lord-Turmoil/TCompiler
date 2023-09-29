@@ -10,17 +10,21 @@ ReaderBuffer::ReaderBuffer()
 {
 }
 
+
 ReaderBuffer::~ReaderBuffer() = default;
+
 
 bool ReaderBuffer::_IsEmpty() const
 {
     return _front == _current;
 }
 
+
 bool ReaderBuffer::_HasNext() const
 {
     return _current < _back;
 }
+
 
 void ReaderBuffer::_Push(char ch)
 {
@@ -34,6 +38,7 @@ void ReaderBuffer::_Push(char ch)
     }
 }
 
+
 void ReaderBuffer::_Push(const char* buffer, size_t size)
 {
     for (auto i = 0; i < size; i++)
@@ -41,6 +46,7 @@ void ReaderBuffer::_Push(const char* buffer, size_t size)
         _Push(*(buffer++));
     }
 }
+
 
 // Actually, pop shouldn't return anything, as its return value will be
 // the same as a immediate _Get() call.
@@ -55,6 +61,7 @@ int ReaderBuffer::_Pop()
     return _buffer[_SCALE_TO_READER_BUFFER_SIZE(_current)];
 }
 
+
 int ReaderBuffer::_Get()
 {
     if (!_HasNext())
@@ -66,5 +73,6 @@ int ReaderBuffer::_Get()
     _current++;
     return ret;
 }
+
 
 TWIO_END

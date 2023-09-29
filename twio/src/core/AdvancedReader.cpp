@@ -10,12 +10,15 @@ AdvancedReader::AdvancedReader(IInputStreamPtr stream)
 {
 }
 
+
 AdvancedReader::~AdvancedReader() = default;
+
 
 std::shared_ptr<AdvancedReader> AdvancedReader::New(const IInputStreamPtr& stream)
 {
     return std::make_shared<AdvancedReader>(stream);
 }
+
 
 size_t AdvancedReader::Read(char* buffer, size_t size)
 {
@@ -50,6 +53,7 @@ size_t AdvancedReader::Read(char* buffer, size_t size)
     return bufferRead + streamRead;
 }
 
+
 int AdvancedReader::Read()
 {
     if (_HasNext())
@@ -69,6 +73,7 @@ int AdvancedReader::Read()
     return ch;
 }
 
+
 int AdvancedReader::Rewind()
 {
     const int ch = _Pop();
@@ -76,20 +81,24 @@ int AdvancedReader::Rewind()
     return ch;
 }
 
+
 int AdvancedReader::Line() const
 {
     return _lineNo;
 }
+
 
 int AdvancedReader::Char() const
 {
     return _charNo;
 }
 
+
 IInputStreamPtr AdvancedReader::Stream() const
 {
     return _stream;
 }
+
 
 void AdvancedReader::Close()
 {
@@ -98,6 +107,7 @@ void AdvancedReader::Close()
         _stream->Close();
     }
 }
+
 
 // Currently will ignore '\r'.
 void AdvancedReader::_MoveForward(char ch)
@@ -114,6 +124,7 @@ void AdvancedReader::_MoveForward(char ch)
     }
 }
 
+
 void AdvancedReader::_MoveBackward(char ch)
 {
     if (ch == '\n')
@@ -127,5 +138,6 @@ void AdvancedReader::_MoveBackward(char ch)
         _charNo--;
     }
 }
+
 
 TWIO_END
