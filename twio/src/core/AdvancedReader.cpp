@@ -54,13 +54,15 @@ int AdvancedReader::Read()
 {
     if (_HasNext())
     {
-        return _Get();
+        const int ch = _Get();
+        _MoveForward(ch);
+        return ch;
     }
 
     const int ch = _stream->Read();
+    _Push(ch);  // EOF will be pushed too.
     if (ch != EOF)
     {
-        _Push(ch);
         _MoveForward(ch);
     }
 
