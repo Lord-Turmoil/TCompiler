@@ -13,11 +13,12 @@ TOMIC_BEGIN
 
 enum class LogLevel
 {
-    Debug,
-    Info,
-    Warning,
-    Error,
-    Fatal
+    DEBUG,
+    INFO,
+    WARNING,
+    ERROR,
+    FATAL,
+    COUNT
 };
 
 class ILogger
@@ -26,6 +27,7 @@ public:
     virtual ~ILogger() = default;
 
     virtual void Log(LogLevel level, const char* format, ...) = 0;
+    virtual int Count(LogLevel level) = 0;
 };
 
 TOMIC_END

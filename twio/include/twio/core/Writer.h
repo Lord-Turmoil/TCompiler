@@ -24,6 +24,7 @@ public:
     size_t Write(char ch) override;
 
     size_t WriteFormat(const char* format, ...) override;
+    size_t WriteFormat(const char* format, va_list argv) override;
 
     IOutputStreamPtr Stream() const override;
 

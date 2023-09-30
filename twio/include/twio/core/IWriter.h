@@ -8,6 +8,7 @@
 #include "../../twio/Common.h"
 #include "../../twio/stream/IStream.h"
 #include <memory>
+#include <cstdarg>
 
 TWIO_BEGIN
 
@@ -28,6 +29,7 @@ public:
 
     // Write formatted string to output stream.
     virtual size_t WriteFormat(const char* format, ...) = 0;
+    virtual size_t WriteFormat(const char* format, va_list argv) = 0;
 
     // Dangerous method, use with caution.
     virtual IOutputStreamPtr Stream() const = 0;

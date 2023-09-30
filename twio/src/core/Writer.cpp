@@ -50,6 +50,12 @@ size_t Writer::WriteFormat(const char* format, ...)
 }
 
 
+size_t Writer::WriteFormat(const char* format, va_list argv)
+{
+    return _stream->Write(format, argv);
+}
+
+
 IOutputStreamPtr Writer::Stream() const
 {
     return _stream;
