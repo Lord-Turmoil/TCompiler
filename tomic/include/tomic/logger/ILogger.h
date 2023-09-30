@@ -1,0 +1,33 @@
+/*******************************************************************************
+ * Copyright (C) Tony's Studio 2018 - 2023. All rights reserved.
+ *
+ *   For BUAA 2023 Compiler Technology
+ */
+
+#ifndef _TOMIC_ILOGGER_H_
+#define _TOMIC_ILOGGER_H_
+
+#include "../Defines.h"
+
+TOMIC_BEGIN
+
+enum class LogLevel
+{
+    Debug,
+    Info,
+    Warning,
+    Error,
+    Fatal
+};
+
+class ILogger
+{
+public:
+    virtual ~ILogger() = default;
+
+    virtual void Log(LogLevel level, const char* format, ...) = 0;
+};
+
+TOMIC_END
+
+#endif
