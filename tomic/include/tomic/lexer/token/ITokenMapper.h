@@ -7,7 +7,7 @@
 #ifndef _TOMIC_I_TOKEN_MAPPER_H_
 #define _TOMIC_I_TOKEN_MAPPER_H_
 
-#include "../../Defines.h"
+#include "../../Common.h"
 #include "Token.h"
 
 TOMIC_BEGIN

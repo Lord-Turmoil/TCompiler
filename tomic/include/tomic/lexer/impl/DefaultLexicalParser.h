@@ -7,9 +7,9 @@
 #ifndef _TOMIC_DEFULAT_LEXICAL_PARSER_H_
 #define _TOMIC_DEFULAT_LEXICAL_PARSER_H_
 
-#include "../../Defines.h"
+#include "../../Common.h"
 #include "../ILexicalParser.h"
-#include "../ILexicalAnalyser.h"
+#include "../ILexicalAnalyzer.h"
 #include <vector>
 
 TOMIC_BEGIN

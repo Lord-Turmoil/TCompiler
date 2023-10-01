@@ -4,10 +4,9 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/lexer/impl/DefaultLexicalAnalyser.h"
+#include "../../include/tomic/lexer/impl/DefaultLexicalAnalyzer.h"
 #include "../../include/tomic/lexer/token/ITokenMapper.h"
 #include "../../include/tomic/utils/StringUtil.h"
-#include "../../../mioc/include/mioc.h"
 
 #include <cctype>
 
@@ -18,19 +17,19 @@ static const char _WHITESPACES[] = " \t\r\n\v\f";
 static const char _OPERATORS[] = "+-*/%&|!<>=";
 static const char _DELIMITERS[] = ",;()[]{}";
 
-DefaultLexicalAnalyser::DefaultLexicalAnalyser()
+DefaultLexicalAnalyzer::DefaultLexicalAnalyzer()
 {
     _InitTasks();
 }
 
 
-DefaultLexicalAnalyser* DefaultLexicalAnalyser::SetReader(twio::IAdvancedReaderPtr reader)
+DefaultLexicalAnalyzer* DefaultLexicalAnalyzer::SetReader(twio::IAdvancedReaderPtr reader)
 {
     _reader = std::move(reader);
     return this;
 }
 
-TokenPtr DefaultLexicalAnalyser::Next()
+TokenPtr DefaultLexicalAnalyzer::Next()
 {
     TokenPtr token;
 
@@ -46,7 +45,7 @@ TokenPtr DefaultLexicalAnalyser::Next()
     return token;
 }
 
-void DefaultLexicalAnalyser::_InitTasks()
+void DefaultLexicalAnalyzer::_InitTasks()
 {
     _tasks.emplace_back(std::make_shared<NumberLexicalTask>());
     _tasks.emplace_back(std::make_shared<IdentifierLexicalTask>());
@@ -57,7 +56,7 @@ void DefaultLexicalAnalyser::_InitTasks()
     _tasks.emplace_back(std::make_shared<UnknownLexicalTask>());
 }
 
-TokenPtr DefaultLexicalAnalyser::_Next()
+TokenPtr DefaultLexicalAnalyzer::_Next()
 {
     // Read the first character to determine which task to perform.
     int lookahead;

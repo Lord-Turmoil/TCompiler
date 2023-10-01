@@ -7,10 +7,8 @@
 #ifndef _TOMIC_ILEXICAL_PARSER_H_
 #define _TOMIC_ILEXICAL_PARSER_H_
 
-#include "../Defines.h"
-#include "ILexicalAnalyser.h"
-#include "../../../../twio/include/twio/core/IReader.h"
-#include "../../../../twio/include/twio/core/IWriter.h"
+#include "../Common.h"
+#include "ILexicalAnalyzer.h"
 #include <memory>
 
 TOMIC_BEGIN

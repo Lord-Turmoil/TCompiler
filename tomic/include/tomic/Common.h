@@ -4,18 +4,11 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_STRING_UTIL_H_
-#define _TOMIC_STRING_UTIL_H_
+#ifndef _TOMIC_COMMON_H_
+#define _TOMIC_COMMON_H_
 
-#include "../Common.h"
-
-TOMIC_BEGIN
-
-namespace StringUtil
-{
-bool Contains(const char* str, int ch);
-}
-
-TOMIC_END
+#include "Defines.h"
+#include "../../../3rd-party/twio/include/twio.h"
+#include "../../../3rd-party/mioc/include/mioc.h"
 
 #endif

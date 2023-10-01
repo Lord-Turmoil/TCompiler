@@ -7,9 +7,7 @@
 #ifndef _TOMIC_IPREPROCESSOR_H_
 #define _TOMIC_IPREPROCESSOR_H_
 
-#include "../Defines.h"
-#include "../../../../twio/include/twio.h"
-
+#include "../Common.h"
 #include <memory>
 
 TOMIC_BEGIN

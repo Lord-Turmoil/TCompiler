@@ -2,4 +2,4 @@
 
 @ECHO OFF
 
-jar -cfM "../publish.zip" include src tomic mioc twio
+jar -cfM "../publish.zip" src tomic 3rd-party

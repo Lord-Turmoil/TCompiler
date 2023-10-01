@@ -7,6 +7,7 @@
       <file path="$PROJECT_DIR$/tomic/src" />
     </sourceRoots>
     <excludeRoots>
+      <file path="$PROJECT_DIR$/output" />
       <file path="$PROJECT_DIR$/pre/publish" />
       <file path="$PROJECT_DIR$/works" />
     </excludeRoots>

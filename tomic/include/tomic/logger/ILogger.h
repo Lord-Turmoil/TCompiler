@@ -7,7 +7,7 @@
 #ifndef _TOMIC_ILOGGER_H_
 #define _TOMIC_ILOGGER_H_
 
-#include "../Defines.h"
+#include "../Common.h"
 
 TOMIC_BEGIN
 

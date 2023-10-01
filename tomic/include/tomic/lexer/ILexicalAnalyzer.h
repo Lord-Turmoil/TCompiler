@@ -1,0 +1,30 @@
+/*******************************************************************************
+ * Copyright (C) Tony's Studio 2018 - 2023. All rights reserved.
+ *
+ *   For BUAA 2023 Compiler Technology
+ */
+
+#ifndef _TOMIC_ILEXICAL_ANALYSER_H_
+#define _TOMIC_ILEXICAL_ANALYSER_H_
+
+#include "../Common.h"
+#include "token/Token.h"
+#include <memory>
+
+TOMIC_BEGIN
+
+class ILexicalAnalyzer
+{
+public:
+    virtual ~ILexicalAnalyzer() = default;
+
+    virtual ILexicalAnalyzer* SetReader(twio::IAdvancedReaderPtr reader) = 0;
+
+    virtual TokenPtr Next() = 0;
+};
+
+using ILexicalAnalyserPtr = std::shared_ptr<ILexicalAnalyzer>;
+
+TOMIC_END
+
+#endif // _TOMIC_ILEXICAL_ANALYZER_H_

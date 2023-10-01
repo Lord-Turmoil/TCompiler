@@ -7,7 +7,7 @@
 #ifndef _TOMIC_TOKEN_H_
 #define _TOMIC_TOKEN_H_
 
-#include "../../Defines.h"
+#include "../../Common.h"
 #include <string>
 #include <memory>
 

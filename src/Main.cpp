@@ -4,10 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../mioc/include/mioc.h"
-#include "../twio/include/twio.h"
 #include "../tomic/include/tomic.h"
-#include "../include/Startup.h"
+#include "Compiler.h"
 #include <cstring>
 
 using namespace tomic;

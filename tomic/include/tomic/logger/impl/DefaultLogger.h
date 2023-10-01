@@ -8,7 +8,6 @@
 #define _TOMIC_DEFAULT_LOGGER_H_
 
 #include "../ILogger.h"
-#include "../../../../../twio/include/twio.h"
 
 TOMIC_BEGIN
 
