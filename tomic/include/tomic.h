@@ -10,7 +10,7 @@
 #include "tomic/lexer/impl/DefaultPreprocessor.h"
 
 #include "tomic/lexer/token/ITokenMapper.h"
-#include "tomic/lexer/token/DefaultTokenMapper.h"
+#include "tomic/lexer/impl/token/DefaultTokenMapper.h"
 
 #include "tomic/lexer/ILexicalAnalyzer.h"
 #include "tomic/lexer/impl/DefaultLexicalAnalyzer.h"
