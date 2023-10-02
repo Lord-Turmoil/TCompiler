@@ -24,3 +24,5 @@ FOR /r %%F IN (*.txt) DO SET fileList=!fileList! %%~nxF
 jar -cfM "../../../pre-publish.zip" %fileList%
 
 CD %curDir%
+
+RMDIR /S /Q "%dstDir%"
