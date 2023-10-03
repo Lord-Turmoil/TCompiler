@@ -4,20 +4,20 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_SYNTACTIC_TYPE_H_
-#define _TOMIC_SYNTACTIC_TYPE_H_
+#ifndef _TOMIC_SYNTAX_TYPE_H_
+#define _TOMIC_SYNTAX_TYPE_H_
 
 #include "../../Common.h"
 #include <unordered_map>
 
 TOMIC_BEGIN
 
-enum class SyntacticType
+enum class SyntaxType
 {
     ST_UNKNOWN,
 
+    ST_EPSILON,
     ST_TERMINATOR,
-    ST_IDENT,
 
     ST_COMP_UNIT,
 
@@ -38,7 +38,9 @@ enum class SyntacticType
     ST_STMT,
     ST_LVAL,
     ST_COND,
-    ST_IF_STMT, ST_FOR_STMT,
+    ST_IF_STMT,
+    ST_FOR_STMT, ST_FOR_COND_STMT,
+    ST_EXP_STMT,
     ST_BREAK_STMT, ST_CONTINUE_STMT, ST_RETURN_STMT,
     ST_IN_STMT, ST_OUT_STMT,
 
@@ -58,7 +60,7 @@ class ISyntacticTypeMapper
 public:
     virtual ~ISyntacticTypeMapper() = default;
 
-    virtual const char* Description(SyntacticType type) const = 0;
+    virtual const char* Description(SyntaxType type) const = 0;
 };
 
 class SyntacticTypeMapper : public ISyntacticTypeMapper
@@ -66,12 +68,12 @@ class SyntacticTypeMapper : public ISyntacticTypeMapper
 public:
     SyntacticTypeMapper();
 
-    const char* Description(SyntacticType type) const override;
+    const char* Description(SyntaxType type) const override;
 private:
     void _Init();
-    std::unordered_map<SyntacticType, const char*> _typeToDescription;
+    std::unordered_map<SyntaxType, const char*> _typeToDescription;
 };
 
 TOMIC_END
 
-#endif // _TOMIC_SYNTACTIC_TYPE_H_
+#endif // _TOMIC_SYNTAX_TYPE_H_
