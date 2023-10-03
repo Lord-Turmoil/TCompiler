@@ -25,6 +25,9 @@ public:
     TokenPtr Next() override;
     TokenPtr Rewind() override;
 
+    int SetCheckPoint() override;
+    void Rollback(int checkpoint) override;
+
 private:
     ILexicalAnalyserPtr _analyser;
     std::vector<TokenPtr> _tokens;

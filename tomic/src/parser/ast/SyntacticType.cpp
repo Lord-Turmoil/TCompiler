@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../include/tomic/parser/ast/SyntacticType.h"
+#include "../../../include/tomic/parser/ast/SyntaxType.h"
 
 TOMIC_BEGIN
 
@@ -13,7 +13,7 @@ SyntacticTypeMapper::SyntacticTypeMapper()
     _Init();
 }
 
-const char* SyntacticTypeMapper::Description(SyntacticType type) const
+const char* SyntacticTypeMapper::Description(SyntaxType type) const
 {
     auto iter = _typeToDescription.find(type);
     if (iter == _typeToDescription.end())
@@ -25,47 +25,49 @@ const char* SyntacticTypeMapper::Description(SyntacticType type) const
 
 void SyntacticTypeMapper::_Init()
 {
-    _typeToDescription[SyntacticType::ST_UNKNOWN] = "Unknown";
-    _typeToDescription[SyntacticType::ST_TERMINATOR] = "Terminator";
-    _typeToDescription[SyntacticType::ST_IDENT] = "Ident";
-    _typeToDescription[SyntacticType::ST_COMP_UNIT] = "CompUnit";
-    _typeToDescription[SyntacticType::ST_DECL] = "Decl";
-    _typeToDescription[SyntacticType::ST_BTYPE] = "BType";
-    _typeToDescription[SyntacticType::ST_CONST_DECL] = "ConstDecl";
-    _typeToDescription[SyntacticType::ST_CONST_DEF] = "ConstDef";
-    _typeToDescription[SyntacticType::ST_CONST_INIT_VAL] = "ConstInitVal";
-    _typeToDescription[SyntacticType::ST_VAR_DECL] = "VarDecl";
-    _typeToDescription[SyntacticType::ST_VAR_DEF] = "VarDef";
-    _typeToDescription[SyntacticType::ST_INIT_VAL] = "InitVal";
-    _typeToDescription[SyntacticType::ST_FUNC_DEF] = "FuncDef";
-    _typeToDescription[SyntacticType::ST_FUNC_TYPE] = "FuncType";
-    _typeToDescription[SyntacticType::ST_FUNC_F_PARAMS] = "FuncFParams";
-    _typeToDescription[SyntacticType::ST_FUNC_A_PARAMS] = "FuncAParams";
-    _typeToDescription[SyntacticType::ST_BLOCK] = "Block";
-    _typeToDescription[SyntacticType::ST_BLOCK_ITEM] = "BlockItem";
-    _typeToDescription[SyntacticType::ST_MAIN_FUNC_DECL] = "MainFuncDecl";
-    _typeToDescription[SyntacticType::ST_STMT] = "Stmt";
-    _typeToDescription[SyntacticType::ST_LVAL] = "LVal";
-    _typeToDescription[SyntacticType::ST_COND] = "Cond";
-    _typeToDescription[SyntacticType::ST_IF_STMT] = "IfStmt";
-    _typeToDescription[SyntacticType::ST_FOR_STMT] = "ForStmt";
-    _typeToDescription[SyntacticType::ST_BREAK_STMT] = "BreakStmt";
-    _typeToDescription[SyntacticType::ST_CONTINUE_STMT] = "ContinueStmt";
-    _typeToDescription[SyntacticType::ST_RETURN_STMT] = "ReturnStmt";
-    _typeToDescription[SyntacticType::ST_IN_STMT] = "InStmt";
-    _typeToDescription[SyntacticType::ST_OUT_STMT] = "OutStmt";
-    _typeToDescription[SyntacticType::ST_EXP] = "Exp";
-    _typeToDescription[SyntacticType::ST_CONST_EXP] = "ConstExp";
-    _typeToDescription[SyntacticType::ST_ADD_EXP] = "AddExp";
-    _typeToDescription[SyntacticType::ST_MUL_EXP] = "MulExp";
-    _typeToDescription[SyntacticType::ST_UNARY_EXP] = "UnaryExp";
-    _typeToDescription[SyntacticType::ST_UNARY_OP] = "UnaryOp";
-    _typeToDescription[SyntacticType::ST_PRIMARY_EXP] = "PrimaryExp";
-    _typeToDescription[SyntacticType::ST_NUMBER] = "Number";
-    _typeToDescription[SyntacticType::ST_OR_EXP] = "OrExp";
-    _typeToDescription[SyntacticType::ST_AND_EXP] = "AndExp";
-    _typeToDescription[SyntacticType::ST_EQ_EXP] = "EqExp";
-    _typeToDescription[SyntacticType::ST_REL_EXP] = "RelExp";
+    _typeToDescription[SyntaxType::ST_UNKNOWN] = "Unknown";
+    _typeToDescription[SyntaxType::ST_EPSILON] = "Epsilon";
+    _typeToDescription[SyntaxType::ST_TERMINATOR] = "Terminator";
+    _typeToDescription[SyntaxType::ST_COMP_UNIT] = "CompUnit";
+    _typeToDescription[SyntaxType::ST_DECL] = "Decl";
+    _typeToDescription[SyntaxType::ST_BTYPE] = "BType";
+    _typeToDescription[SyntaxType::ST_CONST_DECL] = "ConstDecl";
+    _typeToDescription[SyntaxType::ST_CONST_DEF] = "ConstDef";
+    _typeToDescription[SyntaxType::ST_CONST_INIT_VAL] = "ConstInitVal";
+    _typeToDescription[SyntaxType::ST_VAR_DECL] = "VarDecl";
+    _typeToDescription[SyntaxType::ST_VAR_DEF] = "VarDef";
+    _typeToDescription[SyntaxType::ST_INIT_VAL] = "InitVal";
+    _typeToDescription[SyntaxType::ST_FUNC_DEF] = "FuncDef";
+    _typeToDescription[SyntaxType::ST_FUNC_TYPE] = "FuncType";
+    _typeToDescription[SyntaxType::ST_FUNC_F_PARAMS] = "FuncFParams";
+    _typeToDescription[SyntaxType::ST_FUNC_A_PARAMS] = "FuncAParams";
+    _typeToDescription[SyntaxType::ST_BLOCK] = "Block";
+    _typeToDescription[SyntaxType::ST_BLOCK_ITEM] = "BlockItem";
+    _typeToDescription[SyntaxType::ST_MAIN_FUNC_DECL] = "MainFuncDecl";
+    _typeToDescription[SyntaxType::ST_STMT] = "Stmt";
+    _typeToDescription[SyntaxType::ST_LVAL] = "LVal";
+    _typeToDescription[SyntaxType::ST_COND] = "Cond";
+    _typeToDescription[SyntaxType::ST_IF_STMT] = "IfStmt";
+    _typeToDescription[SyntaxType::ST_FOR_STMT] = "ForStmt"; // This is a custom statement.
+    _typeToDescription[SyntaxType::ST_FOR_COND_STMT] = "ForStmt";
+    _typeToDescription[SyntaxType::ST_EXP_STMT] = "ExpStmt";
+    _typeToDescription[SyntaxType::ST_BREAK_STMT] = "BreakStmt";
+    _typeToDescription[SyntaxType::ST_CONTINUE_STMT] = "ContinueStmt";
+    _typeToDescription[SyntaxType::ST_RETURN_STMT] = "ReturnStmt";
+    _typeToDescription[SyntaxType::ST_IN_STMT] = "InStmt";
+    _typeToDescription[SyntaxType::ST_OUT_STMT] = "OutStmt";
+    _typeToDescription[SyntaxType::ST_EXP] = "Exp";
+    _typeToDescription[SyntaxType::ST_CONST_EXP] = "ConstExp";
+    _typeToDescription[SyntaxType::ST_ADD_EXP] = "AddExp";
+    _typeToDescription[SyntaxType::ST_MUL_EXP] = "MulExp";
+    _typeToDescription[SyntaxType::ST_UNARY_EXP] = "UnaryExp";
+    _typeToDescription[SyntaxType::ST_UNARY_OP] = "UnaryOp";
+    _typeToDescription[SyntaxType::ST_PRIMARY_EXP] = "PrimaryExp";
+    _typeToDescription[SyntaxType::ST_NUMBER] = "Number";
+    _typeToDescription[SyntaxType::ST_OR_EXP] = "OrExp";
+    _typeToDescription[SyntaxType::ST_AND_EXP] = "AndExp";
+    _typeToDescription[SyntaxType::ST_EQ_EXP] = "EqExp";
+    _typeToDescription[SyntaxType::ST_REL_EXP] = "RelExp";
 }
 
 TOMIC_END

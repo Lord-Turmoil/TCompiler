@@ -15,7 +15,8 @@ void RegisterComponents()
             ->AddTransient<IPreprocessor, DefaultPreprocessor>()
             ->AddSingleton<ITokenMapper, DefaultTokenMapper>()
             ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer>()
-            ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer>();
+            ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer>()
+            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser>();
 }
 
 void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
@@ -26,6 +27,7 @@ void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
     auto writer = twio::Writer::New(twio::BufferOutputStream::New());
     preprocessor->SetReader(srcReader)->SetWriter(writer)->Process();
 
+    /*
     auto lexicalParser = container->Resolve<ILexicalParser>();
     auto reader = twio::AdvancedReader::New(twio::BufferInputStream::New(writer->Stream()->Yield()));
     lexicalParser->SetReader(reader);
@@ -39,4 +41,10 @@ void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
         dstWriter->Write(token->lexeme.c_str());
         dstWriter->Write("\n");
     }
+    */
+    auto syntacticParser = container->Resolve<ISyntacticParser>();
+    auto reader = twio::AdvancedReader::New(twio::BufferInputStream::New(writer->Stream()->Yield()));
+    syntacticParser->SetReader(reader);
+
+    syntacticParser->Parse();
 }

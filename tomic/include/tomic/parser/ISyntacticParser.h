@@ -12,8 +12,8 @@
 
 TOMIC_BEGIN
 
-class SyntacticTree;
-using SyntacticTreePtr = std::shared_ptr<SyntacticTree>;
+class SyntaxTree;
+using SyntaxTreePtr = std::shared_ptr<SyntaxTree>;
 
 class ISyntacticParser
 {
@@ -22,7 +22,7 @@ public:
 
     virtual ISyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) = 0;
 
-    virtual SyntacticTreePtr Parse() = 0;
+    virtual SyntaxTreePtr Parse() = 0;
 };
 
 TOMIC_END

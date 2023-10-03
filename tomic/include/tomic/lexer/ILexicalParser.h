@@ -23,6 +23,9 @@ public:
 
     virtual TokenPtr Next() = 0;
     virtual TokenPtr Rewind() = 0;
+
+    virtual int SetCheckPoint() = 0;
+    virtual void Rollback(int checkpoint) = 0;
 };
 
 using ILexicalParserPtr = std::shared_ptr<ILexicalParser>;

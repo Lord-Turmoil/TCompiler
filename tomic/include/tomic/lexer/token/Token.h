@@ -88,6 +88,11 @@ struct Token
     {
         return std::make_shared<Token>(type, "", 0, 0);
     }
+
+    static TokenType Type(const std::shared_ptr<Token>& token)
+    {
+        return token ? token->type : TokenType::TK_TERMINATOR;
+    }
 };
 
 using TokenPtr = std::shared_ptr<Token>;

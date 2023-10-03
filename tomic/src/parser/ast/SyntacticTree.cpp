@@ -5,34 +5,83 @@
  */
 
 #include "../../../include/tomic/Common.h"
-#include "../../../include/tomic/parser/ast/SyntacticTree.h"
-#include "../../../include/tomic/parser/ast/SyntacticNode.h"
+#include "../../../include/tomic/parser/ast/SyntaxTree.h"
+#include "../../../include/tomic/parser/ast/SyntaxNode.h"
 #include <algorithm>
 
 TOMIC_BEGIN
 
-SyntacticTree::~SyntacticTree()
+SyntaxTree::~SyntaxTree()
 {
-    for (auto node: _nodes)
+    _Clearup();
+}
+
+std::shared_ptr<SyntaxTree> SyntaxTree::New()
+{
+    return std::make_shared<SyntaxTree>();
+}
+
+SyntaxNodePtr SyntaxTree::NewTerminalNode(TokenPtr token)
+{
+    auto node = new TerminalSyntaxNode(token);
+    node->_tree = this;
+    _nodes.insert(node);
+
+    return node;
+}
+
+SyntaxNodePtr SyntaxTree::NewNonTerminalNode(SyntaxType type)
+{
+    auto node = new NonTerminalSyntaxNode(type);
+    node->_tree = this;
+    _nodes.insert(node);
+
+    return node;
+}
+
+void SyntaxTree::DeleteNode(SyntaxNodePtr node)
+{
+    TOMIC_ASSERT(node);
+    TOMIC_ASSERT(node->_tree == this);
+
+    if (node == _root)
     {
-        delete node;
+        _Clearup();
+        return;
     }
+
+    if (node->_parent)
+    {
+        node->_parent->_Unlink(node);
+    }
+    while (node->HasChildren())
+    {
+        DeleteNode(node->FirstChild());
+    }
+
+    auto it = _nodes.erase(node);
+    delete node;
 }
 
-std::shared_ptr<SyntacticTree> SyntacticTree::New()
-{
-    return std::make_shared<SyntacticTree>();
-}
-
-SyntacticNodePtr SyntacticTree::SetRoot(SyntacticNodePtr root)
+SyntaxNodePtr SyntaxTree::SetRoot(SyntaxNodePtr root)
 {
     TOMIC_ASSERT(root);
-    TOMIC_ASSERT(root->_tree == nullptr);
+    TOMIC_ASSERT(root->_tree == this);
+    TOMIC_ASSERT(root->_parent == nullptr);
 
     root->_tree = this;
     _root = root;
 
     return root;
+}
+
+void SyntaxTree::_Clearup()
+{
+    for (auto it = _nodes.begin(); it != _nodes.end(); it++)
+    {
+        delete *it;
+    }
+    _nodes.clear();
 }
 
 TOMIC_END

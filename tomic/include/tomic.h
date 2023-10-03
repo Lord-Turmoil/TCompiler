@@ -16,3 +16,6 @@
 #include "tomic/lexer/impl/DefaultLexicalAnalyzer.h"
 #include "tomic/lexer/ILexicalParser.h"
 #include "tomic/lexer/impl/DefaultLexicalParser.h"
+
+#include "tomic/parser/ISyntacticParser.h"
+#include "tomic/parser/impl/DefaultSyntacticParser.h"

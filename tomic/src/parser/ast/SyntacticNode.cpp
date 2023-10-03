@@ -4,24 +4,24 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../include/tomic/parser/ast/SyntacticNode.h"
-#include "../../../include/tomic/parser/ast/SyntacticTree.h"
+#include "../../../include/tomic/parser/ast/SyntaxNode.h"
+#include "../../../include/tomic/parser/ast/SyntaxTree.h"
 
 TOMIC_BEGIN
 
-SyntacticNode::SyntacticNode(SyntacticType type)
+SyntaxNode::SyntaxNode(SyntaxType type)
         : _type(type), _tree(nullptr), _parent(nullptr), _token(nullptr)
 {
 }
 
-SyntacticNode::SyntacticNode(SyntacticType type, TokenPtr token)
+SyntaxNode::SyntaxNode(SyntaxType type, TokenPtr token)
         : _type(type), _tree(nullptr), _parent(nullptr), _token(token)
 {
 }
 
-SyntacticNodePtr SyntacticNode::Root() const
+SyntaxNodePtr SyntaxNode::Root() const
 {
-    auto node = const_cast<SyntacticNode*>(this);
+    auto node = const_cast<SyntaxNode*>(this);
     while (node->_parent)
     {
         node = node->_parent;
@@ -29,7 +29,7 @@ SyntacticNodePtr SyntacticNode::Root() const
     return node;
 }
 
-SyntacticNodePtr SyntacticNode::InsertEndChild(SyntacticNodePtr child)
+SyntaxNodePtr SyntaxNode::InsertEndChild(SyntaxNodePtr child)
 {
     _InsertChildPreamble(child);
 
@@ -54,7 +54,7 @@ SyntacticNodePtr SyntacticNode::InsertEndChild(SyntacticNodePtr child)
 }
 
 
-SyntacticNodePtr SyntacticNode::InsertFirstChild(SyntacticNodePtr child)
+SyntaxNodePtr SyntaxNode::InsertFirstChild(SyntaxNodePtr child)
 {
     _InsertChildPreamble(child);
 
@@ -79,7 +79,31 @@ SyntacticNodePtr SyntacticNode::InsertFirstChild(SyntacticNodePtr child)
     return child;
 }
 
-void SyntacticNode::_InsertChildPreamble(SyntacticNodePtr child)
+SyntaxNodePtr SyntaxNode::InsertAfterChild(SyntaxNodePtr child, SyntaxNodePtr after)
+{
+    _InsertChildPreamble(child);
+
+    if (!after)
+    {
+        return InsertFirstChild(child);
+    }
+    if (after == _lastChild)
+    {
+        return InsertEndChild(child);
+    }
+
+    child->_prev = after;
+    child->_next = after->_next;
+    // after is not the last child, so after->_next is not nullptr.
+    after->_next->_prev = child;
+    after->_next = child;
+
+    child->_parent = this;
+
+    return child;
+}
+
+void SyntaxNode::_InsertChildPreamble(SyntaxNodePtr child)
 {
     TOMIC_ASSERT(child);
     TOMIC_ASSERT(child->_tree == _tree);
@@ -90,7 +114,7 @@ void SyntacticNode::_InsertChildPreamble(SyntacticNodePtr child)
     }
 }
 
-void SyntacticNode::_Unlink(SyntacticNodePtr child)
+SyntaxNodePtr SyntaxNode::_Unlink(SyntaxNodePtr child)
 {
     TOMIC_ASSERT(child);
     TOMIC_ASSERT(child->_tree = _tree);
@@ -114,9 +138,30 @@ void SyntacticNode::_Unlink(SyntacticNodePtr child)
         child->_next->_prev = child->_prev;
     }
 
+    SyntaxNodePtr ret = child->_prev;
+
     child->_prev = nullptr;
     child->_next = nullptr;
     child->_parent = nullptr;
+
+    return ret;
+}
+
+
+/*
+ * Non-terminal syntax node.
+ */
+NonTerminalSyntaxNode::NonTerminalSyntaxNode(tomic::SyntaxType type)
+        : SyntaxNode(type)
+{
+}
+
+/*
+ * Terminal syntax node.
+ */
+TerminalSyntaxNode::TerminalSyntaxNode(tomic::TokenPtr token)
+        : SyntaxNode(SyntaxType::ST_TERMINATOR, token)
+{
 }
 
 TOMIC_END

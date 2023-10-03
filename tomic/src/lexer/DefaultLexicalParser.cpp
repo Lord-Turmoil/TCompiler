@@ -61,4 +61,14 @@ TokenPtr DefaultLexicalParser::Rewind()
     return nullptr;
 }
 
+int DefaultLexicalParser::SetCheckPoint()
+{
+    return _current - _tokens.begin();
+}
+
+void DefaultLexicalParser::Rollback(int checkpoint)
+{
+    _current = _tokens.begin() + checkpoint;
+}
+
 TOMIC_END

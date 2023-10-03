@@ -9,8 +9,6 @@
 
 #include "../3rd-party/twio/include/twio.h"
 #include "../3rd-party/mioc/include/mioc.h"
-// #include "../twio/include/twio.h"
-// #include "../mioc/include/mioc.h"
 
 void RegisterComponents();
 
