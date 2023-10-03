@@ -167,6 +167,12 @@ void DefaultPreprocessor::_ProcessBlockCommentRight(int ch)
         _writer->Write(FILLING);    // *
         _writer->Write(FILLING);    // /
         break;
+    case '*':
+        // FIX 2023/10/03 TS: continuous '*'
+        // State should remain unchanged.
+        _state.type = StateType::BLOCK_COMMENT_RIGHT;
+        _writer->Write(FILLING);    // replace the old *
+        break;
     case '\n':
         _state.type = StateType::BLOCK_COMMENT_LEFT;
         _writer->Write(FILLING);    // wrong *
