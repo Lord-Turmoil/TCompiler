@@ -5,6 +5,7 @@
  */
 
 #include "../../include/tomic/parser/impl/DefaultSyntacticParser.h"
+#include "../../include/tomic/parser/ast/trans/RightRecursiveAstTransformer.h"
 
 TOMIC_BEGIN
 
@@ -91,6 +92,7 @@ SyntaxTreePtr DefaultSyntacticParser::Parse()
     }
 
     _tree->SetRoot(compUnit);
+    RightRecursiveAstTransformer().Transform(_tree);
 
     return _tree;
 }
