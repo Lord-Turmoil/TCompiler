@@ -13,6 +13,12 @@ void RegisterComponents()
 {
     auto container = mioc::SingletonContainer::GetContainer();
 
+    // Logger
+    auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New("log.txt"));
+    auto logger = DefaultLogger::New();
+    logger->SetWriter(loggerWriter);
+    container->AddSingleton<ILogger>(logger);
+
     // Lexical
     container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
             ->AddTransient<IPreprocessor, DefaultPreprocessor>()
@@ -21,14 +27,8 @@ void RegisterComponents()
 
     // Syntactic
     container->AddSingleton<ISyntacticTypeMapper, SyntacticTypeMapper>()
-            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser>()
+            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ILogger>()
             ->AddTransient<IAstPrinter, XmlAstPrinter>();
-
-    // Logger
-    auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New("log.txt"));
-    auto logger = DefaultLogger::New();
-    logger->SetWriter(loggerWriter);
-    container->AddSingleton<ILogger>(logger);
 }
 
 

@@ -12,6 +12,7 @@
 #include "../../lexer/ILexicalParser.h"
 #include "../ast/SyntaxNode.h"
 #include "../ast/SyntaxTree.h"
+#include "../../logger/ILogger.h"
 #include <vector>
 
 TOMIC_BEGIN
@@ -19,7 +20,7 @@ TOMIC_BEGIN
 class DefaultSyntacticParser : public ISyntacticParser
 {
 public:
-    DefaultSyntacticParser(ILexicalParserPtr lexicalParser);
+    DefaultSyntacticParser(ILexicalParserPtr lexicalParser, ILoggerPtr logger);
     ~DefaultSyntacticParser() override = default;
 
     DefaultSyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) override;
@@ -28,6 +29,7 @@ public:
 
 private:
     ILexicalParserPtr _lexicalParser;
+    ILoggerPtr _logger;
     SyntaxTreePtr _tree;
 
 private:

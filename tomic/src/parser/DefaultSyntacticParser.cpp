@@ -9,8 +9,8 @@
 
 TOMIC_BEGIN
 
-DefaultSyntacticParser::DefaultSyntacticParser(ILexicalParserPtr lexicalParser)
-        : _lexicalParser(lexicalParser)
+DefaultSyntacticParser::DefaultSyntacticParser(ILexicalParserPtr lexicalParser, ILoggerPtr logger)
+        : _lexicalParser(lexicalParser), _logger(logger), _tree(nullptr)
 {
 }
 
