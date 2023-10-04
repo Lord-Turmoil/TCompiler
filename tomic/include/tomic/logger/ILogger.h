@@ -29,6 +29,11 @@ public:
 
     virtual void Log(LogLevel level, const char* format, ...) = 0;
     virtual int Count(LogLevel level) = 0;
+
+    // Only log level higher than or equal to the given level will be logged.
+    // But will also count the logs of lower level.
+    virtual ILogger* SetLogLevel(LogLevel level) = 0;
+    virtual ILogger* SetWriter(twio::IWriterPtr writer) = 0;
 };
 
 using ILoggerPtr = std::shared_ptr<ILogger>;

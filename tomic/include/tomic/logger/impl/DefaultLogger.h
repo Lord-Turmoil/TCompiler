@@ -23,17 +23,24 @@ public:
 
     static DefaultLoggerPtr New();
 
-    DefaultLogger* SetWriter(twio::IWriterPtr writer)
+    void Log(LogLevel level, const char* format, ...) override;
+    int Count(LogLevel level) override;
+
+    DefaultLogger* SetLogLevel(LogLevel level) override
+    {
+        _level = level;
+        return this;
+    }
+    
+    DefaultLogger* SetWriter(twio::IWriterPtr writer) override
     {
         _writer = writer;
         return this;
     }
 
-    void Log(LogLevel level, const char* format, ...) override;
-    int Count(LogLevel level) override;
-
 private:
     twio::IWriterPtr _writer;
+    LogLevel _level;
     int _count[(int)LogLevel::COUNT];
 };
 

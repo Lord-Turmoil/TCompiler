@@ -26,10 +26,11 @@ public:
 
     static DumbLoggerPtr New();
 
-    DumbLogger* SetWriter(twio::IWriterPtr writer) { return this; }
-
     void Log(LogLevel level, const char* format, ...) override;
     int Count(LogLevel level) override;
+
+    DumbLogger* SetLogLevel(LogLevel level) override { return this; }
+    DumbLogger* SetWriter(twio::IWriterPtr writer) override { return this; }
 
 private:
     int _count[(int)LogLevel::COUNT];

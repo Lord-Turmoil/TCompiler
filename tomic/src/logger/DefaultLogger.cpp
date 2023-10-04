@@ -8,7 +8,7 @@
 
 TOMIC_BEGIN
 
-DefaultLogger::DefaultLogger() : _count{0}
+DefaultLogger::DefaultLogger() : _count{0}, _level(LogLevel::DEBUG)
 {
 }
 
@@ -21,7 +21,7 @@ void DefaultLogger::Log(LogLevel level, const char* format, ...)
 {
     _count[(int)level]++;
 
-    if (_writer == nullptr)
+    if (_writer == nullptr || (level < _level))
     {
         return;
     }
