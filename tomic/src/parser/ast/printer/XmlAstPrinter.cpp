@@ -16,10 +16,13 @@ TOMIC_BEGIN
  */
 XmlAstPrinter::XmlAstPrinter() : _depth(0), _indent(2) {}
 
-void XmlAstPrinter::Print(SyntaxTreePtr tree)
+void XmlAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
 {
     TOMIC_ASSERT(tree);
+    TOMIC_ASSERT(writer);
 
+    _writer = writer;
+    
     // To make first element with depth 0, we set depth to -1.
     _depth = -1;
 

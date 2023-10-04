@@ -83,5 +83,5 @@ static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr 
     auto tree = syntacticParser->Parse();
     auto printer = container->Resolve<IAstPrinter>();
 
-    printer->SetWriter(dstWriter)->Print(tree);
+    printer->Print(tree, dstWriter);
 }

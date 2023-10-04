@@ -19,18 +19,11 @@ public:
     XmlAstPrinter();
     ~XmlAstPrinter() override = default;
 
+    void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) override;
+
     bool VisitEnter(SyntaxNodePtr node) override;
     bool VisitExit(SyntaxNodePtr node) override;
     bool Visit(SyntaxNodePtr node) override;
-
-public:
-    XmlAstPrinter* SetWriter(twio::IWriterPtr writer) override
-    {
-        _writer = writer;
-        return this;
-    }
-
-    void Print(SyntaxTreePtr tree) override;
 
 private:
     void _VisitNonTerminal(SyntaxNodePtr node);

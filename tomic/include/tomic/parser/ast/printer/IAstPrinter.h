@@ -24,10 +24,8 @@ class IAstPrinter : public AstVisitor
 {
 public:
     ~IAstPrinter() override = default;
-
-    virtual IAstPrinter* SetWriter(twio::IWriterPtr writer) = 0;
-
-    virtual void Print(SyntaxTreePtr tree) = 0;
+    
+    virtual void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) = 0;
 };
 
 TOMIC_END
