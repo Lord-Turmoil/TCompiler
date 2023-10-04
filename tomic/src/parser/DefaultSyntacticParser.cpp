@@ -108,50 +108,64 @@ void DefaultSyntacticParser::_PostParseError(int checkpoint, SyntaxNodePtr node)
     }
 }
 
-void DefaultSyntacticParser::_Log(LogLevel level, const char* format, ...)
+void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, ...)
 {
     va_list args;
     va_start(args, format);
-    vsprintf(_logBuffer, format, args);
+    _Log(level, position, format, args);
     va_end(args);
+}
 
-    auto token = _Current();
+void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, va_list argv)
+{
+    vsprintf(_logBuffer, format, argv);
+
+    auto token = position;
     int lineNo = token ? token->lineNo : 1;
     int charNo = token ? token->charNo : 1;
 
     _logger->Log(level, "(%d:%d) %s", lineNo, charNo, _logBuffer);
 }
 
-void DefaultSyntacticParser::_LogFailedToParse(SyntaxType type)
+void DefaultSyntacticParser::_Log(LogLevel level, const char* format, ...)
 {
-    auto descr = _syntaxMapper->Description(type);
+    va_list args;
+    va_start(args, format);
+    _Log(level, _Current(), format, args);
+    va_end(args);
+}
+
+void DefaultSyntacticParser::_LogFailedToParse(SyntaxType type, LogLevel level)
+{
+    const char* descr = _syntaxMapper->Description(type);
     if (!descr)
     {
         descr = "MISSING";
     }
-    _Log(LogLevel::ERROR, "Failed to parse <%s>", type);
+    // Since it is the result of other parsing, it is not an error.
+    _Log(level, "Failed to parse <%s>", descr);
 }
 
-void DefaultSyntacticParser::_LogExpect(TokenType expected)
+void DefaultSyntacticParser::_LogExpect(TokenType expected, LogLevel level)
 {
-    auto current = _Current();
+    auto actual = _Lookahead();
 
-    auto expectedDescr = _tokenMapper->Description(expected);
+    auto expectedDescr = _tokenMapper->Lexeme(expected);
     if (!expectedDescr)
     {
         expectedDescr = "MISSING";
     }
 
-    _Log(LogLevel::ERROR, "Expect %s, but got %s", expectedDescr, current->lexeme.c_str());
+    _Log(level, actual, "Expect %s, but got %s", expectedDescr, actual->lexeme.c_str());
 }
 
-void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected)
+void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected, LogLevel level)
 {
     std::stringstream stream;
 
     for (auto type: expected)
     {
-        auto descr = _tokenMapper->Description(type);
+        auto descr = _tokenMapper->Lexeme(type);
         if (!descr)
         {
             descr = "MISSING";
@@ -159,7 +173,19 @@ void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected)
         stream << " " << descr;
     }
 
-    _Log(LogLevel::ERROR, "Expect one of %s, but got %s", stream.str().c_str(), _Current()->lexeme.c_str());
+    _Log(level, "Expect one of %s, but got %s", stream.str().c_str(), _Current()->lexeme.c_str());
+}
+
+void DefaultSyntacticParser::_LogExpectAfter(TokenType expected, LogLevel level)
+{
+    auto current = _Current();
+    auto expectedDescr = _tokenMapper->Lexeme(expected);
+    if (!expectedDescr)
+    {
+        expectedDescr = "MISSING";
+    }
+
+    _Log(level, current, "Expect %s after %s", expectedDescr, current->lexeme.c_str());
 }
 
 /*
@@ -175,7 +201,7 @@ SyntaxTreePtr DefaultSyntacticParser::Parse()
     {
         // TODO: Error handling.
         _logger->Log(LogLevel::FATAL, "Failed to parse the source code.");
-        TOMIC_ASSERT(compUnit);
+        return nullptr;
     }
 
     _tree->SetRoot(compUnit);
@@ -195,7 +221,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
         SyntaxNodePtr decl = _ParseDecl();
         if (!decl)
         {
-            _Log(LogLevel::ERROR, "Failed to parse <Decl>");
+            _LogFailedToParse(SyntaxType::ST_DECL);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -208,7 +234,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
         SyntaxNodePtr funcDef = _ParseFuncDef();
         if (!funcDef)
         {
-            _Log(LogLevel::ERROR, "Failed to parse <FuncDef>");
+            _LogFailedToParse(SyntaxType::ST_FUNC_DEF);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -278,7 +304,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseDecl()
         auto constDecl = _ParseConstDecl();
         if (!constDecl)
         {
-            _Log(LogLevel::ERROR, "Failed to parse <ConstDecl>");
+            _LogFailedToParse(SyntaxType::ST_CONST_DECL);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -289,7 +315,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseDecl()
         auto varDecl = _ParseVarDecl();
         if (!varDecl)
         {
-            _Log(LogLevel::ERROR, "Failed to parse <VarDecl>");
+            _LogFailedToParse(SyntaxType::ST_VAR_DECL);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -311,6 +337,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBType()
     }
     else
     {
+        _LogExpect(TokenType::TK_INT);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -325,19 +352,20 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_CONST_DECL);
 
     // const
-    TokenPtr token = _Next();
-    if (!_Match(TokenType::TK_CONST, token))
+    if (!_Match(TokenType::TK_CONST, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_CONST);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr constToken = _tree->NewTerminalNode(token);
+    SyntaxNodePtr constToken = _tree->NewTerminalNode(_Next());
     root->InsertEndChild(constToken);
 
     // BType
     SyntaxNodePtr type = _ParseBType();
     if (!type)
     {
+        _LogFailedToParse(SyntaxType::ST_BTYPE);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -347,6 +375,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
     SyntaxNodePtr constDef = _ParseConstDef();
     if (!constDef)
     {
+        _LogFailedToParse(SyntaxType::ST_CONST_DEF);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -360,7 +389,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
         constDef = _ParseConstDef();
         if (!constDef)
         {
-            // TODO: Potential Error
+            _LogFailedToParse(SyntaxType::ST_CONST_DEF);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -368,13 +397,13 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
     }
 
     // Check ;
-    token = _Next();
-    if (!_Match(TokenType::TK_SEMICOLON, token))
+    if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr semicolon = _tree->NewTerminalNode(token);
+    SyntaxNodePtr semicolon = _tree->NewTerminalNode(_Next());
     root->InsertEndChild(semicolon);
 
     return root;
@@ -388,6 +417,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDef()
     // Identifier
     if (!_Match(TokenType::TK_IDENTIFIER, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_IDENTIFIER);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -404,14 +434,16 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDef()
         SyntaxNodePtr constExp = _ParseConstExp();
         if (!constExp)
         {
-            // TODO: Error
+            _LogFailedToParse(SyntaxType::ST_CONST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
         root->InsertEndChild(constExp);
+
+        // Check ']'
         if (!_Match(TokenType::TK_RIGHT_BRACKET, _Lookahead()))
         {
-            // TODO: Error
+            _LogExpect(TokenType::TK_RIGHT_BRACKET);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -423,6 +455,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDef()
     // '='
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_ASSIGN);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -432,6 +465,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDef()
     auto constInitVal = _ParseConstInitVal();
     if (!constInitVal)
     {
+        _LogFailedToParse(SyntaxType::ST_CONST_INIT_VAL);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -453,6 +487,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
         auto constInitVal = _ParseConstInitVal();
         if (!constInitVal)
         {
+            _LogFailedToParse(SyntaxType::ST_CONST_INIT_VAL);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -465,6 +500,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
             constInitVal = _ParseConstInitVal();
             if (!constInitVal)
             {
+                _LogFailedToParse(SyntaxType::ST_CONST_INIT_VAL);
                 _PostParseError(checkpoint, root);
                 return nullptr;
             }
@@ -474,6 +510,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
         // Check '}'
         if (!_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
         {
+            _LogExpect(TokenType::TK_RIGHT_BRACE);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -485,6 +522,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
         auto constExt = _ParseConstExp();
         if (!constExt)
         {
+            _LogFailedToParse(SyntaxType::ST_CONST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -503,6 +541,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDecl()
     SyntaxNodePtr type = _ParseBType();
     if (!type)
     {
+        _LogFailedToParse(SyntaxType::ST_BTYPE);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -512,6 +551,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDecl()
     SyntaxNodePtr varDef = _ParseVarDef();
     if (!varDef)
     {
+        _LogFailedToParse(SyntaxType::ST_VAR_DEF);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -525,7 +565,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDecl()
         varDef = _ParseVarDef();
         if (!varDef)
         {
-            // TODO: Potential Error
+            _LogFailedToParse(SyntaxType::ST_VAR_DEF);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -535,6 +575,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDecl()
     // Check ;
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -552,6 +593,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
     // Identifier
     if (!_Match(TokenType::TK_IDENTIFIER, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_IDENTIFIER);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -568,14 +610,16 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
         SyntaxNodePtr constExp = _ParseConstExp();
         if (!constExp)
         {
-            // TODO: Error
+            _LogFailedToParse(SyntaxType::ST_CONST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
         root->InsertEndChild(constExp);
+
+        // Check ']'
         if (!_Match(TokenType::TK_RIGHT_BRACKET, _Lookahead()))
         {
-            // TODO: Error
+            _LogExpect(TokenType::TK_RIGHT_BRACKET);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -587,6 +631,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
     // Check existence of '=', if not, return success, because it's a declaration.
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
+        _Log(LogLevel::WARNING, "No initial value in VarDef");
         return root;
     }
     root->InsertEndChild(_tree->NewTerminalNode(_Next()));
@@ -595,6 +640,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
     auto initVal = _ParseInitVal();
     if (!initVal)
     {
+        _LogFailedToParse(SyntaxType::ST_INIT_VAL);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -616,6 +662,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
         auto initVal = _ParseInitVal();
         if (!initVal)
         {
+            _LogFailedToParse(SyntaxType::ST_INIT_VAL);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -628,6 +675,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
             initVal = _ParseInitVal();
             if (!initVal)
             {
+                _LogFailedToParse(SyntaxType::ST_INIT_VAL);
                 _PostParseError(checkpoint, root);
                 return nullptr;
             }
@@ -637,6 +685,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
         // Check '}'
         if (!_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
         {
+            _LogExpect(TokenType::TK_RIGHT_BRACE);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -648,6 +697,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
         auto exp = _ParseExp();
         if (!exp)
         {
+            _LogFailedToParse(SyntaxType::ST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -670,6 +720,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     SyntaxNodePtr funcType = _ParseFuncType();
     if (!funcType)
     {
+        _LogFailedToParse(SyntaxType::ST_FUNC_TYPE);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -678,6 +729,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     // Identifier
     if (!_Match(TokenType::TK_IDENTIFIER, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_IDENTIFIER);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -689,6 +741,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     // '('
     if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_LEFT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -697,6 +750,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     SyntaxNodePtr funcFParams = _ParseFuncFParams();
     if (!funcFParams)
     {
+        _LogFailedToParse(SyntaxType::ST_FUNC_FPARAMS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -705,6 +759,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     // ')'
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -714,6 +769,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     SyntaxNodePtr block = _ParseBlock();
     if (!block)
     {
+        _LogFailedToParse(SyntaxType::ST_BLOCK);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -728,16 +784,13 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncType()
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_FUNC_TYPE);
 
     TokenPtr lookahead = _Lookahead();
-    if (_Match(TokenType::TK_INT, lookahead))
-    {
-        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
-    }
-    else if (_Match(TokenType::TK_VOID, lookahead))
+    if (_MatchAny(_funcDefFirstSet, lookahead))
     {
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
     }
     else
     {
+        _LogExpect(_funcDefFirstSet);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -753,6 +806,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParams()
     auto funcFParam = _ParseFuncFParam();
     if (!funcFParam)
     {
+        _LogFailedToParse(SyntaxType::ST_FUNC_FPARAM);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -763,6 +817,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParams()
         funcFParam = _ParseFuncFParam();
         if (!funcFParam)
         {
+            _LogFailedToParse(SyntaxType::ST_FUNC_FPARAM);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -781,6 +836,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
     SyntaxNodePtr type = _ParseBType();
     if (!type)
     {
+        _LogFailedToParse(SyntaxType::ST_BTYPE);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -789,6 +845,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
     // Identifier
     if (!_Match(TokenType::TK_IDENTIFIER, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_IDENTIFIER);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -806,6 +863,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
         }
         else
         {
+            _LogExpect(TokenType::TK_RIGHT_BRACKET);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -817,6 +875,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
             auto constExpr = _ParseConstExp();
             if (!constExpr)
             {
+                _LogFailedToParse(SyntaxType::ST_CONST_EXP);
                 _PostParseError(checkpoint, root);
                 return nullptr;
             }
@@ -829,6 +888,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
             }
             else
             {
+                _LogExpect(TokenType::TK_RIGHT_BRACKET);
                 _PostParseError(checkpoint, root);
                 return nullptr;
             }
@@ -846,6 +906,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncAParams()
     auto exp = _ParseExp();
     if (!exp)
     {
+        _LogFailedToParse(SyntaxType::ST_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -856,6 +917,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncAParams()
         exp = _ParseExp();
         if (!exp)
         {
+            _LogFailedToParse(SyntaxType::ST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -873,6 +935,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBlock()
     // '{'
     if (!_Match(TokenType::TK_LEFT_BRACE, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_LEFT_BRACE);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -887,15 +950,22 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBlock()
     }
 
     // BlockItem
-    SyntaxNodePtr blockItem;
-    while ((blockItem = _ParseBlockItem()))
+    while (!_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
     {
+        auto blockItem = _ParseBlockItem();
+        if (!blockItem)
+        {
+            _LogFailedToParse(SyntaxType::ST_BLOCK_ITEM);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
         root->InsertEndChild(blockItem);
     }
 
     // '}'
     if (!_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RIGHT_BRACE);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -909,28 +979,40 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBlockItem()
     auto checkpoint = _lexicalParser->SetCheckPoint();
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_BLOCK_ITEM);
 
-    SyntaxNodePtr child = nullptr;
     TokenPtr lookahead = _Lookahead();
     if (_Match(TokenType::TK_CONST, lookahead))
     {
-        child = _ParseConstDecl();
+        auto constDecl = _ParseConstDecl();
+        if (!constDecl)
+        {
+            _LogFailedToParse(SyntaxType::ST_CONST_DECL);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(constDecl);
     }
     else if (_Match(TokenType::TK_INT, lookahead))
     {
-        child = _ParseVarDecl();
+        auto varDecl = _ParseVarDecl();
+        if (!varDecl)
+        {
+            _LogFailedToParse(SyntaxType::ST_VAR_DECL);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(varDecl);
     }
     else
     {
-        child = _ParseStmt();
+        auto stmt = _ParseStmt();
+        if (!stmt)
+        {
+            _LogFailedToParse(SyntaxType::ST_STMT);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(stmt);
     }
-
-    // If failed, rollback.
-    if (!child)
-    {
-        _PostParseError(checkpoint, root);
-        return nullptr;
-    }
-    root->InsertEndChild(child);
 
     return root;
 }
@@ -943,6 +1025,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
     // int
     if (!_Match(TokenType::TK_INT, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_INT);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -951,6 +1034,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
     // main
     if (!_Match(TokenType::TK_MAIN, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_MAIN);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -959,6 +1043,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
     // (
     if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_LEFT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -967,6 +1052,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
     // )
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -976,6 +1062,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
     SyntaxNodePtr block = _ParseBlock();
     if (!block)
     {
+        _LogFailedToParse(SyntaxType::ST_BLOCK);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -999,6 +1086,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
     {
         // LVal expression starts with identifier but not followed by '('.
         // While expression can be identifier followed by '(', which is a function call.
+        // Since we don't have function pointer, we can just check if the next token is '('.
         if (_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(2)))
         {
             child = _ParseExpStmt();
@@ -1012,39 +1100,48 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
                 child = _ParseInStmt();
             }
         }
+        if (!child) _LogFailedToParse(SyntaxType::ST_ASSIGNMENT_STMT);
     }
     else if (_Match(TokenType::TK_IF, lookahead))
     {
         child = _ParseIfStmt();
+        if (!child) _LogFailedToParse(SyntaxType::ST_IF_STMT);
     }
     else if (_Match(TokenType::TK_FOR, lookahead))
     {
         child = _ParseForStmt();
+        if (!child) _LogFailedToParse(SyntaxType::ST_FOR_STMT);
     }
     else if (_Match(TokenType::TK_BREAK, lookahead))
     {
         child = _ParseBreakStmt();
+        if (!child) _LogFailedToParse(SyntaxType::ST_BREAK_STMT);
     }
     else if (_Match(TokenType::TK_CONTINUE, lookahead))
     {
         child = _ParseContinueStmt();
+        if (!child) _LogFailedToParse(SyntaxType::ST_CONTINUE_STMT);
     }
     else if (_Match(TokenType::TK_RETURN, lookahead))
     {
         child = _ParseReturnStmt();
+        if (!child) _LogFailedToParse(SyntaxType::ST_RETURN_STMT);
     }
     else if (_Match(TokenType::TK_PRINTF, lookahead))
     {
         child = _ParseOutStmt();
+        if (!child) _LogFailedToParse(SyntaxType::ST_OUT_STMT);
     }
     else if (_Match(TokenType::TK_LEFT_BRACE, lookahead))
     {
         child = _ParseBlock();
+        if (!child) _LogFailedToParse(SyntaxType::ST_BLOCK);
     }
     else
     {
         // If not any of above, it must be an expression statement.
         child = _ParseExpStmt();
+        if (!child) _LogFailedToParse(SyntaxType::ST_EXP_STMT);
     }
 
     // If failed, rollback.
@@ -1067,6 +1164,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAssignmentStmt()
     SyntaxNodePtr lval = _ParseLVal();
     if (!lval)
     {
+        _LogFailedToParse(SyntaxType::ST_LVAL);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1075,6 +1173,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAssignmentStmt()
     // '='
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_ASSIGN);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1084,6 +1183,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAssignmentStmt()
     SyntaxNodePtr exp = _ParseExp();
     if (!exp)
     {
+        _LogFailedToParse(SyntaxType::ST_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1092,6 +1192,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAssignmentStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1108,6 +1209,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseLVal()
     // Identifier
     if (!_Match(TokenType::TK_IDENTIFIER, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_IDENTIFIER);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1122,6 +1224,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseLVal()
         SyntaxNodePtr exp = _ParseExp();
         if (!exp)
         {
+            _LogFailedToParse(SyntaxType::ST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1130,6 +1233,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseLVal()
         // Check ']'
         if (!_Match(TokenType::TK_RIGHT_BRACKET, _Lookahead()))
         {
+            _LogExpect(TokenType::TK_RIGHT_BRACKET);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1148,6 +1252,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCond()
     SyntaxNodePtr orExp = _ParseOrExp();
     if (!orExp)
     {
+        _LogFailedToParse(SyntaxType::ST_OR_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1164,6 +1269,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
     // if
     if (!_Match(TokenType::TK_IF, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_IF);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1172,6 +1278,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
     // '('
     if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_LEFT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1181,6 +1288,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
     SyntaxNodePtr cond = _ParseCond();
     if (!cond)
     {
+        _LogFailedToParse(SyntaxType::ST_COND);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1189,6 +1297,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
     // ')'
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1198,6 +1307,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
     SyntaxNodePtr stmt = _ParseStmt();
     if (!stmt)
     {
+        _LogFailedToParse(SyntaxType::ST_STMT);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1211,6 +1321,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
         stmt = _ParseStmt();
         if (!stmt)
         {
+            _LogFailedToParse(SyntaxType::ST_STMT);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1228,6 +1339,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
     // for
     if (!_Match(TokenType::TK_FOR, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_FOR);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1236,6 +1348,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
     // '('
     if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_LEFT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1247,6 +1360,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
         auto forInitStmt = _ParseForInitStmt();
         if (!forInitStmt)
         {
+            _LogFailedToParse(SyntaxType::ST_FOR_INIT_STMT);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1256,6 +1370,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1267,6 +1382,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
         auto cond = _ParseCond();
         if (!cond)
         {
+            _LogFailedToParse(SyntaxType::ST_COND);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1276,6 +1392,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1287,6 +1404,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
         auto forStepStmt = _ParseForStepStmt();
         if (!forStepStmt)
         {
+            _LogFailedToParse(SyntaxType::ST_FOR_STEP_STMT);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1296,6 +1414,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
     // ')'
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1305,6 +1424,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
     SyntaxNodePtr stmt = _ParseStmt();
     if (!stmt)
     {
+        _LogFailedToParse(SyntaxType::ST_STMT);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1322,6 +1442,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForInitStmt()
     SyntaxNodePtr lval = _ParseLVal();
     if (!lval)
     {
+        _LogFailedToParse(SyntaxType::ST_LVAL);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1330,6 +1451,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForInitStmt()
     // '='
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_ASSIGN);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1339,6 +1461,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForInitStmt()
     SyntaxNodePtr exp = _ParseExp();
     if (!exp)
     {
+        _LogFailedToParse(SyntaxType::ST_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1356,6 +1479,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStepStmt()
     SyntaxNodePtr lval = _ParseLVal();
     if (!lval)
     {
+        _LogFailedToParse(SyntaxType::ST_LVAL);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1364,6 +1488,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStepStmt()
     // '='
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_ASSIGN);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1373,6 +1498,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStepStmt()
     SyntaxNodePtr exp = _ParseExp();
     if (!exp)
     {
+        _LogFailedToParse(SyntaxType::ST_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1392,6 +1518,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseExpStmt()
         SyntaxNodePtr exp = _ParseExp();
         if (!exp)
         {
+            _LogFailedToParse(SyntaxType::ST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1401,6 +1528,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseExpStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1417,6 +1545,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBreakStmt()
     // break
     if (!_Match(TokenType::TK_BREAK, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_BREAK);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1425,6 +1554,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBreakStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1441,6 +1571,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseContinueStmt()
     // continue
     if (!_Match(TokenType::TK_CONTINUE, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_CONTINUE);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1449,6 +1580,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseContinueStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1465,6 +1597,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseReturnStmt()
     // return
     if (!_Match(TokenType::TK_RETURN, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RETURN);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1476,6 +1609,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseReturnStmt()
         SyntaxNodePtr exp = _ParseExp();
         if (!exp)
         {
+            _LogFailedToParse(SyntaxType::ST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1485,6 +1619,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseReturnStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1502,6 +1637,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
     SyntaxNodePtr lval = _ParseLVal();
     if (!lval)
     {
+        _LogFailedToParse(SyntaxType::ST_LVAL);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1510,6 +1646,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
     // '='
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_ASSIGN);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1518,6 +1655,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
     // getint
     if (!_Match(TokenType::TK_GETINT, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_GETINT);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1526,6 +1664,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
     // '('
     if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_LEFT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1534,6 +1673,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
     // ')'
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1542,6 +1682,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1558,6 +1699,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
     // printf
     if (!_Match(TokenType::TK_PRINTF, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_PRINTF);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1566,6 +1708,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
     // '('
     if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_LEFT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1574,6 +1717,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
     // FormatString
     if (!_Match(TokenType::TK_FORMAT, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_FORMAT);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1588,6 +1732,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
         SyntaxNodePtr exp = _ParseExp();
         if (!exp)
         {
+            _LogFailedToParse(SyntaxType::ST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1597,6 +1742,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
     // ')'
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
+        _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1605,6 +1751,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
+        _LogExpectAfter(TokenType::TK_SEMICOLON);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1621,6 +1768,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseExp()
     auto addExp = _ParseAddExp();
     if (!addExp)
     {
+        _LogFailedToParse(SyntaxType::ST_ADD_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1637,6 +1785,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstExp()
     auto addExp = _ParseAddExp();
     if (!addExp)
     {
+        _LogFailedToParse(SyntaxType::ST_ADD_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1653,6 +1802,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAddExp()
     auto mulExp = _ParseMulExp();
     if (!mulExp)
     {
+        _LogFailedToParse(SyntaxType::ST_MUL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1661,6 +1811,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAddExp()
     auto addExpAux = _ParseAddExpAux();
     if (!addExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_ADD_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1696,6 +1847,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAddExpAux()
     auto mulExp = _ParseMulExp();
     if (!mulExp)
     {
+        _LogFailedToParse(SyntaxType::ST_MUL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1705,6 +1857,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAddExpAux()
     auto addExpAux = _ParseAddExpAux();
     if (!addExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_ADD_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1725,6 +1878,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMulExp()
     auto unaryExp = _ParseUnaryExp();
     if (!unaryExp)
     {
+        _LogFailedToParse(SyntaxType::ST_UNARY_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1733,6 +1887,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMulExp()
     auto mulExpAux = _ParseMulExpAux();
     if (!mulExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_MUL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1769,6 +1924,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMulExpAux()
     auto unaryExp = _ParseUnaryExp();
     if (!unaryExp)
     {
+        _LogFailedToParse(SyntaxType::ST_UNARY_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1778,6 +1934,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMulExpAux()
     auto mulExpAux = _ParseMulExpAux();
     if (!mulExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_MUL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1803,6 +1960,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
         auto unaryExp = _ParseUnaryExp();
         if (!unaryExp)
         {
+            _LogFailedToParse(SyntaxType::ST_UNARY_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1824,6 +1982,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
             auto funcAParams = _ParseFuncAParams();
             if (!funcAParams)
             {
+                _LogFailedToParse(SyntaxType::ST_FUNC_APARAMS);
                 _PostParseError(checkpoint, root);
                 return nullptr;
             }
@@ -1833,6 +1992,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
         // ')'
         if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
         {
+            _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1845,6 +2005,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
     auto primaryExp = _ParsePrimaryExp();
     if (!primaryExp)
     {
+        _LogFailedToParse(SyntaxType::ST_PRIMARY_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1880,6 +2041,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryOp()
     }
 
     // It's OK for UnaryOp not to match any.
+    // _Log(LogLevel::INFO, "UnaryOp does not find a match");
 
     return nullptr;
 }
@@ -1906,6 +2068,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParsePrimaryExp()
         auto exp = _ParseExp();
         if (!exp)
         {
+            _LogFailedToParse(SyntaxType::ST_EXP);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1914,6 +2077,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParsePrimaryExp()
         // ')'
         if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
         {
+            _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -1931,6 +2095,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParsePrimaryExp()
     }
 
     // TODO: Error handling.
+    _Log(LogLevel::ERROR, "PrimaryExp does not find a match");
 
     return nullptr;
 }
@@ -1943,6 +2108,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOrExp()
     auto andExp = _ParseAndExp();
     if (!andExp)
     {
+        _LogFailedToParse(SyntaxType::ST_AND_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1951,6 +2117,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOrExp()
     auto orExpAux = _ParseOrExpAux();
     if (!orExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_OR_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1985,6 +2152,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOrExpAux()
     auto andExp = _ParseAndExp();
     if (!andExp)
     {
+        _LogFailedToParse(SyntaxType::ST_AND_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1994,6 +2162,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOrExpAux()
     auto orExpAux = _ParseOrExpAux();
     if (!orExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_OR_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2014,6 +2183,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAndExp()
     auto eqExp = _ParseEqExp();
     if (!eqExp)
     {
+        _LogFailedToParse(SyntaxType::ST_EQ_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2022,6 +2192,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAndExp()
     auto andExpAux = _ParseAndExpAux();
     if (!andExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_AND_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2056,6 +2227,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAndExpAux()
     auto eqExp = _ParseEqExp();
     if (!eqExp)
     {
+        _LogFailedToParse(SyntaxType::ST_EQ_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2065,6 +2237,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAndExpAux()
     auto andExpAux = _ParseAndExpAux();
     if (!andExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_AND_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2085,6 +2258,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseEqExp()
     auto relExp = _ParseRelExp();
     if (!relExp)
     {
+        _LogFailedToParse(SyntaxType::ST_REL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2093,6 +2267,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseEqExp()
     auto eqExpAux = _ParseEqExpAux();
     if (!eqExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_EQ_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2128,6 +2303,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseEqExpAux()
     auto relExp = _ParseRelExp();
     if (!relExp)
     {
+        _LogFailedToParse(SyntaxType::ST_REL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2137,6 +2313,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseEqExpAux()
     auto eqExpAux = _ParseEqExpAux();
     if (!eqExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_EQ_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2157,6 +2334,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseRelExp()
     auto addExp = _ParseAddExp();
     if (!addExp)
     {
+        _LogFailedToParse(SyntaxType::ST_ADD_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2165,6 +2343,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseRelExp()
     auto relExpAux = _ParseRelExpAux();
     if (!relExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_REL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2202,6 +2381,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseRelExpAux()
     auto addExp = _ParseAddExp();
     if (!addExp)
     {
+        _LogFailedToParse(SyntaxType::ST_ADD_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -2211,6 +2391,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseRelExpAux()
     auto relExpAux = _ParseRelExpAux();
     if (!relExpAux)
     {
+        _LogFailedToParse(SyntaxType::ST_REL_EXP);
         _PostParseError(checkpoint, root);
         return nullptr;
     }

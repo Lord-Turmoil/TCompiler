@@ -23,7 +23,10 @@ DefaultLexicalParser* DefaultLexicalParser::SetReader(twio::IAdvancedReaderPtr r
 TokenPtr DefaultLexicalParser::Current()
 {
     TOMIC_ASSERT(!_tokens.empty());
-    TOMIC_ASSERT(_current != _tokens.begin());
+    if (_current == _tokens.begin())
+    {
+        return nullptr;
+    }
     return *(_current - 1);
 }
 

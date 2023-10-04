@@ -21,8 +21,9 @@ public:
 
     virtual ILexicalParser* SetReader(twio::IAdvancedReaderPtr reader) = 0;
 
-    // Shall not return nullptr.
     virtual TokenPtr Current() = 0;
+
+    // Shall not return nullptr.
     virtual TokenPtr Next() = 0;
     virtual TokenPtr Rewind() = 0;
 

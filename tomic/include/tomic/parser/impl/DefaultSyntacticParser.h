@@ -52,10 +52,13 @@ private:
     bool _MatchAny(const std::vector<TokenType>& types, TokenPtr token);
     void _PostParseError(int checkpoint, SyntaxNodePtr node);
 
+    void _Log(LogLevel level, TokenPtr position, const char* format, ...);
+    void _Log(LogLevel level, TokenPtr position, const char* format, va_list argv);
     void _Log(LogLevel level, const char* format, ...);
-    void _LogFailedToParse(SyntaxType type);
-    void _LogExpect(TokenType expected);
-    void _LogExpect(const std::vector<TokenType>& expected);
+    void _LogFailedToParse(SyntaxType type, LogLevel level = LogLevel::INFO);
+    void _LogExpect(TokenType expected, LogLevel level = LogLevel::ERROR);
+    void _LogExpect(const std::vector<TokenType>& expected, LogLevel level = LogLevel::ERROR);
+    void _LogExpectAfter(TokenType expected, LogLevel level = LogLevel::ERROR);
 
 private:
     SyntaxNodePtr _ParseCompUnit();

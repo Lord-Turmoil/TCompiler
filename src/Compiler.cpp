@@ -14,9 +14,9 @@ void RegisterComponents()
     auto container = mioc::SingletonContainer::GetContainer();
 
     // Logger
-    auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New("log.txt"));
+    auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New(stdout, false));
     auto logger = DefaultLogger::New();
-    logger->SetWriter(loggerWriter);
+    logger->SetWriter(loggerWriter)->SetLogLevel(LogLevel::DEBUG);
     container->AddSingleton<ILogger>(logger);
 
     // Lexical
@@ -87,6 +87,11 @@ static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr 
     syntacticParser->SetReader(srcReader);
 
     auto tree = syntacticParser->Parse();
+    if (!tree)
+    {
+        return;
+    }
+
     auto printer = container->Resolve<IAstPrinter>();
 
     printer->Print(tree, dstWriter);
