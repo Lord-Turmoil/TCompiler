@@ -91,7 +91,7 @@ struct Token
 
     static TokenType Type(const std::shared_ptr<Token>& token)
     {
-        return token ? token->type : TokenType::TK_TERMINATOR;
+        return token ? token->type : TokenType::TK_UNKNOWN;
     }
 };
 

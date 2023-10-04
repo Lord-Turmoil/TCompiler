@@ -8,6 +8,10 @@
 #include "../../include/tomic/parser/ast/trans/RightRecursiveAstTransformer.h"
 #include <cstdio>
 #include <cstdarg>
+#include <string>
+#include <iostream>
+#include <sstream>
+
 
 TOMIC_BEGIN
 
@@ -117,16 +121,45 @@ void DefaultSyntacticParser::_Log(LogLevel level, const char* format, ...)
 
     _logger->Log(level, "(%d:%d) %s", lineNo, charNo, _logBuffer);
 }
+
 void DefaultSyntacticParser::_LogFailedToParse(SyntaxType type)
 {
-
+    auto descr = _syntaxMapper->Description(type);
+    if (!descr)
+    {
+        descr = "MISSING";
+    }
+    _Log(LogLevel::ERROR, "Failed to parse <%s>", type);
 }
 
 void DefaultSyntacticParser::_LogExpect(TokenType expected)
 {
+    auto current = _Current();
+
+    auto expectedDescr = _tokenMapper->Description(expected);
+    if (!expectedDescr)
+    {
+        expectedDescr = "MISSING";
+    }
+
+    _Log(LogLevel::ERROR, "Expect %s, but got %s", expectedDescr, current->lexeme.c_str());
 }
+
 void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected)
 {
+    std::stringstream stream;
+
+    for (auto type: expected)
+    {
+        auto descr = _tokenMapper->Description(type);
+        if (!descr)
+        {
+            descr = "MISSING";
+        }
+        stream << " " << descr;
+    }
+
+    _Log(LogLevel::ERROR, "Expect one of %s, but got %s", stream.str().c_str(), _Current()->lexeme.c_str());
 }
 
 /*
