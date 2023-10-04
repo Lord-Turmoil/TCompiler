@@ -8,6 +8,7 @@
 #define _TOMIC_LOGGER_H_
 
 #include "../Common.h"
+#include <memory>
 
 TOMIC_BEGIN
 
@@ -29,6 +30,10 @@ public:
     virtual void Log(LogLevel level, const char* format, ...) = 0;
     virtual int Count(LogLevel level) = 0;
 };
+
+using ILoggerPtr = std::shared_ptr<ILogger>;
+
+const char* LogLevelToString(LogLevel level);
 
 TOMIC_END
 

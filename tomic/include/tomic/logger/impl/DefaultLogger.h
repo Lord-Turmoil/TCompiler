@@ -8,14 +8,20 @@
 #define _TOMIC_DEFAULT_LOGGER_H_
 
 #include "../ILogger.h"
+#include <memory>
 
 TOMIC_BEGIN
+
+class DefaultLogger;
+using DefaultLoggerPtr = std::shared_ptr<DefaultLogger>;
 
 class DefaultLogger : public ILogger
 {
 public:
     DefaultLogger();
     ~DefaultLogger() override = default;
+
+    static DefaultLoggerPtr New();
 
     DefaultLogger* SetWriter(twio::IWriterPtr writer)
     {
@@ -25,9 +31,8 @@ public:
 
     void Log(LogLevel level, const char* format, ...) override;
     int Count(LogLevel level) override;
-private:
-    const char* _LogLevelToString(LogLevel level);
 
+private:
     twio::IWriterPtr _writer;
     int _count[(int)LogLevel::COUNT];
 };

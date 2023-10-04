@@ -12,6 +12,11 @@ DefaultLogger::DefaultLogger() : _count{0}
 {
 }
 
+DefaultLoggerPtr DefaultLogger::New()
+{
+    return std::make_shared<DefaultLogger>();
+}
+
 void DefaultLogger::Log(LogLevel level, const char* format, ...)
 {
     _count[(int)level]++;
@@ -21,32 +26,13 @@ void DefaultLogger::Log(LogLevel level, const char* format, ...)
         return;
     }
 
-    _writer->WriteFormat("[%s] ", _LogLevelToString(level));
+    _writer->WriteFormat("[%s] ", LogLevelToString(level));
     va_list args;
     va_start(args, format);
     _writer->WriteFormat(format, args);
     va_end(args);
 
     _writer->Write("\n");
-}
-
-const char* DefaultLogger::_LogLevelToString(LogLevel level)
-{
-    switch (level)
-    {
-    case LogLevel::DEBUG:
-        return "Debug";
-    case LogLevel::INFO:
-        return "Info";
-    case LogLevel::WARNING:
-        return "Warning";
-    case LogLevel::ERROR:
-        return "Error";
-    case LogLevel::FATAL:
-        return "Fatal";
-    default:
-        return "Unknown";
-    }
 }
 
 int DefaultLogger::Count(LogLevel level)

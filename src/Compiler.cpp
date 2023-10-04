@@ -23,6 +23,12 @@ void RegisterComponents()
     container->AddSingleton<ISyntacticTypeMapper, SyntacticTypeMapper>()
             ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser>()
             ->AddTransient<IAstPrinter, XmlAstPrinter>();
+
+    // Logger
+    auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New("log.txt"));
+    auto logger = DefaultLogger::New();
+    logger->SetWriter(loggerWriter);
+    container->AddSingleton<ILogger>(logger);
 }
 
 
