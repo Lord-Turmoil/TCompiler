@@ -11,29 +11,57 @@ using namespace tomic;
 
 void RegisterComponents()
 {
-    mioc::SingletonContainer::GetContainer()
+    auto container = mioc::SingletonContainer::GetContainer();
+
+    // Lexical
+    container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
             ->AddTransient<IPreprocessor, DefaultPreprocessor>()
-            ->AddSingleton<ITokenMapper, DefaultTokenMapper>()
             ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer>()
-            ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer>()
-            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser>();
+            ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer>();
+
+    // Syntactic
+    container->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser>();
 }
+
+
+/*
+ * Compile a source file to a target file.
+ */
+
+static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter);
+static void LexicalParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
+static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
 
 void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
 {
-    auto container = mioc::SingletonContainer::GetContainer();
-
-    auto preprocessor = container->Resolve<IPreprocessor>();
+    // Preprocess.
     auto writer = twio::Writer::New(twio::BufferOutputStream::New());
-    preprocessor->SetReader(srcReader)->SetWriter(writer)->Process();
+    Preprocess(srcReader, writer);
 
-    /*
-    auto lexicalParser = container->Resolve<ILexicalParser>();
     auto reader = twio::AdvancedReader::New(twio::BufferInputStream::New(writer->Stream()->Yield()));
-    lexicalParser->SetReader(reader);
 
-    TokenPtr token;
+    // Lexical parse only.
+    LexicalParse(reader, dstWriter);
+
+    // Syntactic parse.
+    // SyntacticParse(reader, dstWriter);
+}
+
+static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
+{
+    auto container = mioc::SingletonContainer::GetContainer();
+    auto preprocessor = container->Resolve<IPreprocessor>();
+    preprocessor->SetReader(srcReader)->SetWriter(dstWriter)->Process();
+}
+
+static void LexicalParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter)
+{
+    auto container = mioc::SingletonContainer::GetContainer();
+    auto lexicalParser = container->Resolve<ILexicalParser>();
     auto mapper = container->Resolve<ITokenMapper>();
+    TokenPtr token;
+
+    lexicalParser->SetReader(srcReader);
     while ((token = lexicalParser->Next()) != nullptr)
     {
         dstWriter->Write(mapper->Description(token->type));
@@ -41,10 +69,17 @@ void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
         dstWriter->Write(token->lexeme.c_str());
         dstWriter->Write("\n");
     }
-    */
-    auto syntacticParser = container->Resolve<ISyntacticParser>();
-    auto reader = twio::AdvancedReader::New(twio::BufferInputStream::New(writer->Stream()->Yield()));
-    syntacticParser->SetReader(reader);
+}
 
-    syntacticParser->Parse();
+static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter)
+{
+    auto container = mioc::SingletonContainer::GetContainer();
+    auto syntacticParser = container->Resolve<ISyntacticParser>();
+
+    syntacticParser->SetReader(srcReader);
+
+    auto tree = syntacticParser->Parse();
+    auto printer = container->Resolve<IASTPrinter>();
+
+    printer->SetWriter(dstWriter)->Print(tree);
 }
