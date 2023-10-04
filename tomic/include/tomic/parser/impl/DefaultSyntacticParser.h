@@ -40,6 +40,10 @@ private:
 
     SyntaxTreePtr _tree;
 
+    // Set to true if we are not sure what lies ahead.
+    // Remember to set to false when you are sure.
+    bool _tryParse;
+
 private:
     // Return current token.
     TokenPtr _Current();

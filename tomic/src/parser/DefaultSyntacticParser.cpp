@@ -118,6 +118,12 @@ void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char*
 
 void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, va_list argv)
 {
+    // When in try-parse mode, do not log.
+    if (_tryParse)
+    {
+        return;
+    }
+
     vsprintf(_logBuffer, format, argv);
 
     auto token = position;
@@ -153,7 +159,11 @@ void DefaultSyntacticParser::_LogExpect(TokenType expected, LogLevel level)
     auto expectedDescr = _tokenMapper->Lexeme(expected);
     if (!expectedDescr)
     {
-        expectedDescr = "MISSING";
+        expectedDescr = _tokenMapper->Description(expected);
+        if (!expectedDescr)
+        {
+            expectedDescr = "MISSING";
+        }
     }
 
     _Log(level, actual, "Expect %s, but got %s", expectedDescr, actual->lexeme.c_str());
@@ -195,6 +205,7 @@ void DefaultSyntacticParser::_LogExpectAfter(TokenType expected, LogLevel level)
 SyntaxTreePtr DefaultSyntacticParser::Parse()
 {
     _tree = SyntaxTree::New();
+    _tryParse = false;
 
     auto compUnit = _ParseCompUnit();
     if (!compUnit)
@@ -747,14 +758,18 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     }
     root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
-    SyntaxNodePtr funcFParams = _ParseFuncFParams();
-    if (!funcFParams)
+    // Check existence of FuncFParams.
+    if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
-        _LogFailedToParse(SyntaxType::ST_FUNC_FPARAMS);
-        _PostParseError(checkpoint, root);
-        return nullptr;
+        SyntaxNodePtr funcFParams = _ParseFuncFParams();
+        if (!funcFParams)
+        {
+            _LogFailedToParse(SyntaxType::ST_FUNC_FPARAMS);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(funcFParams);
     }
-    root->InsertEndChild(funcFParams);
 
     // ')'
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
@@ -1093,12 +1108,14 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
         }
         else
         {
+            _tryParse = true;
             child = _ParseAssignmentStmt();
             // It can still be a in statement.
             if (!child)
             {
                 child = _ParseInStmt();
             }
+            _tryParse = false;
         }
         if (!child) _LogFailedToParse(SyntaxType::ST_ASSIGNMENT_STMT);
     }
