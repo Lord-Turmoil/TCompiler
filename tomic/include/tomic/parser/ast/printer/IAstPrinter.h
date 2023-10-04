@@ -15,12 +15,12 @@
 #define _TOMIC_AST_PRINTER_H_
 
 #include "../../../Common.h"
-#include "../ASTVisitor.h"
+#include "../AstVisitor.h"
 
 TOMIC_BEGIN
 
 // This is just a transitional interface class for DI. No other usage.
-class IAstPrinter : public ASTVisitor
+class IAstPrinter : public AstVisitor
 {
 public:
     ~IAstPrinter() override = default;

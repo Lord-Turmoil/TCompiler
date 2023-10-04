@@ -19,8 +19,8 @@ using SyntaxNodePtr = SyntaxNode*;
 class SyntaxTree;
 using SyntaxTreePtr = std::shared_ptr<SyntaxTree>;
 
-class ASTVisitor;
-using ASTVisitorPtr = ASTVisitor*;
+class AstVisitor;
+using ASTVisitorPtr = AstVisitor*;
 
 TOMIC_END
 

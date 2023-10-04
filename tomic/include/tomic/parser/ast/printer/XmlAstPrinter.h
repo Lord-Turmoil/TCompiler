@@ -9,7 +9,7 @@
 
 #include "../../../Common.h"
 #include "IAstPrinter.h"
-#include "../ast.h"
+#include "../AstForward.h"
 
 TOMIC_BEGIN
 

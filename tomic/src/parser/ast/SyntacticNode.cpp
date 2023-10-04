@@ -6,7 +6,7 @@
 
 #include "../../../include/tomic/parser/ast/SyntaxNode.h"
 #include "../../../include/tomic/parser/ast/SyntaxTree.h"
-#include "../../../include/tomic/parser/ast/ASTVisitor.h"
+#include "../../../include/tomic/parser/ast/AstVisitor.h"
 
 TOMIC_BEGIN
 

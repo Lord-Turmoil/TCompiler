@@ -14,7 +14,7 @@
 #include "../../../../include/tomic/Common.h"
 #include "../../lexer/token/Token.h"
 #include "SyntaxType.h"
-#include "ast.h"
+#include "AstForward.h"
 #include <vector>
 
 TOMIC_BEGIN

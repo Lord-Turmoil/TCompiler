@@ -8,14 +8,14 @@
 #define _TOMIC_AST_VISITOR_H_
 
 #include "../../Common.h"
-#include "ast.h"
+#include "AstForward.h"
 
 TOMIC_BEGIN
 
-class ASTVisitor
+class AstVisitor
 {
 public:
-    virtual ~ASTVisitor() = default;
+    virtual ~AstVisitor() = default;
 
     // Called when enter a syntax node.
     virtual bool VisitEnter(SyntaxNodePtr node) { return true; }
