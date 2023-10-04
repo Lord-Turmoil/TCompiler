@@ -8,3 +8,4 @@ file(GLOB_RECURSE SRC_LIST CONFIGURE_DEPENDS src/*.cpp)
 add_library(tomic STATIC ${SRC_LIST})
 
 # target_include_directories(tomic PUBLIC include)
+target_compile_definitions(tomic PUBLIC ENABLE_COMPLETE_AST)

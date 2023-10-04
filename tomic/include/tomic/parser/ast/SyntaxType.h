@@ -28,7 +28,7 @@ enum class SyntaxType
 
     // FuncDef
     ST_FUNC_DEF, ST_FUNC_TYPE,
-    ST_FUNC_FPARAMS, ST_FUNC_FPARAM, ST_FUNC_APARAMS, ST_FUNC_APARAM,
+    ST_FUNC_FPARAMS, ST_FUNC_FPARAM, ST_FUNC_APARAMS,
     ST_BLOCK, ST_BLOCK_ITEM,
 
     // MainFuncDef
@@ -71,7 +71,9 @@ public:
 
     const char* Description(SyntaxType type) const override;
 private:
-    void _Init();
+    void _InitComplete();
+    void _InitStandard();
+
     std::unordered_map<SyntaxType, const char*> _typeToDescription;
 };
 
