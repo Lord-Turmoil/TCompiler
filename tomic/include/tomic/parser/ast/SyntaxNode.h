@@ -14,18 +14,10 @@
 #include "../../../../include/tomic/Common.h"
 #include "../../lexer/token/Token.h"
 #include "SyntaxType.h"
+#include "ast.h"
 #include <vector>
 
 TOMIC_BEGIN
-
-class SyntaxNode;
-using SyntaxNodePtr = SyntaxNode*;
-
-class SyntaxTree;
-using SyntaxTreePtr = std::shared_ptr<SyntaxTree>;
-
-class ASTVisitor;
-using ASTVisitorPtr = ASTVisitor*;
 
 class SyntaxNode
 {

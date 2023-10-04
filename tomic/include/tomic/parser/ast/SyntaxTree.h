@@ -10,7 +10,7 @@
 #include "../../Common.h"
 #include "../../lexer/token/Token.h"
 #include "SyntaxType.h"
-#include "SyntaxNode.h"
+#include "ast.h"
 #include <memory>
 #include <vector>
 #include <unordered_set>
