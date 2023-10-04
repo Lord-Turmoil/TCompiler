@@ -6,6 +6,7 @@
 
 #include "../../../include/tomic/parser/ast/SyntaxNode.h"
 #include "../../../include/tomic/parser/ast/SyntaxTree.h"
+#include "../../../include/tomic/parser/ast/ASTVisitor.h"
 
 TOMIC_BEGIN
 
@@ -165,6 +166,24 @@ NonTerminalSyntaxNode::NonTerminalSyntaxNode(tomic::SyntaxType type)
 {
 }
 
+bool NonTerminalSyntaxNode::Accept(ASTVisitorPtr visitor)
+{
+    TOMIC_ASSERT(visitor);
+
+    if (visitor->VisitEnter(this))
+    {
+        for (auto node = FirstChild(); node; node = node->NextSibling())
+        {
+            if (!node->Accept(visitor))
+            {
+                break;
+            }
+        }
+    }
+
+    return visitor->VisitExit(this);
+}
+
 /*
  * Terminal syntax node.
  */
@@ -173,12 +192,26 @@ TerminalSyntaxNode::TerminalSyntaxNode(tomic::TokenPtr token)
 {
 }
 
+bool TerminalSyntaxNode::Accept(ASTVisitorPtr visitor)
+{
+    TOMIC_ASSERT(visitor);
+
+    return visitor->Visit(this);
+}
+
 /*
  * Epsilon syntax node.
  */
 EpsilonSyntaxNode::EpsilonSyntaxNode()
         : SyntaxNode(SyntaxNodeType::EPSILON, SyntaxType::ST_EPSILON)
 {
+}
+
+bool EpsilonSyntaxNode::Accept(ASTVisitorPtr visitor)
+{
+    TOMIC_ASSERT(visitor);
+
+    return true;
 }
 
 TOMIC_END
