@@ -10,6 +10,7 @@
 #include <vector>
 #include "../../Common.h"
 #include "../ILexicalAnalyzer.h"
+#include "../token/ITokenMapper.h"
 #include <memory>
 
 TOMIC_BEGIN
@@ -24,6 +25,7 @@ TOMIC_BEGIN
 class LexicalTask
 {
 public:
+    explicit LexicalTask(ITokenMapperPtr tokenMapper) : _tokenMapper(tokenMapper) {}
     virtual ~LexicalTask() = default;
 
     // Return whether this task begins with the given character.
@@ -36,6 +38,9 @@ public:
 
     // Accept the reader from LexicalAnalyser, and return the next TokenPtr.
     virtual TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) = 0;
+
+protected:
+    ITokenMapperPtr _tokenMapper;
 };
 
 using LexicalTaskPtr = std::shared_ptr<LexicalTask>;
@@ -48,7 +53,7 @@ using LexicalTaskPtr = std::shared_ptr<LexicalTask>;
 class DefaultLexicalAnalyzer : public ILexicalAnalyzer
 {
 public:
-    DefaultLexicalAnalyzer();
+    DefaultLexicalAnalyzer(ITokenMapperPtr mapper);
     ~DefaultLexicalAnalyzer() override = default;
 
     DefaultLexicalAnalyzer* SetReader(twio::IAdvancedReaderPtr reader) override;
@@ -61,6 +66,7 @@ private:
 
     twio::IAdvancedReaderPtr _reader;
     std::vector<LexicalTaskPtr> _tasks;
+    ITokenMapperPtr _mapper;
 };
 
 
@@ -72,6 +78,8 @@ private:
 class NumberLexicalTask : public LexicalTask
 {
 public:
+    explicit NumberLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
@@ -82,6 +90,8 @@ public:
 class IdentifierLexicalTask : public LexicalTask
 {
 public:
+    explicit IdentifierLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
@@ -91,6 +101,8 @@ public:
 class StringLexicalTask : public LexicalTask
 {
 public:
+    explicit StringLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
@@ -106,6 +118,8 @@ private:
 class SingleOpLexicalTask : public LexicalTask
 {
 public:
+    explicit SingleOpLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
@@ -116,6 +130,8 @@ public:
 class DoubleOpLexicalTask : public LexicalTask
 {
 public:
+    explicit DoubleOpLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
@@ -125,6 +141,8 @@ public:
 class DelimiterLexicalTask : public LexicalTask
 {
 public:
+    explicit DelimiterLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
@@ -133,6 +151,8 @@ public:
 class UnknownLexicalTask : public LexicalTask
 {
 public:
+    explicit UnknownLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;

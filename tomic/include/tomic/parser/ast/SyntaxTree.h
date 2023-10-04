@@ -50,7 +50,7 @@ public:
     SyntaxNodePtr SetRoot(SyntaxNodePtr root);
 
     // For visitor pattern. A utility function to traverse the tree.
-    bool Accept(ASTVisitorPtr visitor);
+    bool Accept(AstVisitorPtr visitor);
 
 private:
     void _ClearUp();

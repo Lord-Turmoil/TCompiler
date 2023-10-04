@@ -17,8 +17,10 @@ static const char _WHITESPACES[] = " \t\r\n\v\f";
 static const char _OPERATORS[] = "+-*/%&|!<>=";
 static const char _DELIMITERS[] = ",;()[]{}";
 
-DefaultLexicalAnalyzer::DefaultLexicalAnalyzer()
+DefaultLexicalAnalyzer::DefaultLexicalAnalyzer(ITokenMapperPtr mapper)
+        : _mapper(mapper)
 {
+    TOMIC_ASSERT(mapper);
     _InitTasks();
 }
 
@@ -47,13 +49,13 @@ TokenPtr DefaultLexicalAnalyzer::Next()
 
 void DefaultLexicalAnalyzer::_InitTasks()
 {
-    _tasks.emplace_back(std::make_shared<NumberLexicalTask>());
-    _tasks.emplace_back(std::make_shared<IdentifierLexicalTask>());
-    _tasks.emplace_back(std::make_shared<StringLexicalTask>());
-    _tasks.emplace_back(std::make_shared<SingleOpLexicalTask>());
-    _tasks.emplace_back(std::make_shared<DoubleOpLexicalTask>());
-    _tasks.emplace_back(std::make_shared<DelimiterLexicalTask>());
-    _tasks.emplace_back(std::make_shared<UnknownLexicalTask>());
+    _tasks.emplace_back(std::make_shared<NumberLexicalTask>(_mapper));
+    _tasks.emplace_back(std::make_shared<IdentifierLexicalTask>(_mapper));
+    _tasks.emplace_back(std::make_shared<StringLexicalTask>(_mapper));
+    _tasks.emplace_back(std::make_shared<SingleOpLexicalTask>(_mapper));
+    _tasks.emplace_back(std::make_shared<DoubleOpLexicalTask>(_mapper));
+    _tasks.emplace_back(std::make_shared<DelimiterLexicalTask>(_mapper));
+    _tasks.emplace_back(std::make_shared<UnknownLexicalTask>(_mapper));
 }
 
 TokenPtr DefaultLexicalAnalyzer::_Next()
@@ -69,7 +71,7 @@ TokenPtr DefaultLexicalAnalyzer::_Next()
     // If end of file is reached, return a terminator token.
     if (lookahead == EOF)
     {
-        return Token::New(TokenType::TK_TERMINATOR);
+        return Token::New(TokenType::TK_TERMINATOR, "", _reader->Line(), _reader->Char());
     }
 
     // Find a task to analyse the character.

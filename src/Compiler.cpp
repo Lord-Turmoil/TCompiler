@@ -22,13 +22,13 @@ void RegisterComponents()
     // Lexical
     container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
             ->AddTransient<IPreprocessor, DefaultPreprocessor>()
-            ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer>()
+            ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
             ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer>();
 
     // Syntactic
-    container->AddSingleton<ISyntacticTypeMapper, SyntacticTypeMapper>()
-            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ILogger>()
-            ->AddTransient<IAstPrinter, XmlAstPrinter>();
+    container->AddSingleton<ISyntaxMapper, SyntaxMapper>()
+            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ILogger, ISyntaxMapper, ITokenMapper>()
+            ->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
 }
 
 

@@ -20,7 +20,7 @@ class SyntaxTree;
 using SyntaxTreePtr = std::shared_ptr<SyntaxTree>;
 
 class AstVisitor;
-using ASTVisitorPtr = AstVisitor*;
+using AstVisitorPtr = AstVisitor*;
 
 TOMIC_END
 

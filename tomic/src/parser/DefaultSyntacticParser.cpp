@@ -6,11 +6,22 @@
 
 #include "../../include/tomic/parser/impl/DefaultSyntacticParser.h"
 #include "../../include/tomic/parser/ast/trans/RightRecursiveAstTransformer.h"
+#include <cstdio>
+#include <cstdarg>
 
 TOMIC_BEGIN
 
-DefaultSyntacticParser::DefaultSyntacticParser(ILexicalParserPtr lexicalParser, ILoggerPtr logger)
-        : _lexicalParser(lexicalParser), _logger(logger), _tree(nullptr)
+static char _logBuffer[1024];
+
+DefaultSyntacticParser::DefaultSyntacticParser(
+        ILexicalParserPtr lexicalParser,
+        ILoggerPtr logger,
+        ISyntaxMapperPtr syntaxMapper,
+        ITokenMapperPtr tokenMapper)
+        : _lexicalParser(lexicalParser),
+          _logger(logger),
+          _syntaxMapper(syntaxMapper),
+          _tokenMapper(tokenMapper)
 {
 }
 
@@ -18,6 +29,18 @@ DefaultSyntacticParser* DefaultSyntacticParser::SetReader(twio::IAdvancedReaderP
 {
     _lexicalParser->SetReader(reader);
     return this;
+}
+
+TokenPtr DefaultSyntacticParser::_Current()
+{
+    auto current = _lexicalParser->Current();
+    // If it is the very beginning, a compromise lookahead is performd.
+    // Nothing can help it if the stream is empty.
+    if (!current)
+    {
+        current = _Lookahead();
+    }
+    return current;
 }
 
 TokenPtr DefaultSyntacticParser::_Next()
@@ -36,7 +59,8 @@ TokenPtr DefaultSyntacticParser::_Lookahead(int n)
     for (i = 0; i < n; i++)
     {
         token = _Next();
-        if (!token)
+        // EOF reached.
+        if (_Match(TokenType::TK_TERMINATOR, token))
         {
             break;
         }
@@ -80,6 +104,35 @@ void DefaultSyntacticParser::_PostParseError(int checkpoint, SyntaxNodePtr node)
     }
 }
 
+void DefaultSyntacticParser::_Log(LogLevel level, const char* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    vsprintf(_logBuffer, format, args);
+    va_end(args);
+
+    auto token = _Current();
+    int lineNo = token ? token->lineNo : 1;
+    int charNo = token ? token->charNo : 1;
+
+    _logger->Log(level, "(%d:%d) %s", lineNo, charNo, _logBuffer);
+}
+void DefaultSyntacticParser::_LogFailedToParse(SyntaxType type)
+{
+
+}
+
+void DefaultSyntacticParser::_LogExpect(TokenType expected)
+{
+}
+void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected)
+{
+}
+
+/*
+ * ========== Parse ==========
+ */
+
 SyntaxTreePtr DefaultSyntacticParser::Parse()
 {
     _tree = SyntaxTree::New();
@@ -88,6 +141,7 @@ SyntaxTreePtr DefaultSyntacticParser::Parse()
     if (!compUnit)
     {
         // TODO: Error handling.
+        _logger->Log(LogLevel::FATAL, "Failed to parse the source code.");
         TOMIC_ASSERT(compUnit);
     }
 
@@ -108,6 +162,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
         SyntaxNodePtr decl = _ParseDecl();
         if (!decl)
         {
+            _Log(LogLevel::ERROR, "Failed to parse <Decl>");
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -120,6 +175,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
         SyntaxNodePtr funcDef = _ParseFuncDef();
         if (!funcDef)
         {
+            _Log(LogLevel::ERROR, "Failed to parse <FuncDef>");
             _PostParseError(checkpoint, root);
             return nullptr;
         }
@@ -128,10 +184,13 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
 
     // Parse MainFuncDef
     SyntaxNodePtr mainFuncDef = _ParseMainFuncDef();
-    if (mainFuncDef)
+    if (!mainFuncDef)
     {
-        root->InsertEndChild(mainFuncDef);
+        _Log(LogLevel::ERROR, "Failed to parse <MainFuncDef>");
+        _PostParseError(checkpoint, root);
+        return nullptr;
     }
+    root->InsertEndChild(mainFuncDef);
 
     return root;
 }
@@ -180,24 +239,29 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseDecl()
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_DECL);
 
     TokenPtr lookahead = _Lookahead();
-    SyntaxNodePtr child = nullptr;
 
     if (_Match(TokenType::TK_CONST, lookahead))
     {
-        child = _ParseConstDecl();
+        auto constDecl = _ParseConstDecl();
+        if (!constDecl)
+        {
+            _Log(LogLevel::ERROR, "Failed to parse <ConstDecl>");
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(constDecl);
     }
     else
     {
-        child = _ParseVarDecl();
+        auto varDecl = _ParseVarDecl();
+        if (!varDecl)
+        {
+            _Log(LogLevel::ERROR, "Failed to parse <VarDecl>");
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(varDecl);
     }
-
-    // If failed, rollback.
-    if (!child)
-    {
-        _PostParseError(checkpoint, root);
-        return nullptr;
-    }
-    root->InsertEndChild(child);
 
     return root;
 }

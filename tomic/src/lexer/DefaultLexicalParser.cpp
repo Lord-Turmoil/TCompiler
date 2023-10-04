@@ -20,6 +20,13 @@ DefaultLexicalParser* DefaultLexicalParser::SetReader(twio::IAdvancedReaderPtr r
     return this;
 }
 
+TokenPtr DefaultLexicalParser::Current()
+{
+    TOMIC_ASSERT(!_tokens.empty());
+    TOMIC_ASSERT(_current != _tokens.begin());
+    return *(_current - 1);
+}
+
 TokenPtr DefaultLexicalParser::Next()
 {
     if (_current == _tokens.end())
@@ -41,7 +48,7 @@ TokenPtr DefaultLexicalParser::Next()
         if (token->type == TokenType::TK_TERMINATOR)
         {
             // _current is still _tokens.end()
-            return nullptr;
+            return token;
         }
 
         _tokens.push_back(token);

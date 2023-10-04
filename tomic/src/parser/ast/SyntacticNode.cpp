@@ -170,7 +170,7 @@ NonTerminalSyntaxNode::NonTerminalSyntaxNode(tomic::SyntaxType type)
 {
 }
 
-bool NonTerminalSyntaxNode::Accept(ASTVisitorPtr visitor)
+bool NonTerminalSyntaxNode::Accept(AstVisitorPtr visitor)
 {
     TOMIC_ASSERT(visitor);
 
@@ -196,7 +196,7 @@ TerminalSyntaxNode::TerminalSyntaxNode(tomic::TokenPtr token)
 {
 }
 
-bool TerminalSyntaxNode::Accept(ASTVisitorPtr visitor)
+bool TerminalSyntaxNode::Accept(AstVisitorPtr visitor)
 {
     TOMIC_ASSERT(visitor);
 
@@ -211,7 +211,7 @@ EpsilonSyntaxNode::EpsilonSyntaxNode()
 {
 }
 
-bool EpsilonSyntaxNode::Accept(ASTVisitorPtr visitor)
+bool EpsilonSyntaxNode::Accept(AstVisitorPtr visitor)
 {
     TOMIC_ASSERT(visitor);
 

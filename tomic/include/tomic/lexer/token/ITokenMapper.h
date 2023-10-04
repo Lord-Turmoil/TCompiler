@@ -9,6 +9,7 @@
 
 #include "../../Common.h"
 #include "Token.h"
+#include <memory>
 
 TOMIC_BEGIN
 
@@ -29,6 +30,8 @@ public:
 
     virtual bool IsKeyword(const std::string& lexeme) const = 0;
 };
+
+using ITokenMapperPtr = std::shared_ptr<ITokenMapper>;
 
 TOMIC_END
 

@@ -84,7 +84,7 @@ SyntaxNodePtr SyntaxTree::SetRoot(SyntaxNodePtr root)
     return root;
 }
 
-bool SyntaxTree::Accept(ASTVisitorPtr visitor)
+bool SyntaxTree::Accept(AstVisitorPtr visitor)
 {
     TOMIC_ASSERT(visitor);
     TOMIC_ASSERT(_root);

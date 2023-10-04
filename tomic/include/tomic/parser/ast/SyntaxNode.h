@@ -38,7 +38,7 @@ public:
     SyntaxNodePtr Root() const;
 
     // For visitor pattern.
-    virtual bool Accept(ASTVisitorPtr visitor) = 0;
+    virtual bool Accept(AstVisitorPtr visitor) = 0;
 
 public:
     bool IsNonTerminal() const { return _nodeType == SyntaxNodeType::NON_TERMINAL; }
@@ -99,7 +99,7 @@ protected:
 
     ~NonTerminalSyntaxNode() override = default;
 
-    bool Accept(ASTVisitorPtr visitor) override;
+    bool Accept(AstVisitorPtr visitor) override;
 };
 
 
@@ -111,7 +111,7 @@ protected:
 
     ~TerminalSyntaxNode() override = default;
 
-    bool Accept(ASTVisitorPtr visitor) override;
+    bool Accept(AstVisitorPtr visitor) override;
 };
 
 class EpsilonSyntaxNode : public SyntaxNode
@@ -122,7 +122,7 @@ protected:
 
     ~EpsilonSyntaxNode() override = default;
 
-    bool Accept(ASTVisitorPtr visitor) override;
+    bool Accept(AstVisitorPtr visitor) override;
 };
 
 TOMIC_END

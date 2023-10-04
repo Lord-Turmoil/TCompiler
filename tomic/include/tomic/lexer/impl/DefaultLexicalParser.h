@@ -10,6 +10,7 @@
 #include "../../Common.h"
 #include "../ILexicalParser.h"
 #include "../ILexicalAnalyzer.h"
+#include "../token/ITokenMapper.h"
 #include <vector>
 
 TOMIC_BEGIN
@@ -22,6 +23,7 @@ public:
 
     DefaultLexicalParser* SetReader(twio::IAdvancedReaderPtr reader) override;
 
+    TokenPtr Current() override;
     TokenPtr Next() override;
     TokenPtr Rewind() override;
 

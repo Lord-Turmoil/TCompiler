@@ -7,14 +7,19 @@
 #include "../../../../include/tomic/parser/ast/SyntaxTree.h"
 #include "../../../../include/tomic/parser/ast/SyntaxNode.h"
 #include "../../../../include/tomic/parser/ast/printer/XmlAstPrinter.h"
-#include "../../../../include/tomic/lexer/token/ITokenMapper.h"
 
 TOMIC_BEGIN
 
 /*
  * ASTPrinter
  */
-XmlAstPrinter::XmlAstPrinter() : _depth(0), _indent(2) {}
+
+XmlAstPrinter::XmlAstPrinter(tomic::ISyntaxMapperPtr syntaxMapperPtr, tomic::ITokenMapperPtr tokenMapper)
+        : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper), _depth(0), _indent(2)
+{
+    TOMIC_ASSERT(_syntaxMapper);
+    TOMIC_ASSERT(_tokenMapper);
+}
 
 void XmlAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
 {
@@ -22,7 +27,7 @@ void XmlAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
     TOMIC_ASSERT(writer);
 
     _writer = writer;
-    
+
     // To make first element with depth 0, we set depth to -1.
     _depth = -1;
 
@@ -33,9 +38,7 @@ bool XmlAstPrinter::VisitEnter(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
 
-    auto container = mioc::SingletonContainer::GetContainer();
-    auto mapper = container->Resolve<ISyntacticTypeMapper>();
-    auto descr = mapper->Description(node->Type());
+    auto descr = _syntaxMapper->Description(node->Type());
 
     _depth++;
 
@@ -57,9 +60,7 @@ bool XmlAstPrinter::VisitEnter(SyntaxNodePtr node)
 
 bool XmlAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
 {
-    auto container = mioc::SingletonContainer::GetContainer();
-    auto mapper = container->Resolve<ISyntacticTypeMapper>();
-    auto descr = mapper->Description(node->Type());
+    auto descr = _syntaxMapper->Description(node->Type());
 
     for (int i = 0; i < _depth * _indent; i++)
     {
@@ -109,9 +110,7 @@ bool XmlAstPrinter::Visit(tomic::SyntaxNodePtr node)
 
 void XmlAstPrinter::_VisitNonTerminal(tomic::SyntaxNodePtr node)
 {
-    auto container = mioc::SingletonContainer::GetContainer();
-    auto mapper = container->Resolve<ISyntacticTypeMapper>();
-    auto descr = mapper->Description(node->Type());
+    auto descr = _syntaxMapper->Description(node->Type());
 
     for (int i = 0; i < _depth * _indent; i++)
     {
@@ -131,10 +130,7 @@ void XmlAstPrinter::_VisitNonTerminal(tomic::SyntaxNodePtr node)
 
 void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
 {
-    auto container = mioc::SingletonContainer::GetContainer();
-    auto tokenMapper = container->Resolve<ITokenMapper>();
-    auto syntacticMapper = container->Resolve<ISyntacticTypeMapper>();
-    auto syntacticDescr = syntacticMapper->Description(node->Type());
+    auto syntacticDescr = _syntaxMapper->Description(node->Type());
 
     for (int i = 0; i < _depth * _indent; i++)
     {
@@ -149,7 +145,7 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
         _writer->WriteFormat("<MISSING-%d", _depth);
     }
 
-    const char* tokenDescr = tokenMapper->Description(node->Token()->type);
+    const char* tokenDescr = _tokenMapper->Description(node->Token()->type);
     if (tokenDescr)
     {
         _writer->WriteFormat(" token=\'%s\'", tokenDescr);
@@ -165,7 +161,7 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
 void XmlAstPrinter::_VisitEpsilon(tomic::SyntaxNodePtr node)
 {
     auto container = mioc::SingletonContainer::GetContainer();
-    auto mapper = container->Resolve<ISyntacticTypeMapper>();
+    auto mapper = container->Resolve<ISyntaxMapper>();
     auto descr = mapper->Description(node->Type());
 
     for (int i = 0; i < _depth * _indent; i++)

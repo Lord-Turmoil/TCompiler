@@ -8,7 +8,7 @@
 
 TOMIC_BEGIN
 
-SyntacticTypeMapper::SyntacticTypeMapper()
+SyntaxMapper::SyntaxMapper()
 {
 #ifdef ENABLE_COMPLETE_AST
     _InitComplete();
@@ -17,7 +17,7 @@ SyntacticTypeMapper::SyntacticTypeMapper()
 #endif
 }
 
-const char* SyntacticTypeMapper::Description(SyntaxType type) const
+const char* SyntaxMapper::Description(SyntaxType type) const
 {
     auto iter = _typeToDescription.find(type);
     if (iter == _typeToDescription.end())
@@ -31,7 +31,7 @@ const char* SyntacticTypeMapper::Description(SyntaxType type) const
     return iter->second;
 }
 
-void SyntacticTypeMapper::_InitComplete()
+void SyntaxMapper::_InitComplete()
 {
     _typeToDescription[SyntaxType::ST_UNKNOWN] = "Unknown";
     _typeToDescription[SyntaxType::ST_EPSILON] = "Epsilon";
@@ -87,7 +87,7 @@ void SyntacticTypeMapper::_InitComplete()
     _typeToDescription[SyntaxType::ST_REL_EXP] = "RelExp";
 }
 
-void SyntacticTypeMapper::_InitStandard()
+void SyntaxMapper::_InitStandard()
 {
     _typeToDescription[SyntaxType::ST_UNKNOWN] = "Unknown";
     _typeToDescription[SyntaxType::ST_EPSILON] = "Epsilon";

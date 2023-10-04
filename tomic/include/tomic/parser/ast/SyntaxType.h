@@ -9,6 +9,7 @@
 
 #include "../../Common.h"
 #include <unordered_map>
+#include <memory>
 
 TOMIC_BEGIN
 
@@ -56,18 +57,20 @@ enum class SyntaxType
     ST_COUNT
 };
 
-class ISyntacticTypeMapper
+class ISyntaxMapper
 {
 public:
-    virtual ~ISyntacticTypeMapper() = default;
+    virtual ~ISyntaxMapper() = default;
 
     virtual const char* Description(SyntaxType type) const = 0;
 };
 
-class SyntacticTypeMapper : public ISyntacticTypeMapper
+using ISyntaxMapperPtr = std::shared_ptr<ISyntaxMapper>;
+
+class SyntaxMapper : public ISyntaxMapper
 {
 public:
-    SyntacticTypeMapper();
+    SyntaxMapper();
 
     const char* Description(SyntaxType type) const override;
 private:
@@ -76,6 +79,8 @@ private:
 
     std::unordered_map<SyntaxType, const char*> _typeToDescription;
 };
+
+using SyntaxMapperPtr = std::shared_ptr<SyntaxMapper>;
 
 TOMIC_END
 

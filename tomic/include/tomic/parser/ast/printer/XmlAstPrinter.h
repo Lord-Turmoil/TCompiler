@@ -10,13 +10,15 @@
 #include "../../../Common.h"
 #include "IAstPrinter.h"
 #include "../AstForward.h"
+#include "../SyntaxType.h"
+#include "../../../lexer/token/ITokenMapper.h"
 
 TOMIC_BEGIN
 
 class XmlAstPrinter : public IAstPrinter
 {
 public:
-    XmlAstPrinter();
+    XmlAstPrinter(ISyntaxMapperPtr syntaxMapperPtr, ITokenMapperPtr tokenMapper);
     ~XmlAstPrinter() override = default;
 
     void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) override;
@@ -31,6 +33,8 @@ private:
     void _VisitEpsilon(SyntaxNodePtr node);
 
     twio::IWriterPtr _writer;
+    ISyntaxMapperPtr _syntaxMapper;
+    ITokenMapperPtr _tokenMapper;
     int _depth;
     int _indent;
 };

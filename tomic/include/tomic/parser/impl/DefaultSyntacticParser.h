@@ -10,6 +10,7 @@
 #include "../../Common.h"
 #include "../ISyntacticParser.h"
 #include "../../lexer/ILexicalParser.h"
+#include "../../lexer/token/ITokenMapper.h"
 #include "../ast/SyntaxNode.h"
 #include "../ast/SyntaxTree.h"
 #include "../../logger/ILogger.h"
@@ -20,7 +21,11 @@ TOMIC_BEGIN
 class DefaultSyntacticParser : public ISyntacticParser
 {
 public:
-    DefaultSyntacticParser(ILexicalParserPtr lexicalParser, ILoggerPtr logger);
+    DefaultSyntacticParser(
+            ILexicalParserPtr lexicalParser,
+            ILoggerPtr logger,
+            ISyntaxMapperPtr syntaxMapper,
+            ITokenMapperPtr tokenMapper);
     ~DefaultSyntacticParser() override = default;
 
     DefaultSyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) override;
@@ -30,9 +35,14 @@ public:
 private:
     ILexicalParserPtr _lexicalParser;
     ILoggerPtr _logger;
+    ISyntaxMapperPtr _syntaxMapper;
+    ITokenMapperPtr _tokenMapper;
+
     SyntaxTreePtr _tree;
 
 private:
+    // Return current token.
+    TokenPtr _Current();
     // Return next token.
     TokenPtr _Next();
     // Lookahead for n tokens. Will make no effect to token stream.
@@ -42,6 +52,12 @@ private:
     bool _MatchAny(const std::vector<TokenType>& types, TokenPtr token);
     void _PostParseError(int checkpoint, SyntaxNodePtr node);
 
+    void _Log(LogLevel level, const char* format, ...);
+    void _LogFailedToParse(SyntaxType type);
+    void _LogExpect(TokenType expected);
+    void _LogExpect(const std::vector<TokenType>& expected);
+
+private:
     SyntaxNodePtr _ParseCompUnit();
     bool _MatchDecl();
     bool _MatchFuncDecl();
