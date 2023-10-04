@@ -31,10 +31,13 @@ private:
     SyntaxTreePtr _tree;
 
 private:
+    // Return next token.
+    TokenPtr _Next();
     // Lookahead for n tokens. Will make no effect to token stream.
     // n must greater than 0!
-    TokenPtr _Lookahead(int n);
+    TokenPtr _Lookahead(int n = 1);
     bool _Match(TokenType type, TokenPtr token);
+    bool _MatchAny(const std::vector<TokenType>& types, TokenPtr token);
     void _PostParseError(int checkpoint, SyntaxNodePtr node);
 
     SyntaxNodePtr _ParseCompUnit();
@@ -55,6 +58,7 @@ private:
     SyntaxNodePtr _ParseFuncDef();
     SyntaxNodePtr _ParseFuncType();
     SyntaxNodePtr _ParseFuncFParams();
+    SyntaxNodePtr _ParseFuncFParam();
     SyntaxNodePtr _ParseFuncAParams();
 
     SyntaxNodePtr _ParseBlock();
@@ -65,12 +69,14 @@ private:
 
     ////////// Stmt
     SyntaxNodePtr _ParseStmt();
+    SyntaxNodePtr _ParseAssignmentStmt();
     SyntaxNodePtr _ParseLVal();
     SyntaxNodePtr _ParseCond();
 
     SyntaxNodePtr _ParseIfStmt();
     SyntaxNodePtr _ParseForStmt();
-    SyntaxNodePtr _ParseForCondStmt();
+    SyntaxNodePtr _ParseForInitStmt();
+    SyntaxNodePtr _ParseForStepStmt();
     SyntaxNodePtr _ParseExpStmt();
 
     SyntaxNodePtr _ParseBreakStmt();
@@ -84,15 +90,21 @@ private:
     SyntaxNodePtr _ParseExp();
     SyntaxNodePtr _ParseConstExp();
     SyntaxNodePtr _ParseAddExp();
+    SyntaxNodePtr _ParseAddExpAux();
     SyntaxNodePtr _ParseMulExp();
+    SyntaxNodePtr _ParseMulExpAux();
     SyntaxNodePtr _ParseUnaryExp();
     SyntaxNodePtr _ParseUnaryOp();
     SyntaxNodePtr _ParsePrimaryExp();
-    SyntaxNodePtr _ParseNumber();
+
     SyntaxNodePtr _ParseOrExp();
+    SyntaxNodePtr _ParseOrExpAux();
     SyntaxNodePtr _ParseAndExp();
+    SyntaxNodePtr _ParseAndExpAux();
     SyntaxNodePtr _ParseEqExp();
+    SyntaxNodePtr _ParseEqExpAux();
     SyntaxNodePtr _ParseRelExp();
+    SyntaxNodePtr _ParseRelExpAux();
 };
 
 TOMIC_END
