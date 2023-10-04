@@ -37,6 +37,11 @@ public:
     SyntaxNodePtr InsertFirstChild(SyntaxNodePtr child);
     SyntaxNodePtr InsertAfterChild(SyntaxNodePtr child, SyntaxNodePtr after);
 
+    // Remove a child. This will not delete the node.
+    // Return the node before the removed node.
+    // To delete a node, use SyntaxTree::DeleteNode.
+    SyntaxNodePtr RemoveChild(SyntaxNodePtr child);
+
     // Get the root of the tree, can be a sub-tree.
     SyntaxNodePtr Root() const;
 
@@ -44,26 +49,32 @@ public:
     virtual bool Accept(ASTVisitorPtr visitor) = 0;
 
 public:
+    bool IsNonTerminal() const { return _nodeType == SyntaxNodeType::NON_TERMINAL; }
+    bool IsTerminal() const { return _nodeType == SyntaxNodeType::TERMINAL; }
+    bool IsEpsilon() const { return _nodeType == SyntaxNodeType::EPSILON; }
+
     bool HasChildren() const { return _firstChild; }
 
     SyntaxNodePtr Parent() const { return _parent; }
-
     SyntaxNodePtr FirstChild() const { return _firstChild; }
-
     SyntaxNodePtr LastChild() const { return _lastChild; }
-
     SyntaxNodePtr NextSibling() const { return _next; }
-
     SyntaxNodePtr PrevSibling() const { return _prev; }
 
 private:
     void _InsertChildPreamble(SyntaxNodePtr child);
-    void _DeleteChildPreamble(SyntaxNodePtr child);
     SyntaxNodePtr _Unlink(SyntaxNodePtr child);
 
 protected:
-    SyntaxNode(SyntaxType type);
-    SyntaxNode(SyntaxType type, TokenPtr token);
+    enum class SyntaxNodeType
+    {
+        NON_TERMINAL,
+        TERMINAL,
+        EPSILON
+    };
+
+    SyntaxNode(SyntaxNodeType nodeType, SyntaxType type);
+    SyntaxNode(SyntaxNodeType nodeType, SyntaxType type, TokenPtr token);
     virtual ~SyntaxNode() = default;
 
     // AST links.
@@ -79,6 +90,9 @@ protected:
     // AST properties.
     SyntaxType _type;
     TokenPtr _token;
+
+private:
+    SyntaxNodeType _nodeType;
 };
 
 class NonTerminalSyntaxNode : public SyntaxNode
@@ -100,6 +114,17 @@ protected:
     TerminalSyntaxNode(TokenPtr token);
 
     ~TerminalSyntaxNode() override = default;
+
+    bool Accept(ASTVisitorPtr visitor) override;
+};
+
+class EpsilonSyntaxNode : public SyntaxNode
+{
+    friend class SyntaxTree;
+protected:
+    EpsilonSyntaxNode();
+
+    ~EpsilonSyntaxNode() override = default;
 
     bool Accept(ASTVisitorPtr visitor) override;
 };

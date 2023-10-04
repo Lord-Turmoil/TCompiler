@@ -9,13 +9,13 @@
 
 TOMIC_BEGIN
 
-SyntaxNode::SyntaxNode(SyntaxType type)
-        : _type(type), _tree(nullptr), _parent(nullptr), _token(nullptr)
+SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type)
+        : _nodeType(nodeType), _type(type), _tree(nullptr), _parent(nullptr), _token(nullptr)
 {
 }
 
-SyntaxNode::SyntaxNode(SyntaxType type, TokenPtr token)
-        : _type(type), _tree(nullptr), _parent(nullptr), _token(token)
+SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type, TokenPtr token)
+        : _nodeType(nodeType), _type(type), _tree(nullptr), _parent(nullptr), _token(token)
 {
 }
 
@@ -103,6 +103,15 @@ SyntaxNodePtr SyntaxNode::InsertAfterChild(SyntaxNodePtr child, SyntaxNodePtr af
     return child;
 }
 
+SyntaxNodePtr SyntaxNode::RemoveChild(SyntaxNodePtr child)
+{
+    TOMIC_ASSERT(child);
+    TOMIC_ASSERT(child->_tree == _tree);
+    TOMIC_ASSERT(child->_parent == this);
+
+    return _Unlink(child);
+}
+
 void SyntaxNode::_InsertChildPreamble(SyntaxNodePtr child)
 {
     TOMIC_ASSERT(child);
@@ -152,7 +161,7 @@ SyntaxNodePtr SyntaxNode::_Unlink(SyntaxNodePtr child)
  * Non-terminal syntax node.
  */
 NonTerminalSyntaxNode::NonTerminalSyntaxNode(tomic::SyntaxType type)
-        : SyntaxNode(type)
+        : SyntaxNode(SyntaxNodeType::NON_TERMINAL, type)
 {
 }
 
@@ -160,7 +169,15 @@ NonTerminalSyntaxNode::NonTerminalSyntaxNode(tomic::SyntaxType type)
  * Terminal syntax node.
  */
 TerminalSyntaxNode::TerminalSyntaxNode(tomic::TokenPtr token)
-        : SyntaxNode(SyntaxType::ST_TERMINATOR, token)
+        : SyntaxNode(SyntaxNodeType::TERMINAL, SyntaxType::ST_TERMINATOR, token)
+{
+}
+
+/*
+ * Epsilon syntax node.
+ */
+EpsilonSyntaxNode::EpsilonSyntaxNode()
+        : SyntaxNode(SyntaxNodeType::EPSILON, SyntaxType::ST_EPSILON)
 {
 }
 

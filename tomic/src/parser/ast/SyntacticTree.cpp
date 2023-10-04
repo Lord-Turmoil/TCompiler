@@ -39,6 +39,15 @@ SyntaxNodePtr SyntaxTree::NewNonTerminalNode(SyntaxType type)
     return node;
 }
 
+SyntaxNodePtr SyntaxTree::NewEpsilonNode()
+{
+    auto node = new EpsilonSyntaxNode();
+    node->_tree = this;
+    _nodes.insert(node);
+
+    return node;
+}
+
 void SyntaxTree::DeleteNode(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
@@ -82,6 +91,7 @@ void SyntaxTree::_Clearup()
         delete *it;
     }
     _nodes.clear();
+    _root = nullptr;
 }
 
 TOMIC_END

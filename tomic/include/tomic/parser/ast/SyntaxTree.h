@@ -41,6 +41,8 @@ public:
     // Create a new syntactic node, which is self-managed by the syntactic tree.
     SyntaxNodePtr NewTerminalNode(TokenPtr token);
     SyntaxNodePtr NewNonTerminalNode(SyntaxType type);
+    SyntaxNodePtr NewEpsilonNode();
+
     void DeleteNode(SyntaxNodePtr node);
 
     SyntaxNodePtr Root() const { return _root; }

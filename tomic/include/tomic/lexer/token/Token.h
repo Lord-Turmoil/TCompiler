@@ -56,12 +56,12 @@ enum class TokenType
     TK_SEMICOLON,      // ;
     TK_COMMA,          // ,
 
-    TK_LEFT_PAREN,     // (
-    TK_RIGHT_PAREN,    // )
-    TK_LEFT_BRACE,     // {
-    TK_RIGHT_BRACE,    // }
-    TK_LEFT_BRACKET,   // [
-    TK_RIGHT_BRACKET,  // ]
+    TK_LEFT_PARENTHESIS,    // (
+    TK_RIGHT_PARENTHESIS,   // )
+    TK_LEFT_BRACE,          // {
+    TK_RIGHT_BRACE,         // }
+    TK_LEFT_BRACKET,        // [
+    TK_RIGHT_BRACKET,       // ]
 };
 
 // For now, memory layout is not considered.

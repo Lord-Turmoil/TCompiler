@@ -98,8 +98,8 @@ void DefaultTokenMapper::_InitLexemeToType()
     _lexemeToType[";"] = TokenType::TK_SEMICOLON;
     _lexemeToType[","] = TokenType::TK_COMMA;
 
-    _lexemeToType["("] = TokenType::TK_LEFT_PAREN;
-    _lexemeToType[")"] = TokenType::TK_RIGHT_PAREN;
+    _lexemeToType["("] = TokenType::TK_LEFT_PARENTHESIS;
+    _lexemeToType[")"] = TokenType::TK_RIGHT_PARENTHESIS;
     _lexemeToType["{"] = TokenType::TK_LEFT_BRACE;
     _lexemeToType["}"] = TokenType::TK_RIGHT_BRACE;
     _lexemeToType["["] = TokenType::TK_LEFT_BRACKET;
@@ -155,8 +155,8 @@ void DefaultTokenMapper::_InitTypeToDescription()
     _typeToDescription[TokenType::TK_SEMICOLON] = "SEMICN";
     _typeToDescription[TokenType::TK_COMMA] = "COMMA";
 
-    _typeToDescription[TokenType::TK_LEFT_PAREN] = "LPARENT";
-    _typeToDescription[TokenType::TK_RIGHT_PAREN] = "RPARENT";
+    _typeToDescription[TokenType::TK_LEFT_PARENTHESIS] = "LPARENT";
+    _typeToDescription[TokenType::TK_RIGHT_PARENTHESIS] = "RPARENT";
     _typeToDescription[TokenType::TK_LEFT_BRACE] = "LBRACE";
     _typeToDescription[TokenType::TK_RIGHT_BRACE] = "RBRACE";
     _typeToDescription[TokenType::TK_LEFT_BRACKET] = "LBRACK";
