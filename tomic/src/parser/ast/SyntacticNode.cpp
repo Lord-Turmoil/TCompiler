@@ -11,12 +11,16 @@
 TOMIC_BEGIN
 
 SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type)
-        : _nodeType(nodeType), _type(type), _tree(nullptr), _parent(nullptr), _token(nullptr)
+        : _nodeType(nodeType), _type(type),
+          _tree(nullptr), _parent(nullptr), _prev(nullptr), _next(nullptr),
+          _firstChild(nullptr), _lastChild(nullptr)
 {
 }
 
 SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type, TokenPtr token)
-        : _nodeType(nodeType), _type(type), _tree(nullptr), _parent(nullptr), _token(token)
+        : _nodeType(nodeType), _type(type), _token(token),
+          _tree(nullptr), _parent(nullptr), _prev(nullptr), _next(nullptr),
+          _firstChild(nullptr), _lastChild(nullptr)
 {
 }
 

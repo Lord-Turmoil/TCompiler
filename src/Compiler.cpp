@@ -20,7 +20,9 @@ void RegisterComponents()
             ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer>();
 
     // Syntactic
-    container->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser>();
+    container->AddSingleton<ISyntacticTypeMapper, SyntacticTypeMapper>()
+            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser>()
+            ->AddTransient<IAstPrinter, XmlAstPrinter>();
 }
 
 
@@ -41,10 +43,10 @@ void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
     auto reader = twio::AdvancedReader::New(twio::BufferInputStream::New(writer->Stream()->Yield()));
 
     // Lexical parse only.
-    LexicalParse(reader, dstWriter);
+    // LexicalParse(reader, dstWriter);
 
     // Syntactic parse.
-    // SyntacticParse(reader, dstWriter);
+    SyntacticParse(reader, dstWriter);
 }
 
 static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
@@ -79,7 +81,7 @@ static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr 
     syntacticParser->SetReader(srcReader);
 
     auto tree = syntacticParser->Parse();
-    auto printer = container->Resolve<IASTPrinter>();
+    auto printer = container->Resolve<IAstPrinter>();
 
     printer->SetWriter(dstWriter)->Print(tree);
 }

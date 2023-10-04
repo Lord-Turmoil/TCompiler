@@ -19,3 +19,5 @@
 
 #include "tomic/parser/ISyntacticParser.h"
 #include "tomic/parser/impl/DefaultSyntacticParser.h"
+#include "tomic/parser/ast/printer/IAstPrinter.h"
+#include "tomic/parser/ast/printer/XmlAstPrinter.h"

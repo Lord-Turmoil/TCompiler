@@ -38,6 +38,7 @@ public:
     // Create a new syntactic tree.
     static std::shared_ptr<SyntaxTree> New();
 
+public:
     // Create a new syntactic node, which is self-managed by the syntactic tree.
     SyntaxNodePtr NewTerminalNode(TokenPtr token);
     SyntaxNodePtr NewNonTerminalNode(SyntaxType type);
@@ -46,11 +47,13 @@ public:
     void DeleteNode(SyntaxNodePtr node);
 
     SyntaxNodePtr Root() const { return _root; }
-
     SyntaxNodePtr SetRoot(SyntaxNodePtr root);
 
+    // For visitor pattern. A utility function to traverse the tree.
+    bool Accept(ASTVisitorPtr visitor);
+
 private:
-    void _Clearup();
+    void _ClearUp();
 
     SyntaxNodePtr _root;
     std::unordered_set<SyntaxNodePtr> _nodes;

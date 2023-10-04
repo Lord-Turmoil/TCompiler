@@ -22,7 +22,11 @@ const char* SyntacticTypeMapper::Description(SyntaxType type) const
     auto iter = _typeToDescription.find(type);
     if (iter == _typeToDescription.end())
     {
+#ifdef ENABLE_COMPLETE_AST
         return "Missing";
+#else
+        return nullptr;
+#endif
     }
     return iter->second;
 }

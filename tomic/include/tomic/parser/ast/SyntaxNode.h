@@ -53,6 +53,10 @@ public:
     SyntaxNodePtr NextSibling() const { return _next; }
     SyntaxNodePtr PrevSibling() const { return _prev; }
 
+public:
+    SyntaxType Type() const { return _type; }
+    TokenPtr Token() const { return _token; }
+
 private:
     void _InsertChildPreamble(SyntaxNodePtr child);
     SyntaxNodePtr _Unlink(SyntaxNodePtr child);

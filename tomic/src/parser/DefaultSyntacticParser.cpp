@@ -83,6 +83,15 @@ SyntaxTreePtr DefaultSyntacticParser::Parse()
 {
     _tree = SyntaxTree::New();
 
+    auto compUnit = _ParseCompUnit();
+    if (!compUnit)
+    {
+        // TODO: Error handling.
+        TOMIC_ASSERT(compUnit);
+    }
+
+    _tree->SetRoot(compUnit);
+
     return _tree;
 }
 
@@ -92,16 +101,26 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
     auto checkpoint = _lexicalParser->SetCheckPoint();
 
     // Parse Decl
-    SyntaxNodePtr decl;
-    while ((decl = _ParseDecl()))
+    while (_MatchDecl())
     {
+        SyntaxNodePtr decl = _ParseDecl();
+        if (!decl)
+        {
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
         root->InsertEndChild(decl);
     }
 
     // Parse FuncDef
-    SyntaxNodePtr funcDef;
-    while ((funcDef = _ParseFuncDef()))
+    while (_MatchFuncDecl())
     {
+        SyntaxNodePtr funcDef = _ParseFuncDef();
+        if (!funcDef)
+        {
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
         root->InsertEndChild(funcDef);
     }
 
@@ -113,6 +132,40 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
     }
 
     return root;
+}
+
+bool DefaultSyntacticParser::_MatchDecl()
+{
+    // const ...
+    if (_Match(TokenType::TK_CONST, _Lookahead()))
+    {
+        return true;
+    }
+
+    // int ident, ...
+    // As long as the third one is not '(', it must be a declaration.
+    if (_Match(TokenType::TK_INT, _Lookahead()) && _Match(TokenType::TK_IDENTIFIER, _Lookahead(2)))
+    {
+        return !_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
+    }
+
+    return false;
+}
+
+static std::vector<TokenType> _funcDefFirstSet = {
+        TokenType::TK_INT,
+        TokenType::TK_VOID
+};
+
+bool DefaultSyntacticParser::_MatchFuncDecl()
+{
+    if (!_MatchAny(_funcDefFirstSet, _Lookahead()))
+    {
+        return false;
+    }
+
+    return _Match(TokenType::TK_IDENTIFIER, _Lookahead(2)) &&
+           _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
 }
 
 /*
@@ -153,10 +206,9 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBType()
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_BTYPE);
 
     SyntaxNodePtr child;
-    TokenPtr token = _Next();
-    if (_Match(TokenType::TK_INT, token))
+    if (_Match(TokenType::TK_INT, _Lookahead()))
     {
-        child = _tree->NewTerminalNode(token);
+        child = _tree->NewTerminalNode(_Next());
     }
     else
     {
@@ -433,11 +485,10 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
     }
 
-    // '='
+    // Check existence of '=', if not, return success, because it's a declaration.
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
-        _PostParseError(checkpoint, root);
-        return nullptr;
+        return root;
     }
     root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
@@ -856,6 +907,11 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
         else
         {
             child = _ParseAssignmentStmt();
+            // It can still be a in statement.
+            if (!child)
+            {
+                child = _ParseInStmt();
+            }
         }
     }
     else if (_Match(TokenType::TK_IF, lookahead))
@@ -877,10 +933,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
     else if (_Match(TokenType::TK_RETURN, lookahead))
     {
         child = _ParseReturnStmt();
-    }
-    else if (_Match(TokenType::TK_GETINT, lookahead))
-    {
-        child = _ParseInStmt();
     }
     else if (_Match(TokenType::TK_PRINTF, lookahead))
     {
@@ -1449,6 +1501,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
         _PostParseError(checkpoint, root);
         return nullptr;
     }
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     // ';'
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
@@ -1727,7 +1780,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryOp()
         return root;
     }
 
-    // TODO: Error handling.
+    // It's OK for UnaryOp not to match any.
 
     return nullptr;
 }

@@ -41,6 +41,8 @@ private:
     void _PostParseError(int checkpoint, SyntaxNodePtr node);
 
     SyntaxNodePtr _ParseCompUnit();
+    bool _MatchDecl();
+    bool _MatchFuncDecl();
 
     ////////// Decl
     SyntaxNodePtr _ParseDecl();

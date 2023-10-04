@@ -15,6 +15,8 @@ TOMIC_BEGIN
 class ASTVisitor
 {
 public:
+    virtual ~ASTVisitor() = default;
+
     // Called when enter a syntax node.
     virtual bool VisitEnter(SyntaxNodePtr node) { return true; }
 

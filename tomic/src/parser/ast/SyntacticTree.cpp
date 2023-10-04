@@ -13,7 +13,7 @@ TOMIC_BEGIN
 
 SyntaxTree::~SyntaxTree()
 {
-    _Clearup();
+    _ClearUp();
 }
 
 std::shared_ptr<SyntaxTree> SyntaxTree::New()
@@ -55,7 +55,7 @@ void SyntaxTree::DeleteNode(SyntaxNodePtr node)
 
     if (node == _root)
     {
-        _Clearup();
+        _ClearUp();
         return;
     }
 
@@ -84,7 +84,15 @@ SyntaxNodePtr SyntaxTree::SetRoot(SyntaxNodePtr root)
     return root;
 }
 
-void SyntaxTree::_Clearup()
+bool SyntaxTree::Accept(ASTVisitorPtr visitor)
+{
+    TOMIC_ASSERT(visitor);
+    TOMIC_ASSERT(_root);
+
+    return _root->Accept(visitor);
+}
+
+void SyntaxTree::_ClearUp()
 {
     for (auto it = _nodes.begin(); it != _nodes.end(); it++)
     {
