@@ -32,4 +32,4 @@ public:
 
 TOMIC_END
 
-#endif
+#endif // _TOMIC_AST_PRINTER_H_

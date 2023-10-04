@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_ILOGGER_H_
-#define _TOMIC_ILOGGER_H_
+#ifndef _TOMIC_LOGGER_H_
+#define _TOMIC_LOGGER_H_
 
 #include "../Common.h"
 

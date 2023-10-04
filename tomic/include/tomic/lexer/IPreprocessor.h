@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_IPREPROCESSOR_H_
-#define _TOMIC_IPREPROCESSOR_H_
+#ifndef _TOMIC_PREPROCESSOR_H_
+#define _TOMIC_PREPROCESSOR_H_
 
 #include "../Common.h"
 #include <memory>
@@ -30,4 +30,4 @@ using IPreprocessorPtr = std::shared_ptr<IPreprocessor>;
 
 TOMIC_END
 
-#endif // _TOMIC_IPREPROCESSOR_H_
+#endif // _TOMIC_PREPROCESSOR_H_

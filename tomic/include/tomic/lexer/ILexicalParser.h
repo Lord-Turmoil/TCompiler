@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_ILEXICAL_PARSER_H_
-#define _TOMIC_ILEXICAL_PARSER_H_
+#ifndef _TOMIC_LEXICAL_PARSER_H_
+#define _TOMIC_LEXICAL_PARSER_H_
 
 #include "../Common.h"
 #include "ILexicalAnalyzer.h"
@@ -32,4 +32,4 @@ using ILexicalParserPtr = std::shared_ptr<ILexicalParser>;
 
 TOMIC_END
 
-#endif // _TOMIC_ILEXICAL_PARSER_H_
+#endif // _TOMIC_LEXICAL_PARSER_H_

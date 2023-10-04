@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_I_TOKEN_MAPPER_H_
-#define _TOMIC_I_TOKEN_MAPPER_H_
+#ifndef _TOMIC__TOKEN_MAPPER_H_
+#define _TOMIC__TOKEN_MAPPER_H_
 
 #include "../../Common.h"
 #include "Token.h"
