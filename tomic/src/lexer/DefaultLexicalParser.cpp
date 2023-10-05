@@ -8,15 +8,18 @@
 
 TOMIC_BEGIN
 
-DefaultLexicalParser::DefaultLexicalParser(ILexicalAnalyserPtr analyser)
-        : _analyser(analyser)
+DefaultLexicalParser::DefaultLexicalParser(ILexicalAnalyzerPtr analyzer, ILoggerPtr logger)
+        : _analyzer(analyzer), _logger(logger)
 {
+    TOMIC_ASSERT(_analyzer);
+    TOMIC_ASSERT(_logger);
+
     _current = _tokens.end();
 }
 
 DefaultLexicalParser* DefaultLexicalParser::SetReader(twio::IAdvancedReaderPtr reader)
 {
-    _analyser->SetReader(reader);
+    _analyzer->SetReader(reader);
     return this;
 }
 
@@ -34,7 +37,7 @@ TokenPtr DefaultLexicalParser::Next()
 {
     if (_current == _tokens.end())
     {
-        TokenPtr token = _analyser->Next();
+        TokenPtr token = _analyzer->Next();
         // Filter out unknown tokens.
         while (token->type != TokenType::TK_TERMINATOR)
         {
@@ -42,9 +45,8 @@ TokenPtr DefaultLexicalParser::Next()
             {
                 break;
             }
-
-            // TODO: Error report
-            token = _analyser->Next();
+            _LogUnexpectedToken(token);
+            token = _analyzer->Next();
         }
 
         // EOF reached.
@@ -79,6 +81,15 @@ int DefaultLexicalParser::SetCheckPoint()
 void DefaultLexicalParser::Rollback(int checkpoint)
 {
     _current = _tokens.begin() + checkpoint;
+}
+
+void DefaultLexicalParser::_LogUnexpectedToken(TokenPtr token)
+{
+    TOMIC_ASSERT(token);
+    _logger->Log(LogLevel::ERROR, "(%d:%d) Unexpected token %s",
+                 token->lineNo,
+                 token->charNo,
+                 token->lexeme.c_str());
 }
 
 TOMIC_END

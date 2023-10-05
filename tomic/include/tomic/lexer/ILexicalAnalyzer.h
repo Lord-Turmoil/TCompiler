@@ -23,7 +23,7 @@ public:
     virtual TokenPtr Next() = 0;
 };
 
-using ILexicalAnalyserPtr = std::shared_ptr<ILexicalAnalyzer>;
+using ILexicalAnalyzerPtr = std::shared_ptr<ILexicalAnalyzer>;
 
 TOMIC_END
 
