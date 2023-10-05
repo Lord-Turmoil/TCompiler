@@ -38,17 +38,11 @@ TokenPtr DefaultLexicalParser::Next()
     if (_current == _tokens.end())
     {
         TokenPtr token = _analyzer->Next();
-        // Filter out unknown tokens.
-        while (token->type != TokenType::TK_TERMINATOR)
+        while (token->type == TokenType::TK_UNKNOWN)
         {
-            if (token->type != TokenType::TK_UNKNOWN)
-            {
-                break;
-            }
             _LogUnexpectedToken(token);
             token = _analyzer->Next();
         }
-
         // EOF reached.
         if (token->type == TokenType::TK_TERMINATOR)
         {

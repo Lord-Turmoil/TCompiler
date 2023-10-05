@@ -254,6 +254,7 @@ TokenPtr StringLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
         }
         else
         {
+            lexeme += ch;
             // TODO: Mark Error
             error = true;
         }
