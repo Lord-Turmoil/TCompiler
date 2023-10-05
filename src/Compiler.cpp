@@ -28,7 +28,8 @@ void RegisterComponents()
     // Syntactic
     container->AddSingleton<ISyntaxMapper, SyntaxMapper>()
             ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>()
-            ->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
+            // ->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
+            ->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
 }
 
 
@@ -86,13 +87,17 @@ static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr 
 
     syntacticParser->SetReader(srcReader);
 
+    auto logger = container->Resolve<ILogger>();
     auto tree = syntacticParser->Parse();
     if (!tree)
     {
+        logger->Log(LogLevel::FATAL, "Syntactic parse failed.");
         return;
     }
+    if (logger->Count(LogLevel::ERROR) > 0)
+    {
+        logger->Log(LogLevel::FATAL, "Syntactic parse completed with errors.");
+    }
 
-    auto printer = container->Resolve<IAstPrinter>();
-
-    printer->Print(tree, dstWriter);
+    container->Resolve<IAstPrinter>()->Print(tree, dstWriter);
 }

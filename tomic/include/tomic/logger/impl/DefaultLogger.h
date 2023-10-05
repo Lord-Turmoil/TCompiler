@@ -31,7 +31,7 @@ public:
         _level = level;
         return this;
     }
-    
+
     DefaultLogger* SetWriter(twio::IWriterPtr writer) override
     {
         _writer = writer;

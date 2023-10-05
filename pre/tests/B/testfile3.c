@@ -72,7 +72,7 @@ int main()
         i = i + 1;
     }
 
-    printf("9 for's\n");
+    printf("9 fors\n");
 
     return 0;
 }

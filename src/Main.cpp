@@ -11,7 +11,7 @@
 using namespace tomic;
 
 const char LOCAL_INPUT_FILE[] = "in.c";
-const char LOCAL_OUTPUT_FILE[] = "out.xml";
+const char LOCAL_OUTPUT_FILE[] = "out.txt";
 const char INPUT_FILE[] = "testfile.txt";
 const char OUTPUT_FILE[] = "output.txt";
 

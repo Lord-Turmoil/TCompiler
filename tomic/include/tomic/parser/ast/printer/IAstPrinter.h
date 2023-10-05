@@ -24,7 +24,7 @@ class IAstPrinter : public AstVisitor
 {
 public:
     ~IAstPrinter() override = default;
-    
+
     virtual void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) = 0;
 };
 

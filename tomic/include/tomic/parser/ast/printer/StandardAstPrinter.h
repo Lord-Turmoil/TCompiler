@@ -9,8 +9,36 @@
 
 #include "../../../Common.h"
 #include "IAstPrinter.h"
+#include "../SyntaxType.h"
+#include "../../../lexer/token/ITokenMapper.h"
 
 TOMIC_BEGIN
+
+/*
+ * This one is for the barnacle online judge. It shows how powerful
+ * Dependency Injection is. Just so easy for the pluggable design.
+ */
+class StandardAstPrinter : public IAstPrinter
+{
+public:
+    StandardAstPrinter(ISyntaxMapperPtr syntaxMapperPtr, ITokenMapperPtr tokenMapper);
+    ~StandardAstPrinter() override = default;
+
+    void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) override;
+
+    bool VisitEnter(SyntaxNodePtr node) override;
+    bool VisitExit(SyntaxNodePtr node) override;
+    bool Visit(SyntaxNodePtr node) override;
+
+private:
+    void _VisitNonTerminal(SyntaxNodePtr node);
+    void _VisitTerminal(SyntaxNodePtr node);
+    void _VisitEpsilon(SyntaxNodePtr node);
+
+    twio::IWriterPtr _writer;
+    ISyntaxMapperPtr _syntaxMapper;
+    ITokenMapperPtr _tokenMapper;
+};
 
 TOMIC_END
 
