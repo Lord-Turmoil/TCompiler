@@ -32,6 +32,9 @@ private:
     void _VisitTerminal(SyntaxNodePtr node);
     void _VisitEpsilon(SyntaxNodePtr node);
 
+    void _PrintIndent(int depth);
+
+private:
     twio::IWriterPtr _writer;
     ISyntaxMapperPtr _syntaxMapper;
     ITokenMapperPtr _tokenMapper;

@@ -10,10 +10,6 @@
 
 TOMIC_BEGIN
 
-/*
- * ASTPrinter
- */
-
 XmlAstPrinter::XmlAstPrinter(tomic::ISyntaxMapperPtr syntaxMapperPtr, tomic::ITokenMapperPtr tokenMapper)
         : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper), _depth(0), _indent(2)
 {
@@ -42,10 +38,7 @@ bool XmlAstPrinter::VisitEnter(SyntaxNodePtr node)
 
     _depth++;
 
-    for (int i = 0; i < _depth * _indent; i++)
-    {
-        _writer->Write(" ");
-    }
+    _PrintIndent(_depth);
     if (descr)
     {
         _writer->WriteFormat("<%s>\n", descr);
@@ -62,10 +55,7 @@ bool XmlAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
 {
     auto descr = _syntaxMapper->Description(node->Type());
 
-    for (int i = 0; i < _depth * _indent; i++)
-    {
-        _writer->Write(" ");
-    }
+    _PrintIndent(_depth);
     if (descr)
     {
         _writer->WriteFormat("</%s>\n", descr);
@@ -112,10 +102,7 @@ void XmlAstPrinter::_VisitNonTerminal(tomic::SyntaxNodePtr node)
 {
     auto descr = _syntaxMapper->Description(node->Type());
 
-    for (int i = 0; i < _depth * _indent; i++)
-    {
-        _writer->Write(" ");
-    }
+    _PrintIndent(_depth);
     if (descr)
     {
         _writer->WriteFormat("<%s />\n", descr);
@@ -132,10 +119,7 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
 {
     auto syntacticDescr = _syntaxMapper->Description(node->Type());
 
-    for (int i = 0; i < _depth * _indent; i++)
-    {
-        _writer->Write(" ");
-    }
+    _PrintIndent(_depth);
     if (syntacticDescr)
     {
         _writer->WriteFormat("<%s", syntacticDescr);
@@ -152,10 +136,23 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
     }
     else
     {
-        _writer->WriteFormat(" token=\'\'");
+        _writer->WriteFormat(" token=\'MISSING-%d\'", _depth);
     }
 
-    _writer->WriteFormat(" lexeme=\'%s\' />\n", node->Token()->lexeme.c_str());
+    const char* lexeme = node->Token()->lexeme.c_str();
+    _writer->Write(" lexeme=\'");
+    for (const char* p = lexeme; *p; p++)
+    {
+        if (*p == '&')
+        {
+            _writer->Write("&amp;");
+        }
+        else
+        {
+            _writer->WriteFormat("%c", *p);
+        }
+    }
+    _writer->Write("\' />\n");
 }
 
 void XmlAstPrinter::_VisitEpsilon(tomic::SyntaxNodePtr node)
@@ -164,10 +161,7 @@ void XmlAstPrinter::_VisitEpsilon(tomic::SyntaxNodePtr node)
     auto mapper = container->Resolve<ISyntaxMapper>();
     auto descr = mapper->Description(node->Type());
 
-    for (int i = 0; i < _depth * _indent; i++)
-    {
-        _writer->Write(" ");
-    }
+    _PrintIndent(_depth);
     if (descr)
     {
         _writer->WriteFormat("<%s>\n", descr);
@@ -177,4 +171,13 @@ void XmlAstPrinter::_VisitEpsilon(tomic::SyntaxNodePtr node)
         _writer->WriteFormat("<EPSILON: %d>\n", _depth);
     }
 }
+
+void XmlAstPrinter::_PrintIndent(int depth)
+{
+    for (int i = 0; i < depth * _indent; i++)
+    {
+        _writer->Write(" ");
+    }
+}
+
 TOMIC_END
