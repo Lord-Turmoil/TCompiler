@@ -61,7 +61,7 @@ void SyntaxMapper::_InitComplete()
     _typeToDescription[SyntaxType::ST_BLOCK] = "Block";
     _typeToDescription[SyntaxType::ST_BLOCK_ITEM] = "BlockItem";
 
-    _typeToDescription[SyntaxType::ST_MAIN_FUNC_DECL] = "MainFuncDecl";
+    _typeToDescription[SyntaxType::ST_MAIN_FUNC_DEF] = "MainFuncDef";
 
     _typeToDescription[SyntaxType::ST_STMT] = "Stmt";
     _typeToDescription[SyntaxType::ST_ASSIGNMENT_STMT] = "AssignmentStmt";
@@ -118,7 +118,7 @@ void SyntaxMapper::_InitStandard()
     _typeToDescription[SyntaxType::ST_BLOCK] = "Block";
     // _typeToDescription[SyntaxType::ST_BLOCK_ITEM] = "BlockItem";
 
-    _typeToDescription[SyntaxType::ST_MAIN_FUNC_DECL] = "MainFuncDecl";
+    _typeToDescription[SyntaxType::ST_MAIN_FUNC_DEF] = "MainFuncDef";
 
     _typeToDescription[SyntaxType::ST_STMT] = "Stmt";
     _typeToDescription[SyntaxType::ST_ASSIGNMENT_STMT] = "AssignmentStmt";

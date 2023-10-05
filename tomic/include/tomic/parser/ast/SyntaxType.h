@@ -34,7 +34,7 @@ enum class SyntaxType
     ST_BLOCK, ST_BLOCK_ITEM,
 
     // MainFuncDef
-    ST_MAIN_FUNC_DECL,
+    ST_MAIN_FUNC_DEF,
 
     // Stmt
     ST_STMT,

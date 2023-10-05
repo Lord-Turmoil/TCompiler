@@ -1035,7 +1035,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBlockItem()
 SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
-    auto root = _tree->NewNonTerminalNode(SyntaxType::ST_MAIN_FUNC_DECL);
+    auto root = _tree->NewNonTerminalNode(SyntaxType::ST_MAIN_FUNC_DEF);
 
     // int
     if (!_Match(TokenType::TK_INT, _Lookahead()))
