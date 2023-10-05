@@ -23,9 +23,9 @@ class DefaultSyntacticParser : public ISyntacticParser
 public:
     DefaultSyntacticParser(
             ILexicalParserPtr lexicalParser,
-            ILoggerPtr logger,
             ISyntaxMapperPtr syntaxMapper,
-            ITokenMapperPtr tokenMapper);
+            ITokenMapperPtr tokenMapper,
+            ILoggerPtr logger);
     ~DefaultSyntacticParser() override = default;
 
     DefaultSyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) override;
@@ -34,11 +34,10 @@ public:
 
 private:
     ILexicalParserPtr _lexicalParser;
-    ILoggerPtr _logger;
     ISyntaxMapperPtr _syntaxMapper;
     ITokenMapperPtr _tokenMapper;
-
     SyntaxTreePtr _tree;
+    ILoggerPtr _logger;
 
     // Set to true if we are not sure what lies ahead.
     // Remember to set to false when you are sure.

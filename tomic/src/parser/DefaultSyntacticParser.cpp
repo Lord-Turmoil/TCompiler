@@ -19,13 +19,13 @@ static char _logBuffer[1024];
 
 DefaultSyntacticParser::DefaultSyntacticParser(
         ILexicalParserPtr lexicalParser,
-        ILoggerPtr logger,
         ISyntaxMapperPtr syntaxMapper,
-        ITokenMapperPtr tokenMapper)
+        ITokenMapperPtr tokenMapper,
+        ILoggerPtr logger)
         : _lexicalParser(lexicalParser),
-          _logger(logger),
           _syntaxMapper(syntaxMapper),
-          _tokenMapper(tokenMapper)
+          _tokenMapper(tokenMapper),
+          _logger(logger)
 {
 }
 
@@ -1988,33 +1988,14 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
     // UnaryExp -> Ident '(' FuncAParams ')'
     if (_Match(TokenType::TK_IDENTIFIER, _Lookahead()) && _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(2)))
     {
-        // Ident
-        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
-        // '('
-        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
-
-        // Check existence of FuncAParams
-        if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
+        auto functionCall = _ParseFuncCall();
+        if (!functionCall)
         {
-            auto funcAParams = _ParseFuncAParams();
-            if (!funcAParams)
-            {
-                _LogFailedToParse(SyntaxType::ST_FUNC_APARAMS);
-                _PostParseError(checkpoint, root);
-                return nullptr;
-            }
-            root->InsertEndChild(funcAParams);
-        }
-
-        // ')'
-        if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
-        {
-            _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
+            _LogFailedToParse(SyntaxType::ST_FUNC_CALL);
             _PostParseError(checkpoint, root);
             return nullptr;
         }
-        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
-
+        root->InsertEndChild(functionCall);
         return root;
     }
 

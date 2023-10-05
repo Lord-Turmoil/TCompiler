@@ -27,7 +27,7 @@ void RegisterComponents()
 
     // Syntactic
     container->AddSingleton<ISyntaxMapper, SyntaxMapper>()
-            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ILogger, ISyntaxMapper, ITokenMapper>()
+            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>()
             ->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
 }
 
