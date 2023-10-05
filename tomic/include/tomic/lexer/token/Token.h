@@ -19,7 +19,7 @@ enum class TokenType
     TK_TERMINATOR,     // terminator
 
     TK_IDENTIFIER,     // identifier
-    TK_NUMBER,         // integer constant
+    TK_INTEGER,         // integer constant
     TK_FORMAT,         // format string, e.g. "a = %d"
     TK_MAIN,           // main
     TK_RETURN,         // return

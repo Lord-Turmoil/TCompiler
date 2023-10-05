@@ -66,7 +66,7 @@ private:
 private:
     SyntaxNodePtr _ParseCompUnit();
     bool _MatchDecl();
-    bool _MatchFuncDecl();
+    bool _MatchFuncDef();
 
     ////////// Decl
     SyntaxNodePtr _ParseDecl();
@@ -95,6 +95,7 @@ private:
 
     ////////// Stmt
     SyntaxNodePtr _ParseStmt();
+    SyntaxNodePtr _ParseStmtAux();
     SyntaxNodePtr _ParseAssignmentStmt();
     SyntaxNodePtr _ParseLVal();
     SyntaxNodePtr _ParseCond();
@@ -123,6 +124,7 @@ private:
     SyntaxNodePtr _ParseUnaryOp();
     SyntaxNodePtr _ParsePrimaryExp();
     SyntaxNodePtr _ParseFuncCall();
+    SyntaxNodePtr _ParseNumber();
 
     SyntaxNodePtr _ParseOrExp();
     SyntaxNodePtr _ParseOrExpAux();

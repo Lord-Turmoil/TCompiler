@@ -166,7 +166,14 @@ void DefaultSyntacticParser::_LogExpect(TokenType expected, LogLevel level)
         }
     }
 
-    _Log(level, actual, "Expect %s, but got %s", expectedDescr, actual->lexeme.c_str());
+    if (actual->type == TokenType::TK_TERMINATOR)
+    {
+        _Log(level, actual, "Expect %s, but got EOF", expectedDescr);
+    }
+    else
+    {
+        _Log(level, actual, "Expect %s, but got %s", expectedDescr, actual->lexeme.c_str());
+    }
 }
 
 void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected, LogLevel level)
@@ -240,7 +247,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
     }
 
     // Parse FuncDef
-    while (_MatchFuncDecl())
+    while (_MatchFuncDef())
     {
         SyntaxNodePtr funcDef = _ParseFuncDef();
         if (!funcDef)
@@ -288,7 +295,7 @@ static std::vector<TokenType> _funcDefFirstSet = {
         TokenType::TK_VOID
 };
 
-bool DefaultSyntacticParser::_MatchFuncDecl()
+bool DefaultSyntacticParser::_MatchFuncDef()
 {
     if (!_MatchAny(_funcDefFirstSet, _Lookahead()))
     {
@@ -369,8 +376,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr constToken = _tree->NewTerminalNode(_Next());
-    root->InsertEndChild(constToken);
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     // BType
     SyntaxNodePtr type = _ParseBType();
@@ -414,8 +420,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr semicolon = _tree->NewTerminalNode(_Next());
-    root->InsertEndChild(semicolon);
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     return root;
 }
@@ -432,8 +437,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDef()
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr identifier = _tree->NewTerminalNode(_Next());
-    root->InsertEndChild(identifier);
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     // Dimension
     // TODO: Limit dimension.
@@ -495,6 +499,15 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
         // Skip '{'
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
+        // Check if it is an empty list.
+        if (_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
+        {
+            _logger->Log(LogLevel::WARNING, "Empty initialization list in <ConstInitVal>");
+            // Skip '}'
+            root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+            return root;
+        }
+
         auto constInitVal = _ParseConstInitVal();
         if (!constInitVal)
         {
@@ -503,6 +516,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
             return nullptr;
         }
         root->InsertEndChild(constInitVal);
+
         while (_Match(TokenType::TK_COMMA, _Lookahead()))
         {
             // Skip ','
@@ -590,8 +604,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDecl()
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr semicolon = _tree->NewTerminalNode(_Next());
-    root->InsertEndChild(semicolon);
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     return root;
 }
@@ -608,7 +621,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr identifier = _tree->NewTerminalNode(_Next());
+    auto identifier = _tree->NewTerminalNode(_Next());
     root->InsertEndChild(identifier);
 
     // Dimension
@@ -642,7 +655,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
     // Check existence of '=', if not, return success, because it's a declaration.
     if (!_Match(TokenType::TK_ASSIGN, _Lookahead()))
     {
-        _Log(LogLevel::WARNING, "No initial value in VarDef");
+        _Log(LogLevel::WARNING, "No initial value for %s", identifier->Token()->lexeme.c_str());
         return root;
     }
     root->InsertEndChild(_tree->NewTerminalNode(_Next()));
@@ -670,6 +683,15 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
         // Skip '{'
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
+        // Check if it is an empty list.
+        if (_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
+        {
+            _logger->Log(LogLevel::WARNING, "Empty initialization list in <InitVal>");
+            // Skip '}'
+            root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+            return root;
+        }
+
         auto initVal = _ParseInitVal();
         if (!initVal)
         {
@@ -678,6 +700,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
             return nullptr;
         }
         root->InsertEndChild(initVal);
+
         while (_Match(TokenType::TK_COMMA, _Lookahead()))
         {
             // Skip ','
@@ -744,10 +767,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
         _PostParseError(checkpoint, root);
         return nullptr;
     }
-    SyntaxNodePtr identifier = _tree->NewTerminalNode(_Next());
-    root->InsertEndChild(identifier);
-
-    // FuncFParams
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     // '('
     if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
@@ -798,8 +818,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncType()
     auto checkpoint = _lexicalParser->SetCheckPoint();
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_FUNC_TYPE);
 
-    TokenPtr lookahead = _Lookahead();
-    if (_MatchAny(_funcDefFirstSet, lookahead))
+    if (_MatchAny(_funcDefFirstSet, _Lookahead()))
     {
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
     }
@@ -826,6 +845,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParams()
         return nullptr;
     }
     root->InsertEndChild(funcFParam);
+
     while (_Match(TokenType::TK_COMMA, _Lookahead()))
     {
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
@@ -882,6 +902,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
             _PostParseError(checkpoint, root);
             return nullptr;
         }
+
         // second dimension
         if (_Match(TokenType::TK_LEFT_BRACKET, _Lookahead()))
         {
@@ -894,6 +915,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
                 _PostParseError(checkpoint, root);
                 return nullptr;
             }
+            root->InsertEndChild(constExpr);
 
             // Check ']'
             if (_Match(TokenType::TK_RIGHT_BRACKET, _Lookahead()))
@@ -926,6 +948,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncAParams()
         return nullptr;
     }
     root->InsertEndChild(exp);
+
     while (_Match(TokenType::TK_COMMA, _Lookahead()))
     {
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
@@ -1090,36 +1113,39 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
  * ==================== Stmt ====================
  */
 
+/*
+ * Statement parsing is a little bit tricky. Since there may be ambiguity between
+ * expression statement, assignment statement and input statement. So we have to
+ * try parse them. We do this in an auxiliary function _ParseStmtAux() below.
+ */
 SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_STMT);
-
-    SyntaxNodePtr child = nullptr;
     TokenPtr lookahead = _Lookahead();
+
+    // ExpStmt, AssignmentStmt and InStmt can all start with an identifier.
+    // So we have to try parse them. No other statements can start with an identifier,
+    // thus an error shall be reported if we failed to parse.
     if (_Match(TokenType::TK_IDENTIFIER, lookahead))
     {
-        // LVal expression starts with identifier but not followed by '('.
-        // While expression can be identifier followed by '(', which is a function call.
-        // Since we don't have function pointer, we can just check if the next token is '('.
-        if (_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(2)))
+        _tryParse = true;
+        auto stmt = _ParseStmtAux();
+        _tryParse = false;
+
+        if (!stmt)
         {
-            child = _ParseExpStmt();
+            _LogFailedToParse(SyntaxType::ST_STMT);
+            _PostParseError(checkpoint, root);
+            return nullptr;
         }
-        else
-        {
-            _tryParse = true;
-            child = _ParseAssignmentStmt();
-            // It can still be a in statement.
-            if (!child)
-            {
-                child = _ParseInStmt();
-            }
-            _tryParse = false;
-        }
-        if (!child) _LogFailedToParse(SyntaxType::ST_ASSIGNMENT_STMT);
+        root->InsertEndChild(stmt);
+        return root;
     }
-    else if (_Match(TokenType::TK_IF, lookahead))
+
+    // Now, we can parse other statements.
+    SyntaxNodePtr child = nullptr;
+    if (_Match(TokenType::TK_IF, lookahead))
     {
         child = _ParseIfStmt();
         if (!child) _LogFailedToParse(SyntaxType::ST_IF_STMT);
@@ -1170,6 +1196,37 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
     root->InsertEndChild(child);
 
     return root;
+}
+
+/*
+ * Try parse ambiguous ExpStmt, AssignmentStmt and InStmt.
+ */
+SyntaxNodePtr DefaultSyntacticParser::_ParseStmtAux()
+{
+    // InStmt is the simplest, so try parse it first.
+    auto inStmt = _ParseInStmt();
+    if (inStmt)
+    {
+        return inStmt;
+    }
+
+    // AssignmentStmt is the second simplest, so try parse it second.
+    auto assignmentStmt = _ParseAssignmentStmt();
+    if (assignmentStmt)
+    {
+        return assignmentStmt;
+    }
+
+    // ExpStmt is the most complex, so try parse it last.
+    auto expStmt = _ParseExpStmt();
+    if (expStmt)
+    {
+        return expStmt;
+    }
+
+    _Log(LogLevel::DEBUG, "StmtAux didn't match any Stmt");
+
+    return nullptr;
 }
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseAssignmentStmt()
@@ -2050,9 +2107,16 @@ SyntaxNodePtr DefaultSyntacticParser::_ParsePrimaryExp()
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_PRIMARY_EXP);
 
     // PrimaryExp -> Number
-    if (_Match(TokenType::TK_NUMBER, _Lookahead()))
+    if (_Match(TokenType::TK_INTEGER, _Lookahead()))
     {
-        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+        auto number = _ParseNumber();
+        if (!number)
+        {
+            _LogFailedToParse(SyntaxType::ST_NUMBER);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(number);
         return root;
     }
 
@@ -2138,6 +2202,23 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncCall()
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
         _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
+        _PostParseError(checkpoint, root);
+        return nullptr;
+    }
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+
+    return root;
+}
+
+SyntaxNodePtr DefaultSyntacticParser::_ParseNumber()
+{
+    auto checkpoint = _lexicalParser->SetCheckPoint();
+    auto root = _tree->NewNonTerminalNode(SyntaxType::ST_NUMBER);
+
+    // Number -> Integer
+    if (!_Match(TokenType::TK_INTEGER, _Lookahead()))
+    {
+        _LogExpect(TokenType::TK_INTEGER);
         _PostParseError(checkpoint, root);
         return nullptr;
     }

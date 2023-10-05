@@ -12,12 +12,20 @@ using namespace tomic;
 void RegisterComponents()
 {
     auto container = mioc::SingletonContainer::GetContainer();
+    auto config = container->Resolve<IConfig>();
 
     // Logger
-    auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New(stdout, false));
-    auto logger = DefaultLogger::New();
-    logger->SetWriter(loggerWriter)->SetLogLevel(LogLevel::DEBUG);
-    container->AddSingleton<ILogger>(logger);
+    if (config->EnableLog())
+    {
+        auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New(stdout, false));
+        auto logger = DefaultLogger::New();
+        logger->SetWriter(loggerWriter)->SetLogLevel(LogLevel::DEBUG);
+        container->AddSingleton<ILogger>(logger);
+    }
+    else
+    {
+        container->AddSingleton<ILogger, DumbLogger>();
+    }
 
     // Lexical
     container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
@@ -30,7 +38,6 @@ void RegisterComponents()
             ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>();
 
     // Ast printer
-    auto config = container->Resolve<IConfig>();
     if (tomic::StringUtil::Equals(config->OutputExt(), ".xml"))
     {
         container->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
@@ -86,6 +93,10 @@ static void LexicalParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr ds
     lexicalParser->SetReader(srcReader);
     while ((token = lexicalParser->Next()) != nullptr)
     {
+        if (token->type == TokenType::TK_TERMINATOR)
+        {
+            break;
+        }
         dstWriter->Write(mapper->Description(token->type));
         dstWriter->Write(" ");
         dstWriter->Write(token->lexeme.c_str());

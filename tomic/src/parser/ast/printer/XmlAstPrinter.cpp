@@ -45,7 +45,7 @@ bool XmlAstPrinter::VisitEnter(SyntaxNodePtr node)
     }
     else
     {
-        _writer->WriteFormat("<MISSING-%d>\n", _depth);
+        // _writer->WriteFormat("<MISSING-%d>\n", _depth);
     }
 
     return true;
@@ -62,7 +62,7 @@ bool XmlAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
     }
     else
     {
-        _writer->WriteFormat("</MISSING-%d>\n", _depth);
+        // _writer->WriteFormat("</MISSING-%d>\n", _depth);
     }
 
     _depth--;
@@ -109,7 +109,7 @@ void XmlAstPrinter::_VisitNonTerminal(tomic::SyntaxNodePtr node)
     }
     else
     {
-        _writer->WriteFormat("<MISSING-%d />\n", _depth);
+        // _writer->WriteFormat("<MISSING-%d />\n", _depth);
     }
 
     // Visit will not recurse into children.

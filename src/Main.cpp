@@ -14,11 +14,19 @@ const char* input = "testfile.txt";
 const char* output = "output.txt";
 const char* ext = ".txt";
 bool enableCompleteAst = false;
+bool enableLog = false;
 
 bool ParseArgs(int argc, char* argv[]);
 void Configure();
 int main(int argc, char* argv[])
 {
+#ifndef INTERNAL
+    if (argc != 1)
+    {
+        return -1;
+    }
+#endif
+
     if (!ParseArgs(argc, argv))
     {
         return 1;
@@ -39,7 +47,9 @@ void Configure()
     auto container = mioc::SingletonContainer::GetContainer();
 
     auto config = tomic::Config::New();
-    config->SetEnableCompleteAst(enableCompleteAst)->SetOutputExt(ext);
+    config->SetEnableCompleteAst(enableCompleteAst)
+            ->SetEnableLog(enableLog)
+            ->SetOutputExt(ext);
     container->AddSingleton<IConfig>(config);
 
     RegisterComponents();
@@ -50,7 +60,7 @@ bool ParseArgs(int argc, char* argv[])
     int opt;
     int arg_cnt = 0;
     bool err = false;
-    while ((opt = getopt(argc, argv, "o:e:c")))
+    while ((opt = getopt(argc, argv, "o:e:cl")))
     {
         if (opterr != 0)
         {
@@ -69,6 +79,9 @@ bool ParseArgs(int argc, char* argv[])
             break;
         case 'c':
             enableCompleteAst = true;
+            break;
+        case 'l':
+            enableLog = true;
             break;
         case '!':
             arg_cnt++;

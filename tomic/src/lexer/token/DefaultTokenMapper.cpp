@@ -118,7 +118,7 @@ void DefaultTokenMapper::_InitTypeToDescription()
 {
     _typeToDescription[TokenType::TK_UNKNOWN] = "UNKNOWN";
     _typeToDescription[TokenType::TK_IDENTIFIER] = "IDENFR";
-    _typeToDescription[TokenType::TK_NUMBER] = "INTCON";
+    _typeToDescription[TokenType::TK_INTEGER] = "INTCON";
     _typeToDescription[TokenType::TK_FORMAT] = "STRCON";
     _typeToDescription[TokenType::TK_MAIN] = "MAINTK";
     _typeToDescription[TokenType::TK_RETURN] = "RETURNTK";

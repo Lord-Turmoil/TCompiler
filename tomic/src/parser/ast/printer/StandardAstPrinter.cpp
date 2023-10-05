@@ -51,14 +51,6 @@ bool StandardAstPrinter::Visit(SyntaxNodePtr node)
     {
         _VisitTerminal(node);
     }
-    else if (node->IsEpsilon())
-    {
-        _VisitEpsilon(node);
-    }
-    else
-    {
-        _VisitNonTerminal(node);
-    }
 
     return true;
 }
@@ -82,8 +74,9 @@ void StandardAstPrinter::_VisitTerminal(SyntaxNodePtr node)
 
     auto token = node->Token();
     auto descr = _tokenMapper->Description(token->type);
+    TOMIC_ASSERT(descr);
 
-    _writer->WriteFormat("%s", descr ? descr : "MISSING");
+    _writer->WriteFormat("%s", descr);
     _writer->Write(" ");
     _writer->Write(token->lexeme.c_str());
     _writer->Write("\n");

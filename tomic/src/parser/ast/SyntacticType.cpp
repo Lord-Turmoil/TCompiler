@@ -27,11 +27,7 @@ const char* SyntaxMapper::Description(SyntaxType type) const
     auto iter = _typeToDescription.find(type);
     if (iter == _typeToDescription.end())
     {
-#ifdef ENABLE_COMPLETE_AST
-        return "Missing";
-#else
-        return nullptr;
-#endif
+        return _config->EnableCompleteAst() ? "Missing" : nullptr;
     }
     return iter->second;
 }
@@ -95,8 +91,8 @@ void SyntaxMapper::_InitComplete()
 
 void SyntaxMapper::_InitStandard()
 {
-    _typeToDescription[SyntaxType::ST_UNKNOWN] = "Unknown";
-    _typeToDescription[SyntaxType::ST_EPSILON] = "Epsilon";
+    // _typeToDescription[SyntaxType::ST_UNKNOWN] = "Unknown";
+    // _typeToDescription[SyntaxType::ST_EPSILON] = "Epsilon";
     _typeToDescription[SyntaxType::ST_TERMINATOR] = "Terminator";
 
     _typeToDescription[SyntaxType::ST_COMP_UNIT] = "CompUnit";
@@ -114,21 +110,21 @@ void SyntaxMapper::_InitStandard()
     _typeToDescription[SyntaxType::ST_FUNC_TYPE] = "FuncType";
     _typeToDescription[SyntaxType::ST_FUNC_FPARAMS] = "FuncFParams";
     _typeToDescription[SyntaxType::ST_FUNC_FPARAM] = "FuncFParam";
-    _typeToDescription[SyntaxType::ST_FUNC_APARAMS] = "FuncAParams";
+    _typeToDescription[SyntaxType::ST_FUNC_APARAMS] = "FuncRParams";
     _typeToDescription[SyntaxType::ST_BLOCK] = "Block";
     // _typeToDescription[SyntaxType::ST_BLOCK_ITEM] = "BlockItem";
 
     _typeToDescription[SyntaxType::ST_MAIN_FUNC_DEF] = "MainFuncDef";
 
     _typeToDescription[SyntaxType::ST_STMT] = "Stmt";
-    _typeToDescription[SyntaxType::ST_ASSIGNMENT_STMT] = "AssignmentStmt";
+    // _typeToDescription[SyntaxType::ST_ASSIGNMENT_STMT] = "AssignmentStmt";
     _typeToDescription[SyntaxType::ST_LVAL] = "LVal";
     _typeToDescription[SyntaxType::ST_COND] = "Cond";
     // _typeToDescription[SyntaxType::ST_IF_STMT] = "IfStmt";
     // _typeToDescription[SyntaxType::ST_FOR_STMT] = "ForStmt";
     _typeToDescription[SyntaxType::ST_FOR_INIT_STMT] = "ForStmt";
     _typeToDescription[SyntaxType::ST_FOR_STEP_STMT] = "ForStmt";
-    _typeToDescription[SyntaxType::ST_EXP_STMT] = "ExpStmt";
+    // _typeToDescription[SyntaxType::ST_EXP_STMT] = "ExpStmt";
     // _typeToDescription[SyntaxType::ST_BREAK_STMT] = "BreakStmt";
     // _typeToDescription[SyntaxType::ST_CONTINUE_STMT] = "ContinueStmt";
     // _typeToDescription[SyntaxType::ST_RETURN_STMT] = "ReturnStmt";
@@ -140,12 +136,12 @@ void SyntaxMapper::_InitStandard()
     _typeToDescription[SyntaxType::ST_ADD_EXP] = "AddExp";
     _typeToDescription[SyntaxType::ST_MUL_EXP] = "MulExp";
     _typeToDescription[SyntaxType::ST_UNARY_EXP] = "UnaryExp";
-    _typeToDescription[SyntaxType::ST_FUNC_CALL] = "FunctionCall";
+    // _typeToDescription[SyntaxType::ST_FUNC_CALL] = "FunctionCall";
     _typeToDescription[SyntaxType::ST_UNARY_OP] = "UnaryOp";
     _typeToDescription[SyntaxType::ST_PRIMARY_EXP] = "PrimaryExp";
     _typeToDescription[SyntaxType::ST_NUMBER] = "Number";
-    _typeToDescription[SyntaxType::ST_OR_EXP] = "OrExp";
-    _typeToDescription[SyntaxType::ST_AND_EXP] = "AndExp";
+    _typeToDescription[SyntaxType::ST_OR_EXP] = "LOrExp";
+    _typeToDescription[SyntaxType::ST_AND_EXP] = "LAndExp";
     _typeToDescription[SyntaxType::ST_EQ_EXP] = "EqExp";
     _typeToDescription[SyntaxType::ST_REL_EXP] = "RelExp";
 }

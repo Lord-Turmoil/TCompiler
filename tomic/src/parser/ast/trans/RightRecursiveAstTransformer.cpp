@@ -30,18 +30,18 @@ SyntaxTreePtr RightRecursiveAstTransformer::Transform(SyntaxTreePtr tree)
 
 bool RightRecursiveAstTransformer::VisitEnter(SyntaxNodePtr node)
 {
-    TOMIC_ASSERT(node);
-
-    if (_IsRightRecursive(node))
-    {
-        _Transform(node);
-    }
-
     return true;
 }
 
 bool RightRecursiveAstTransformer::VisitExit(SyntaxNodePtr node)
 {
+    TOMIC_ASSERT(node);
+
+    if (_NeedTransform(node))
+    {
+        _Transform(node);
+    }
+
     return true;
 }
 
@@ -52,8 +52,6 @@ bool RightRecursiveAstTransformer::Visit(SyntaxNodePtr node)
 
 bool RightRecursiveAstTransformer::_IsRightRecursive(SyntaxNodePtr node)
 {
-    TOMIC_ASSERT(node);
-
     for (auto type: _rightRecursiveTypes)
     {
         if (node->Type() == type)
@@ -65,11 +63,21 @@ bool RightRecursiveAstTransformer::_IsRightRecursive(SyntaxNodePtr node)
     return false;
 }
 
+bool RightRecursiveAstTransformer::_NeedTransform(SyntaxNodePtr node)
+{
+    if (!_IsRightRecursive(node))
+    {
+        return false;
+    }
+
+    auto lastChild = node->LastChild();
+
+    return lastChild && (lastChild->Type() == node->Type());
+}
+
 void RightRecursiveAstTransformer::_Transform(SyntaxNodePtr node)
 {
-    TOMIC_ASSERT(node);
-
-    if (!_IsRightRecursive(node))
+    if (!_NeedTransform(node))
     {
         return;
     }
@@ -79,32 +87,35 @@ void RightRecursiveAstTransformer::_Transform(SyntaxNodePtr node)
     // It can be nullptr if the node is the root of the tree, but in most cases,
     // it shouldn't.
     auto parent = node->Parent();
+    SyntaxNodePtr mark = nullptr;
 
-    // We determine whether the transformation is needed by checking if
-    // the last child is of the same recursive type of the current node.
-    auto lastChild = node->LastChild();
-
-    // Rotate the tree while the last child of the node is of the same recursive type.
-    while (lastChild && (lastChild->Type() == node->Type()))
+    // First, we remove the current node from its parent.
+    // We need to remember the location, so we can insert its last child to the
+    // same location.
+    if (parent)
     {
-        // Unlink this child.
-        node->RemoveChild(lastChild);
+        mark = parent->RemoveChild(node);
+    }
 
-        // Make this node the first child of the 'lastChild' node.
-        // And add this 'lastChild' to the old place of the node.
-        if (parent)
-        {
-            auto mark = parent->RemoveChild(node);
-            lastChild->InsertFirstChild(node);
-            parent->InsertAfterChild(lastChild, mark);
-        }
-        else
-        {
-            lastChild->InsertFirstChild(node);
-        }
+    // Then, we remove the last child of the current node.
+    auto lastChild = node->LastChild();
+    node->RemoveChild(lastChild);
 
-        node = lastChild;
-        lastChild = node->LastChild();
+    // We find the left most child with the same type of the last child
+    // to which we will insert the current node.
+    auto candidate = lastChild;
+    while (candidate->HasChildren() && (candidate->FirstChild()->Type() == lastChild->Type()))
+    {
+        candidate = candidate->FirstChild();
+    }
+
+    // Now, we insert the current node as the first child of the candidate.
+    candidate->InsertFirstChild(node);
+
+    // Finally, we insert the last child to the same location of the current node.
+    if (parent)
+    {
+        parent->InsertAfterChild(lastChild, mark);
     }
 }
 

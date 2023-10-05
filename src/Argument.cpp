@@ -80,7 +80,7 @@ int getopt(int argc, char* argv[], const char* pattern)
         {
             opt = '?';
             opterr = ERRNO_INVALID_OPTION;
-            sprintf_s(_opt_buffer, "Illegal argument %c", opt);
+            SPRINTF(_opt_buffer, "Illegal argument %c", opt);
         }
         else
         {
@@ -93,12 +93,13 @@ int getopt(int argc, char* argv[], const char* pattern)
                         (optind == argc - 1))
                     {
                         opterr = ERRNO_MISSING_ARGUMENT;
-                        sprintf_s(_opt_buffer,
-                                  "Missing argument for parameter %c", opt);
+                        SPRINTF(_opt_buffer, "Missing argument for parameter %c", opt);
                         optmsg = _opt_buffer;
                     }
                     else
+                    {
                         optarg = argv[++optind];
+                    }
                 }
             }
         }
@@ -112,7 +113,9 @@ int getopt(int argc, char* argv[], const char* pattern)
 static int _parseopt(const char* arg)
 {
     if (arg[0] == '-' && arg[1] != '\0')
+    {
         return arg[1];
+    }
     return 0;
 }
 
@@ -121,7 +124,9 @@ static int _parseopt(const char* arg)
 static char* _parsearg(char* arg)
 {
     if (arg[2] != '\0')
+    {
         return &arg[2];
+    }
     return nullptr;
 }
 

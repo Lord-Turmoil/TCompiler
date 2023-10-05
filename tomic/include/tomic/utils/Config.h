@@ -19,6 +19,7 @@ public:
     virtual ~IConfig() = default;
 
     virtual bool EnableCompleteAst() const = 0;
+    virtual bool EnableLog() const = 0;
     virtual const char* OutputExt() const = 0;
 };
 
@@ -33,6 +34,7 @@ public:
     static std::shared_ptr<Config> New() { return std::make_shared<Config>(); }
 
     bool EnableCompleteAst() const override { return _enableCompleteAst; }
+    bool EnableLog() const override { return _enableLog; }
     const char* OutputExt() const override { return _outputExt.c_str(); }
 
 public:
@@ -41,14 +43,22 @@ public:
         _enableCompleteAst = enable;
         return this;
     }
+
     Config* SetOutputExt(std::string ext)
     {
         _outputExt = ext;
         return this;
     }
 
+    Config* SetEnableLog(bool enable)
+    {
+        _enableLog = enable;
+        return this;
+    }
+
 private:
     bool _enableCompleteAst;
+    bool _enableLog;
     std::string _outputExt;
 };
 

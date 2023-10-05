@@ -24,3 +24,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC tomic)
 
 set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/output")
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION bin)
+
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE INTERNAL)

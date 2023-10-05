@@ -150,7 +150,7 @@ TokenPtr NumberLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
         reader->Rewind();
     }
 
-    return Token::New(TokenType::TK_NUMBER, lexeme, lineNo, charNo);
+    return Token::New(TokenType::TK_INTEGER, lexeme, lineNo, charNo);
 }
 
 

@@ -53,4 +53,10 @@ int getopt(int argc, char* argv[], const char* pattern);
 #define ERRMSG_TOO_FEW  "Too few arguments!"
 #define ERRMSG_ILLEGAL  "Arguments illegal!"
 
+#ifdef _WIN32
+#define SPRINTF sprintf_s
+#else
+#define SPRINTF sprintf
+#endif
+
 #endif

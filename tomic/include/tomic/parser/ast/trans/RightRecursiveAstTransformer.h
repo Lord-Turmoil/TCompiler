@@ -31,6 +31,7 @@ public:
 
 private:
     bool _IsRightRecursive(SyntaxNodePtr node);
+    bool _NeedTransform(SyntaxNodePtr node);
     void _Transform(SyntaxNodePtr node);
 
     static std::vector<SyntaxType> _rightRecursiveTypes;
