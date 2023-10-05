@@ -8,13 +8,18 @@
 
 TOMIC_BEGIN
 
-SyntaxMapper::SyntaxMapper()
+SyntaxMapper::SyntaxMapper(IConfigPtr config) : _config(config)
 {
-#ifdef ENABLE_COMPLETE_AST
-    _InitComplete();
-#else
-    _InitStandard();
-#endif
+    TOMIC_ASSERT(_config);
+
+    if (_config->EnableCompleteAst())
+    {
+        _InitComplete();
+    }
+    else
+    {
+        _InitStandard();
+    }
 }
 
 const char* SyntaxMapper::Description(SyntaxType type) const

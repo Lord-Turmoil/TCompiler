@@ -18,6 +18,11 @@ bool Contains(const char* str, int ch)
     return (ch != EOF) && (strchr(str, ch) != nullptr);
 }
 
+bool Equals(const char* str1, const char* str2)
+{
+    return strcmp(str1, str2) == 0;
+}
+
 }
 
 TOMIC_END

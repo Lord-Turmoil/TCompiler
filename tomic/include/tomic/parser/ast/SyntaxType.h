@@ -8,6 +8,7 @@
 #define _TOMIC_SYNTAX_TYPE_H_
 
 #include "../../Common.h"
+#include "../../utils/Config.h"
 #include <unordered_map>
 #include <memory>
 
@@ -70,13 +71,16 @@ using ISyntaxMapperPtr = std::shared_ptr<ISyntaxMapper>;
 class SyntaxMapper : public ISyntaxMapper
 {
 public:
-    SyntaxMapper();
+    SyntaxMapper(IConfigPtr config);
 
     const char* Description(SyntaxType type) const override;
+
 private:
     void _InitComplete();
     void _InitStandard();
 
+private:
+    IConfigPtr _config;
     std::unordered_map<SyntaxType, const char*> _typeToDescription;
 };
 

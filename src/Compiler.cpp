@@ -26,10 +26,23 @@ void RegisterComponents()
             ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, ILogger>();
 
     // Syntactic
-    container->AddSingleton<ISyntaxMapper, SyntaxMapper>()
-            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>()
-            // ->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
-            ->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
+    container->AddSingleton<ISyntaxMapper, SyntaxMapper, IConfig>()
+            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>();
+
+    // Ast printer
+    auto config = container->Resolve<IConfig>();
+    if (tomic::StringUtil::Equals(config->OutputExt(), ".xml"))
+    {
+        container->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
+    }
+    else if (tomic::StringUtil::Equals(config->OutputExt(), ".json"))
+    {
+        container->AddTransient<IAstPrinter, JsonAstPrinter, ISyntaxMapper, ITokenMapper>();
+    }
+    else
+    {
+        container->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
+    }
 }
 
 

@@ -14,6 +14,7 @@ TOMIC_BEGIN
 namespace StringUtil
 {
 bool Contains(const char* str, int ch);
+bool Equals(const char* str1, const char* str2);
 }
 
 TOMIC_END

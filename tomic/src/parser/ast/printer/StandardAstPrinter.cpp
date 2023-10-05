@@ -10,13 +10,11 @@
 
 TOMIC_BEGIN
 
-/*
- * ASTPrinter
- */
-
 StandardAstPrinter::StandardAstPrinter(tomic::ISyntaxMapperPtr syntaxMapperPtr, tomic::ITokenMapperPtr tokenMapper)
         : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper)
 {
+    TOMIC_ASSERT(_syntaxMapper);
+    TOMIC_ASSERT(_tokenMapper);
 }
 
 void StandardAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)

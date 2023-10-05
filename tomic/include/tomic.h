@@ -21,8 +21,12 @@
 #include "tomic/parser/impl/DefaultSyntacticParser.h"
 #include "tomic/parser/ast/printer/IAstPrinter.h"
 #include "tomic/parser/ast/printer/XmlAstPrinter.h"
+#include "tomic/parser/ast/printer/JsonAstPrinter.h"
 #include "tomic/parser/ast/printer/StandardAstPrinter.h"
 
 #include "tomic/logger/ILogger.h"
 #include "tomic/logger/impl/DefaultLogger.h"
 #include "tomic/logger/impl/DumbLogger.h"
+
+#include "tomic/utils/Config.h"
+#include "tomic/utils/StringUtil.h"

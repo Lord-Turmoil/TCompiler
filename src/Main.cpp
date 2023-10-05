@@ -6,31 +6,25 @@
 
 #include "../tomic/include/tomic.h"
 #include "Compiler.h"
-#include <cstring>
+#include "Argument.h"
 
 using namespace tomic;
 
-const char LOCAL_INPUT_FILE[] = "in.c";
-const char LOCAL_OUTPUT_FILE[] = "out.txt";
-const char INPUT_FILE[] = "testfile.txt";
-const char OUTPUT_FILE[] = "output.txt";
+const char* input = "testfile.txt";
+const char* output = "output.txt";
+const char* ext = ".txt";
+bool enableCompleteAst = false;
 
+bool ParseArgs(int argc, char* argv[]);
+void Configure();
 int main(int argc, char* argv[])
 {
-    const char* input;
-    const char* output;
-    if (argc >= 2 && strcmp(argv[1], "-local") == 0)
+    if (!ParseArgs(argc, argv))
     {
-        input = LOCAL_INPUT_FILE;
-        output = LOCAL_OUTPUT_FILE;
-    }
-    else
-    {
-        input = INPUT_FILE;
-        output = OUTPUT_FILE;
+        return 1;
     }
 
-    RegisterComponents();
+    Configure();
 
     auto reader = twio::Reader::New(twio::FileInputStream::New(input));
     auto writer = twio::Writer::New(twio::FileOutputStream::New(output));
@@ -38,4 +32,70 @@ int main(int argc, char* argv[])
     Compile(reader, writer);
 
     return 0;
+}
+
+void Configure()
+{
+    auto container = mioc::SingletonContainer::GetContainer();
+
+    auto config = tomic::Config::New();
+    config->SetEnableCompleteAst(enableCompleteAst)->SetOutputExt(ext);
+    container->AddSingleton<IConfig>(config);
+
+    RegisterComponents();
+}
+
+bool ParseArgs(int argc, char* argv[])
+{
+    int opt;
+    int arg_cnt = 0;
+    bool err = false;
+    while ((opt = getopt(argc, argv, "o:e:c")))
+    {
+        if (opterr != 0)
+        {
+            fprintf(stderr, "Argument error: %s\n", optmsg);
+            err = true;
+            resetopt();
+            break;
+        }
+        switch (opt)
+        {
+        case 'o':
+            output = optarg;
+            break;
+        case 'e':
+            ext = optarg;
+            break;
+        case 'c':
+            enableCompleteAst = true;
+            break;
+        case '!':
+            arg_cnt++;
+            if (arg_cnt == 1)
+            {
+                input = optarg;
+            }
+            else if (arg_cnt == 2)
+            {
+                err = true;
+                fprintf(stderr, "Too many arguments\n");
+            }
+            break;
+        case '?':
+            err = true;
+            fprintf(stderr, "Unknown parameter \"-%c\"\n", optopt);
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (err)
+    {
+        fprintf(stderr, "Usage: %s input [-o output]\n", argv[0]);
+        return false;
+    }
+
+    return true;
 }
