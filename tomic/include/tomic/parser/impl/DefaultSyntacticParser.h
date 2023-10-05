@@ -122,6 +122,7 @@ private:
     SyntaxNodePtr _ParseUnaryExp();
     SyntaxNodePtr _ParseUnaryOp();
     SyntaxNodePtr _ParsePrimaryExp();
+    SyntaxNodePtr _ParseFuncCall();
 
     SyntaxNodePtr _ParseOrExp();
     SyntaxNodePtr _ParseOrExpAux();

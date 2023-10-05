@@ -2098,6 +2098,54 @@ SyntaxNodePtr DefaultSyntacticParser::_ParsePrimaryExp()
     return nullptr;
 }
 
+SyntaxNodePtr DefaultSyntacticParser::_ParseFuncCall()
+{
+    auto checkpoint = _lexicalParser->SetCheckPoint();
+    auto root = _tree->NewNonTerminalNode(SyntaxType::ST_FUNC_CALL);
+
+    // Ident
+    if (!_Match(TokenType::TK_IDENTIFIER, _Lookahead()))
+    {
+        _LogExpect(TokenType::TK_IDENTIFIER);
+        _PostParseError(checkpoint, root);
+        return nullptr;
+    }
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+
+    // '('
+    if (!_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead()))
+    {
+        _LogExpect(TokenType::TK_LEFT_PARENTHESIS);
+        _PostParseError(checkpoint, root);
+        return nullptr;
+    }
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+
+    // Check existence of FuncAParams
+    if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
+    {
+        auto funcAParams = _ParseFuncAParams();
+        if (!funcAParams)
+        {
+            _LogFailedToParse(SyntaxType::ST_FUNC_APARAMS);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(funcAParams);
+    }
+
+    // ')'
+    if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
+    {
+        _LogExpect(TokenType::TK_RIGHT_PARENTHESIS);
+        _PostParseError(checkpoint, root);
+        return nullptr;
+    }
+    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+
+    return root;
+}
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseOrExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();

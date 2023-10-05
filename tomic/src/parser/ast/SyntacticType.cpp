@@ -80,6 +80,7 @@ void SyntaxMapper::_InitComplete()
     _typeToDescription[SyntaxType::ST_UNARY_EXP] = "UnaryExp";
     _typeToDescription[SyntaxType::ST_UNARY_OP] = "UnaryOp";
     _typeToDescription[SyntaxType::ST_PRIMARY_EXP] = "PrimaryExp";
+    _typeToDescription[SyntaxType::ST_FUNC_CALL] = "FunctionCall";
     _typeToDescription[SyntaxType::ST_NUMBER] = "Number";
     _typeToDescription[SyntaxType::ST_OR_EXP] = "OrExp";
     _typeToDescription[SyntaxType::ST_AND_EXP] = "AndExp";
@@ -134,6 +135,7 @@ void SyntaxMapper::_InitStandard()
     _typeToDescription[SyntaxType::ST_ADD_EXP] = "AddExp";
     _typeToDescription[SyntaxType::ST_MUL_EXP] = "MulExp";
     _typeToDescription[SyntaxType::ST_UNARY_EXP] = "UnaryExp";
+    _typeToDescription[SyntaxType::ST_FUNC_CALL] = "FunctionCall";
     _typeToDescription[SyntaxType::ST_UNARY_OP] = "UnaryOp";
     _typeToDescription[SyntaxType::ST_PRIMARY_EXP] = "PrimaryExp";
     _typeToDescription[SyntaxType::ST_NUMBER] = "Number";
