@@ -22,6 +22,8 @@ TOMIC_BEGIN
  * So the syntactic nodes should not be created by the user directly, that is, the
  * constructors and destructors of the syntactic nodes are private. Therefore,
  * smart pointer are not used here.
+ * Although under ast directory, it is actually not an AST, since it contains all
+ * non-terminal nodes. But I guess it is OK to treat it as an AST. :?
  */
 class SyntaxTree
 {
