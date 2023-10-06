@@ -147,6 +147,14 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
         {
             _writer->Write("&amp;");
         }
+        else if (*p == '<')
+        {
+            _writer->Write("&lt;");
+        }
+        else if (*p == '>')
+        {
+            _writer->Write("&gt;");
+        }
         else
         {
             _writer->WriteFormat("%c", *p);
