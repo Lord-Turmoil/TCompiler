@@ -7,6 +7,7 @@
 #include "../../../../include/tomic/parser/ast/trans/RightRecursiveAstTransformer.h"
 #include "../../../../include/tomic/parser/ast/SyntaxNode.h"
 #include "../../../../include/tomic/parser/ast/SyntaxTree.h"
+#include <vector>
 
 TOMIC_BEGIN
 
@@ -33,11 +34,37 @@ bool RightRecursiveAstTransformer::VisitEnter(SyntaxNodePtr node)
     return true;
 }
 
+/*
+ * We MUST NOT transform the current node, since it is still being visited.
+ * If transformed, the parent node will then get the wrong NextSibling from
+ * this node!
+ * Therefore, we transform all its children, as we've done visiting them. And
+ * one exception, if the current node is the root of the tree, we transform it
+ * when we exit it.
+ */
 bool RightRecursiveAstTransformer::VisitExit(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
 
-    if (_NeedTransform(node))
+    // First, we should make a copy of the children list, since we will modify
+    // it during the transformation, which will make NextSibling wrong.
+    std::vector<SyntaxNodePtr> children;
+    for (auto child = node->FirstChild(); child; child = child->NextSibling())
+    {
+        children.push_back(child);
+    }
+
+    // Then we transform all its children.
+    for (auto child: children)
+    {
+        if (_NeedTransform(child))
+        {
+            _Transform(child);
+        }
+    }
+
+    // At last, if it is the root, transform it.
+    if (!node->Parent())
     {
         _Transform(node);
     }
