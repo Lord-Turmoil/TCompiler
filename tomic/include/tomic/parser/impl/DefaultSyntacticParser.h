@@ -13,6 +13,7 @@
 #include "../../lexer/token/ITokenMapper.h"
 #include "../ast/SyntaxNode.h"
 #include "../ast/SyntaxTree.h"
+#include "../ast/mapper/ISyntaxMapper.h"
 #include "../../logger/ILogger.h"
 #include <vector>
 

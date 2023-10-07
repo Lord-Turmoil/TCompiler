@@ -34,8 +34,15 @@ void RegisterComponents()
             ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, ILogger>();
 
     // Syntactic
-    container->AddSingleton<ISyntaxMapper, SyntaxMapper, IConfig>()
-            ->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>();
+    if (config->EnableCompleteAst())
+    {
+        container->AddSingleton<ISyntaxMapper, CompleteSyntaxMapper>();
+    }
+    else
+    {
+        container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
+    }
+    container->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>();
 
     // Ast printer
     if (tomic::StringUtil::Equals(config->OutputExt(), ".xml"))

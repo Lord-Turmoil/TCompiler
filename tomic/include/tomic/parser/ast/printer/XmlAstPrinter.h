@@ -11,6 +11,7 @@
 #include "IAstPrinter.h"
 #include "../AstForward.h"
 #include "../SyntaxType.h"
+#include "../mapper/ISyntaxMapper.h"
 #include "../../../lexer/token/ITokenMapper.h"
 
 TOMIC_BEGIN

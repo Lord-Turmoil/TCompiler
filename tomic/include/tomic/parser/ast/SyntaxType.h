@@ -58,34 +58,6 @@ enum class SyntaxType
     ST_COUNT
 };
 
-class ISyntaxMapper
-{
-public:
-    virtual ~ISyntaxMapper() = default;
-
-    virtual const char* Description(SyntaxType type) const = 0;
-};
-
-using ISyntaxMapperPtr = std::shared_ptr<ISyntaxMapper>;
-
-class SyntaxMapper : public ISyntaxMapper
-{
-public:
-    SyntaxMapper(IConfigPtr config);
-
-    const char* Description(SyntaxType type) const override;
-
-private:
-    void _InitComplete();
-    void _InitStandard();
-
-private:
-    IConfigPtr _config;
-    std::unordered_map<SyntaxType, const char*> _typeToDescription;
-};
-
-using SyntaxMapperPtr = std::shared_ptr<SyntaxMapper>;
-
 TOMIC_END
 
 #endif // _TOMIC_SYNTAX_TYPE_H_

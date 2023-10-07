@@ -10,6 +10,7 @@
 #include "../../../Common.h"
 #include "IAstPrinter.h"
 #include "../SyntaxType.h"
+#include "../mapper/ISyntaxMapper.h"
 #include "../../../lexer/token/ITokenMapper.h"
 
 TOMIC_BEGIN
