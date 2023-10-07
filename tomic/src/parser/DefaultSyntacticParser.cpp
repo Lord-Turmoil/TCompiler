@@ -108,6 +108,19 @@ void DefaultSyntacticParser::_PostParseError(int checkpoint, SyntaxNodePtr node)
     }
 }
 
+void DefaultSyntacticParser::_SetTryParse(bool tryParse)
+{
+    if (tryParse)
+    {
+        _tryParse++;
+    }
+    else if (_tryParse > 0)
+    {
+        // Avoid illegal decrement.
+        _tryParse--;
+    }
+}
+
 void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, ...)
 {
     va_list args;
@@ -119,7 +132,7 @@ void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char*
 void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, va_list argv)
 {
     // When in try-parse mode, do not log.
-    if (_tryParse)
+    if (_IsTryParse())
     {
         return;
     }
@@ -212,7 +225,7 @@ void DefaultSyntacticParser::_LogExpectAfter(TokenType expected, LogLevel level)
 SyntaxTreePtr DefaultSyntacticParser::Parse()
 {
     _tree = SyntaxTree::New();
-    _tryParse = false;
+    _tryParse = 0;
 
     auto compUnit = _ParseCompUnit();
     if (!compUnit)
@@ -1129,9 +1142,9 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
     // thus an error shall be reported if we failed to parse.
     if (_Match(TokenType::TK_IDENTIFIER, lookahead))
     {
-        _tryParse = true;
+        _SetTryParse(true);
         auto stmt = _ParseStmtAux();
-        _tryParse = false;
+        _SetTryParse(false);
 
         if (!stmt)
         {

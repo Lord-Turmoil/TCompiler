@@ -40,9 +40,9 @@ private:
     SyntaxTreePtr _tree;
     ILoggerPtr _logger;
 
-    // Set to true if we are not sure what lies ahead.
-    // Remember to set to false when you are sure.
-    bool _tryParse;
+    // Set to true if we are not sure what lies ahead. Since recursive
+    // set may happen, so we make it int, and use it as a counter.
+    int _tryParse;
 
 private:
     // Return current token.
@@ -55,6 +55,9 @@ private:
     bool _Match(TokenType type, TokenPtr token);
     bool _MatchAny(const std::vector<TokenType>& types, TokenPtr token);
     void _PostParseError(int checkpoint, SyntaxNodePtr node);
+
+    void _SetTryParse(bool tryParse);
+    bool _IsTryParse() const { return _tryParse > 0; }
 
     void _Log(LogLevel level, TokenPtr position, const char* format, ...);
     void _Log(LogLevel level, TokenPtr position, const char* format, va_list argv);
