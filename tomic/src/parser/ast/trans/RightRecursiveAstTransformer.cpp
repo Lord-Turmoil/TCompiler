@@ -64,7 +64,7 @@ bool RightRecursiveAstTransformer::VisitExit(SyntaxNodePtr node)
     }
 
     // At last, if it is the root, transform it.
-    if (!node->Parent())
+    if (!node->Parent() && _NeedTransform(node))
     {
         _Transform(node);
     }
