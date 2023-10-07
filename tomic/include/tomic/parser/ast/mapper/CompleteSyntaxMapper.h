@@ -18,6 +18,8 @@ public:
     CompleteSyntaxMapper();
     ~CompleteSyntaxMapper() override = default;
 
+    const char* Description(SyntaxType type) const override;
+
 private:
     void _Init();
 };

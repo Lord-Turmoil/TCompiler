@@ -13,6 +13,16 @@ CompleteSyntaxMapper::CompleteSyntaxMapper()
     _Init();
 }
 
+const char* CompleteSyntaxMapper::Description(SyntaxType type) const
+{
+    auto iter = _typeToDescription.find(type);
+    if (iter == _typeToDescription.end())
+    {
+        return "Missing";
+    }
+    return iter->second;
+}
+
 void CompleteSyntaxMapper::_Init()
 {
     _typeToDescription[SyntaxType::ST_UNKNOWN] = "Unknown";
