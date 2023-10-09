@@ -21,14 +21,16 @@ public:
     ~StandardErrorLogger() override = default;
 
     virtual void Log(int line, int column, ErrorType type, const char* msg) override;
+    virtual void LogFormat(int line, int column, ErrorType type, const char* format, ...) override;
 
     virtual void Dumps(twio::IWriterPtr writer) override;
+
+    // Using PIMPL idiom to hide the implementation details
+    class StandardErrorEntry;
 
 private:
     IErrorMapperPtr _mapper;
 
-    // Using PIMPL idiom to hide the implementation details
-    class StandardErrorEntry;
     std::vector<std::unique_ptr<StandardErrorEntry>> _entries;
 };
 

@@ -33,6 +33,11 @@ void StandardErrorLogger::Log(int line, int column, ErrorType type, const char* 
     _entries.emplace_back(new StandardErrorEntry(line, type));
 }
 
+void StandardErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
+{
+    _entries.emplace_back(new StandardErrorEntry(line, type));
+}
+
 void StandardErrorLogger::Dumps(twio::IWriterPtr writer)
 {
     for (auto& entry: _entries)
