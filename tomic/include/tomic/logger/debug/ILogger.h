@@ -7,7 +7,7 @@
 #ifndef _TOMIC_LOGGER_H_
 #define _TOMIC_LOGGER_H_
 
-#include "../Common.h"
+#include "../../Common.h"
 #include <memory>
 
 TOMIC_BEGIN

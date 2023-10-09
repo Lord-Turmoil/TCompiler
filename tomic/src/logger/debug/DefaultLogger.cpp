@@ -4,11 +4,11 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/logger/impl/DefaultLogger.h"
+#include "../../../include/tomic/logger/debug/impl/DefaultLogger.h"
 
 TOMIC_BEGIN
 
-DefaultLogger::DefaultLogger() : _count{0}, _level(LogLevel::DEBUG)
+DefaultLogger::DefaultLogger() : _count{ 0 }, _level(LogLevel::DEBUG)
 {
 }
 

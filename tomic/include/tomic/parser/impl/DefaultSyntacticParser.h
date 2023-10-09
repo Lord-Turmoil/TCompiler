@@ -14,7 +14,7 @@
 #include "../ast/SyntaxNode.h"
 #include "../ast/SyntaxTree.h"
 #include "../ast/mapper/ISyntaxMapper.h"
-#include "../../logger/ILogger.h"
+#include "../../logger/debug/ILogger.h"
 #include <vector>
 
 TOMIC_BEGIN

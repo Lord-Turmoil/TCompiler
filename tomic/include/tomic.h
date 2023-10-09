@@ -33,9 +33,14 @@
 #include "tomic/parser/ast/printer/StandardAstPrinter.h"
 
 // logger
-#include "tomic/logger/ILogger.h"
-#include "tomic/logger/impl/DefaultLogger.h"
-#include "tomic/logger/impl/DumbLogger.h"
+#include "tomic/logger/debug/ILogger.h"
+#include "tomic/logger/debug/impl/DefaultLogger.h"
+#include "tomic/logger/debug/impl/DumbLogger.h"
+
+// error
+#include "tomic/logger/error/IErrorMapper.h"
+#include "tomic/logger/error/impl/DefaultErrorMapper.h"
+#include "tomic/logger/error/impl/StandardErrorLogger.h"
 
 // others
 #include "tomic/utils/Config.h"

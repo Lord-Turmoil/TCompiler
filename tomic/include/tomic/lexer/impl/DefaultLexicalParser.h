@@ -11,7 +11,7 @@
 #include "../ILexicalParser.h"
 #include "../ILexicalAnalyzer.h"
 #include "../token/ITokenMapper.h"
-#include "../../logger/ILogger.h"
+#include "../../logger/debug/ILogger.h"
 #include <vector>
 
 TOMIC_BEGIN
