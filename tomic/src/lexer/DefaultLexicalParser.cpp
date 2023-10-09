@@ -8,10 +8,11 @@
 
 TOMIC_BEGIN
 
-DefaultLexicalParser::DefaultLexicalParser(ILexicalAnalyzerPtr analyzer, ILoggerPtr logger)
-        : _analyzer(analyzer), _logger(logger)
+DefaultLexicalParser::DefaultLexicalParser(ILexicalAnalyzerPtr analyzer, IErrorLoggerPtr errorLogger, ILoggerPtr logger)
+        : _analyzer(analyzer), _errorLogger(errorLogger), _logger(logger)
 {
     TOMIC_ASSERT(_analyzer);
+    TOMIC_ASSERT(_errorLogger);
     TOMIC_ASSERT(_logger);
 
     _current = _tokens.end();
@@ -39,6 +40,7 @@ TokenPtr DefaultLexicalParser::Next()
         TokenPtr token = _analyzer->Next();
         while (token->type == TokenType::TK_UNKNOWN)
         {
+            _RaiseUnexpectedTokenError(token);
             _LogUnexpectedToken(token);
             token = _analyzer->Next();
         }
@@ -83,6 +85,17 @@ void DefaultLexicalParser::_LogUnexpectedToken(TokenPtr token)
                  token->lineNo,
                  token->charNo,
                  token->lexeme.c_str());
+}
+
+void DefaultLexicalParser::_RaiseUnexpectedTokenError(TokenPtr token)
+{
+    TOMIC_ASSERT(token);
+    _errorLogger->LogFormat(
+            token->lineNo,
+            token->charNo,
+            ErrorType::ERR_UNEXPECTED_TOKEN,
+            "Unexpected token %s",
+            token->lexeme.c_str());
 }
 
 TOMIC_END

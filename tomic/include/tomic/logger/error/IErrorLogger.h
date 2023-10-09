@@ -22,6 +22,8 @@ public:
     virtual void LogFormat(int line, int column, ErrorType type, const char* format, ...) = 0;
 
     virtual void Dumps(twio::IWriterPtr writer) = 0;
+
+    virtual int Count() = 0;
 };
 
 using IErrorLoggerPtr = std::shared_ptr<IErrorLogger>;

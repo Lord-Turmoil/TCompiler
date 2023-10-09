@@ -10,8 +10,27 @@
 #include "../IErrorLogger.h"
 #include "../IErrorMapper.h"
 #include <memory>
+#include <string>
 
 TOMIC_BEGIN
+
+class DefaultErrorEntry
+{
+public:
+    DefaultErrorEntry(int line, int column, ErrorType type, const char* msg)
+            : _line(line), _column(column), _type(type)
+    {
+        if (msg)
+        {
+            _msg = msg;
+        }
+    }
+
+    int _line;
+    int _column;
+    ErrorType _type;
+    std::string _msg;
+};
 
 class DefaultErrorLogger : public IErrorLogger
 {
@@ -24,13 +43,11 @@ public:
 
     virtual void Dumps(twio::IWriterPtr writer) override;
 
-    // Using PIMPL idiom to hide the implementation details
-    class DefaultErrorEntry;
+    virtual int Count() override;
 
 private:
     IErrorMapperPtr _mapper;
-
-    std::vector<std::unique_ptr<DefaultErrorEntry>> _entries;
+    std::vector<DefaultErrorEntry> _entries;
 };
 
 TOMIC_END

@@ -20,6 +20,8 @@ public:
 
     virtual bool EnableCompleteAst() const = 0;
     virtual bool EnableLog() const = 0;
+    virtual bool UseStandardErrorMessage() const = 0;
+
     virtual const char* OutputExt() const = 0;
 };
 
@@ -35,6 +37,7 @@ public:
 
     bool EnableCompleteAst() const override { return _enableCompleteAst; }
     bool EnableLog() const override { return _enableLog; }
+    bool UseStandardErrorMessage() const override { return _useStandardError; }
     const char* OutputExt() const override { return _outputExt.c_str(); }
 
 public:
@@ -56,9 +59,17 @@ public:
         return this;
     }
 
+    Config* SetUseStandardError(bool useStandardError)
+    {
+        _useStandardError = useStandardError;
+        return this;
+    }
+
+
 private:
     bool _enableCompleteAst;
     bool _enableLog;
+    bool _useStandardError;
     std::string _outputExt;
 };
 

@@ -27,11 +27,23 @@ void RegisterComponents()
         container->AddSingleton<ILogger, DumbLogger>();
     }
 
+    // Error logger
+    if (config->UseStandardErrorMessage())
+    {
+        container->AddSingleton<IErrorMapper, StandardErrorMapper>()
+                ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
+    }
+    else
+    {
+        container->AddSingleton<IErrorMapper, DefaultErrorMapper>()
+                ->AddSingleton<IErrorLogger, DefaultErrorLogger, IErrorMapper>();
+    }
+
     // Lexical
     container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
             ->AddTransient<IPreprocessor, DefaultPreprocessor>()
             ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
-            ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, ILogger>();
+            ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
 
     // Syntactic
     if (config->EnableCompleteAst())
@@ -81,6 +93,10 @@ void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
 
     // Syntactic parse.
     SyntacticParse(reader, dstWriter);
+
+    auto errorLogger = mioc::SingletonContainer::GetContainer()->Resolve<IErrorLogger>();
+    auto errorWriter = twio::Writer::New(twio::FileOutputStream::New(stderr, false));
+    errorLogger->Dumps(errorWriter);
 }
 
 static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)

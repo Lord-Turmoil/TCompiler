@@ -12,6 +12,7 @@
 #include "../ILexicalAnalyzer.h"
 #include "../token/ITokenMapper.h"
 #include "../../logger/debug/ILogger.h"
+#include "../../logger/error/IErrorLogger.h"
 #include <vector>
 
 TOMIC_BEGIN
@@ -19,7 +20,7 @@ TOMIC_BEGIN
 class DefaultLexicalParser : public ILexicalParser
 {
 public:
-    DefaultLexicalParser(ILexicalAnalyzerPtr analyzer, ILoggerPtr logger);
+    DefaultLexicalParser(ILexicalAnalyzerPtr analyzer, IErrorLoggerPtr errorLogger, ILoggerPtr logger);
     virtual ~DefaultLexicalParser() = default;
 
     DefaultLexicalParser* SetReader(twio::IAdvancedReaderPtr reader) override;
@@ -33,9 +34,11 @@ public:
 
 private:
     void _LogUnexpectedToken(TokenPtr token);
+    void _RaiseUnexpectedTokenError(TokenPtr token);
 
 private:
     ILexicalAnalyzerPtr _analyzer;
+    IErrorLoggerPtr _errorLogger;
     ILoggerPtr _logger;
 
     std::vector<TokenPtr> _tokens;

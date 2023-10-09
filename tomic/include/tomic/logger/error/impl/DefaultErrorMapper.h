@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_STANDARD_ERROR_MAPPER_H_
-#define _TOMIC_STANDARD_ERROR_MAPPER_H_
+#ifndef _TOMIC_DEFAULT_ERROR_MAPPER_H_
+#define _TOMIC_DEFAULT_ERROR_MAPPER_H_
 
 #include "../IErrorMapper.h"
 #include "../ErrorType.h"

@@ -14,6 +14,18 @@
 
 TOMIC_BEGIN
 
+class StandardErrorEntry
+{
+public:
+    StandardErrorEntry(int line, ErrorType type)
+            : _line(line), _type(type)
+    {
+    }
+
+    int _line;
+    ErrorType _type;
+};
+
 class StandardErrorLogger : public IErrorLogger
 {
 public:
@@ -25,13 +37,11 @@ public:
 
     virtual void Dumps(twio::IWriterPtr writer) override;
 
-    // Using PIMPL idiom to hide the implementation details
-    class StandardErrorEntry;
+    virtual int Count() override;
 
 private:
     IErrorMapperPtr _mapper;
-
-    std::vector<std::unique_ptr<StandardErrorEntry>> _entries;
+    std::vector<StandardErrorEntry> _entries;
 };
 
 TOMIC_END

@@ -10,42 +10,22 @@
 
 TOMIC_BEGIN
 
-class DefaultErrorLogger::DefaultErrorEntry
-{
-public:
-    DefaultErrorEntry(int line, int column, ErrorType type, const char* msg)
-            : _line(line), _column(column), _type(type)
-    {
-        if (msg)
-        {
-            _msg = msg;
-        }
-    }
-
-    int _line;
-    int _column;
-    ErrorType _type;
-    std::string _msg;
-};
-
-using DefaultErrorEntryPtr = std::unique_ptr<DefaultErrorLogger::DefaultErrorEntry>;
-
 class CompareDefaultErrorEntry
 {
 public:
-    bool operator()(const DefaultErrorEntryPtr& lhs, const DefaultErrorEntryPtr& rhs)
+    bool operator()(const DefaultErrorEntry& lhs, const DefaultErrorEntry& rhs)
     {
-        if (lhs->_line != rhs->_line)
+        if (lhs._line != rhs._line)
         {
-            return lhs->_line < rhs->_line;
+            return lhs._line < rhs._line;
         }
-        else if (lhs->_column != rhs->_column)
+        else if (lhs._column != rhs._column)
         {
-            return lhs->_column < rhs->_column;
+            return lhs._column < rhs._column;
         }
         else
         {
-            return lhs->_type < rhs->_type;
+            return lhs._type < rhs._type;
         }
     }
 };
@@ -57,7 +37,7 @@ DefaultErrorLogger::DefaultErrorLogger(IErrorMapperPtr mapper)
 
 void DefaultErrorLogger::Log(int line, int column, ErrorType type, const char* msg)
 {
-    _entries.push_back(std::make_unique<DefaultErrorEntry>(line, column, type, msg));
+    _entries.emplace_back(line, column, type, msg);
 }
 
 void DefaultErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
@@ -76,20 +56,27 @@ void DefaultErrorLogger::LogFormat(int line, int column, ErrorType type, const c
         buffer[0] = '\0';
     }
 
-    _entries.push_back(std::make_unique<DefaultErrorEntry>(line, column, type, buffer));
+    _entries.emplace_back(DefaultErrorEntry(line, column, type, buffer));
 }
 
 void DefaultErrorLogger::Dumps(twio::IWriterPtr writer)
 {
+    // It may be sorted many times, but it doesn't matter. :)
+    std::sort(_entries.begin(), _entries.end(), CompareDefaultErrorEntry());
 
     for (auto& entry: _entries)
     {
         writer->WriteFormat("Line %d, Column %d: %s\n",
-                            entry->_line,
-                            entry->_column,
-                            _mapper->Description(entry->_type));
-        writer->WriteFormat("    %s\n", entry->_msg);
+                            entry._line,
+                            entry._column,
+                            _mapper->Description(entry._type));
+        writer->WriteFormat("    %s\n", entry._msg.c_str());
     }
+}
+
+int DefaultErrorLogger::Count()
+{
+    return _entries.size();
 }
 
 TOMIC_END

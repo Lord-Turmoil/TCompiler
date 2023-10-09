@@ -38,8 +38,11 @@
 #include "tomic/logger/debug/impl/DumbLogger.h"
 
 // error
+#include "tomic/logger/error/IErrorLogger.h"
 #include "tomic/logger/error/IErrorMapper.h"
 #include "tomic/logger/error/impl/DefaultErrorMapper.h"
+#include "tomic/logger/error/impl/StandardErrorMapper.h"
+#include "tomic/logger/error/impl/DefaultErrorLogger.h"
 #include "tomic/logger/error/impl/StandardErrorLogger.h"
 
 // others

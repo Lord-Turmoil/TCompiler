@@ -5,22 +5,27 @@
  */
 
 #include "../../../include/tomic/logger/error/impl/StandardErrorLogger.h"
+#include <algorithm>
 #include <string>
 
 TOMIC_BEGIN
 
-// Using PIMPL idiom to hide the implementation details
-class StandardErrorLogger::StandardErrorEntry
+class CompareStandardErrorEntry
 {
 public:
-    StandardErrorEntry(int line, ErrorType type)
-            : _line(line), _type(type)
+    bool operator()(const StandardErrorEntry& lhs, const StandardErrorEntry& rhs)
     {
+        if (lhs._line != rhs._line)
+        {
+            return lhs._line < rhs._line;
+        }
+        else
+        {
+            return lhs._type < rhs._type;
+        }
     }
-
-    int _line;
-    ErrorType _type;
 };
+
 
 StandardErrorLogger::StandardErrorLogger(IErrorMapperPtr mapper)
         : _mapper(mapper)
@@ -30,20 +35,27 @@ StandardErrorLogger::StandardErrorLogger(IErrorMapperPtr mapper)
 
 void StandardErrorLogger::Log(int line, int column, ErrorType type, const char* msg)
 {
-    _entries.emplace_back(new StandardErrorEntry(line, type));
+    _entries.emplace_back(line, type);
 }
 
 void StandardErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
 {
-    _entries.emplace_back(new StandardErrorEntry(line, type));
+    _entries.emplace_back(line, type);
 }
 
 void StandardErrorLogger::Dumps(twio::IWriterPtr writer)
 {
+    std::sort(_entries.begin(), _entries.end(), CompareStandardErrorEntry());
+
     for (auto& entry: _entries)
     {
-        writer->WriteFormat("%d %s\n", entry->_line, _mapper->Description(entry->_type));
+        writer->WriteFormat("%d %s\n", entry._line, _mapper->Description(entry._type));
     }
+}
+
+int StandardErrorLogger::Count()
+{
+    return _entries.size();
 }
 
 TOMIC_END
