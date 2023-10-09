@@ -16,12 +16,25 @@
 #include "SyntaxType.h"
 #include "AstForward.h"
 #include <vector>
+#include <string>
+#include <map>
 
 TOMIC_BEGIN
 
 class SyntaxNode
 {
     friend class SyntaxTree;
+public:
+    bool IsNonTerminal() const { return _nodeType == SyntaxNodeType::NON_TERMINAL; }
+    bool IsTerminal() const { return _nodeType == SyntaxNodeType::TERMINAL; }
+    bool IsEpsilon() const { return _nodeType == SyntaxNodeType::EPSILON; }
+
+    // For visitor pattern.
+    virtual bool Accept(AstVisitorPtr visitor) = 0;
+
+    /*
+     * ==================== AST Links ====================
+     */
 public:
     // Insert a child node to the end of the children list.
     // Return the added child.
@@ -34,32 +47,47 @@ public:
     // To delete a node, use SyntaxTree::DeleteNode.
     SyntaxNodePtr RemoveChild(SyntaxNodePtr child);
 
-    // Get the root of the tree, can be a sub-tree.
-    SyntaxNodePtr Root() const;
-
-    // For visitor pattern.
-    virtual bool Accept(AstVisitorPtr visitor) = 0;
-
-public:
-    bool IsNonTerminal() const { return _nodeType == SyntaxNodeType::NON_TERMINAL; }
-    bool IsTerminal() const { return _nodeType == SyntaxNodeType::TERMINAL; }
-    bool IsEpsilon() const { return _nodeType == SyntaxNodeType::EPSILON; }
-
     bool HasChildren() const { return _firstChild; }
 
+    // Get the root of the tree, can be a sub-tree.
+    SyntaxNodePtr Root() const;
     SyntaxNodePtr Parent() const { return _parent; }
     SyntaxNodePtr FirstChild() const { return _firstChild; }
     SyntaxNodePtr LastChild() const { return _lastChild; }
     SyntaxNodePtr NextSibling() const { return _next; }
     SyntaxNodePtr PrevSibling() const { return _prev; }
 
+private:
+    void _InsertChildPreamble(SyntaxNodePtr child);
+    SyntaxNodePtr _Unlink(SyntaxNodePtr child);
+
+    /*
+     * ==================== AST Attributes ====================
+     */
+public:
+    bool HasAttribute(const char* name) const;
+
+    // Get the attribute value, or defaultValue if not found.
+    const char* Attribute(const char* name, const char* value = nullptr) const;
+    int IntAttribute(const char* name, int defaultValue = 0) const;
+    bool BoolAttribute(const char* name, bool defaultValue = false) const;
+
+    // Set the attribute value.
+    SyntaxNodePtr SetAttribute(const char* name, const char* value);
+    SyntaxNodePtr SetIntAttribute(const char* name, int value);
+    SyntaxNodePtr SetBoolAttribute(const char* name, bool value);
+
+    // Remove the attribute.
+    SyntaxNodePtr RemoveAttribute(const char* name);
+
+private:
+    bool _FindAttribute(const char* name, std::map<std::string, std::string>::iterator* attr);
+    bool _FindOrCreateAttribute(const char* name, std::map<std::string, std::string>::iterator* attr);
+
 public:
     SyntaxType Type() const { return _type; }
     TokenPtr Token() const { return _token; }
 
-private:
-    void _InsertChildPreamble(SyntaxNodePtr child);
-    SyntaxNodePtr _Unlink(SyntaxNodePtr child);
 
 protected:
     enum class SyntaxNodeType
@@ -86,6 +114,7 @@ protected:
     // AST properties.
     SyntaxType _type;
     TokenPtr _token;
+    std::map<std::string, std::string> _attributes;
 
 private:
     SyntaxNodeType _nodeType;

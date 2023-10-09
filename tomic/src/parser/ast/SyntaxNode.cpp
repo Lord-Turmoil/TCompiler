@@ -7,6 +7,7 @@
 #include "../../../include/tomic/parser/ast/SyntaxNode.h"
 #include "../../../include/tomic/parser/ast/SyntaxTree.h"
 #include "../../../include/tomic/parser/ast/AstVisitor.h"
+#include "../../../include/tomic/utils/StringUtil.h"
 
 TOMIC_BEGIN
 
@@ -33,6 +34,10 @@ SyntaxNodePtr SyntaxNode::Root() const
     }
     return node;
 }
+
+/*
+ * ==================== AST Links ====================
+ */
 
 SyntaxNodePtr SyntaxNode::InsertEndChild(SyntaxNodePtr child)
 {
@@ -159,6 +164,122 @@ SyntaxNodePtr SyntaxNode::_Unlink(SyntaxNodePtr child)
     child->_parent = nullptr;
 
     return ret;
+}
+
+/*
+ * ==================== AST Attributes ====================
+ */
+
+bool SyntaxNode::HasAttribute(const char* name) const
+{
+    return _attributes.find(name) != _attributes.end();
+}
+
+const char* SyntaxNode::Attribute(const char* name, const char* value) const
+{
+    auto it = _attributes.find(name);
+    if (it != _attributes.end())
+    {
+        return it->second.c_str();
+    }
+    return value;
+}
+
+int SyntaxNode::IntAttribute(const char* name, int defaultValue) const
+{
+    auto it = _attributes.find(name);
+    if (it != _attributes.end())
+    {
+        int value;
+        if (StringUtil::ToInt(it->second.c_str(), &value))
+        {
+            return value;
+        }
+    }
+    return defaultValue;
+}
+
+bool SyntaxNode::BoolAttribute(const char* name, bool defaultValue) const
+{
+    auto it = _attributes.find(name);
+    if (it != _attributes.end())
+    {
+        bool value;
+        if (StringUtil::ToBool(it->second.c_str(), &value))
+        {
+            return value;
+        }
+    }
+    return defaultValue;
+}
+
+SyntaxNodePtr SyntaxNode::SetAttribute(const char* name, const char* value)
+{
+    std::map<std::string, std::string>::iterator it;
+    if (_FindOrCreateAttribute(name, &it))
+    {
+        it->second = value;
+    }
+    return this;
+}
+
+SyntaxNodePtr SyntaxNode::SetIntAttribute(const char* name, int value)
+{
+    return SetAttribute(name, StringUtil::ToString(value));
+}
+
+SyntaxNodePtr SyntaxNode::SetBoolAttribute(const char* name, bool value)
+{
+    return SetAttribute(name, StringUtil::ToString(value));
+}
+
+SyntaxNodePtr SyntaxNode::RemoveAttribute(const char* name)
+{
+    std::map<std::string, std::string>::iterator it;
+    if (_FindAttribute(name, &it))
+    {
+        _attributes.erase(it);
+    }
+    return this;
+}
+
+bool SyntaxNode::_FindAttribute(const char* name, std::map<std::string, std::string>::iterator* attr)
+{
+    auto it = _attributes.find(name);
+    if (it != _attributes.end())
+    {
+        if (attr)
+        {
+            *attr = it;
+        }
+        return true;
+    }
+
+    return false;
+}
+
+bool SyntaxNode::_FindOrCreateAttribute(const char* name, std::map<std::string, std::string>::iterator* attr)
+{
+    std::map<std::string, std::string>::iterator it;
+    if (_FindAttribute(name, &it))
+    {
+        if (attr)
+        {
+            *attr = it;
+        }
+        return true;
+    }
+    auto ret = _attributes.emplace(name, "");
+    if (ret.second)
+    {
+        if (attr)
+        {
+            *attr = ret.first;
+        }
+        return true;
+    }
+
+    return false;
 }
 
 

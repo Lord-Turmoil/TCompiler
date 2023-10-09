@@ -40,6 +40,60 @@ bool Equals(const char* str1, const char* str2)
     return strcmp(str1, str2) == 0;
 }
 
+bool ToInt(const char* str, int* value)
+{
+    if (sscanf(str, "%d", value) == 1)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool ToBool(const char* str, bool* value)
+{
+    int intVal = 0;
+    if (ToInt(str, &intVal))
+    {
+        *value = intVal != 0;
+        return true;
+    }
+
+    static const char* TRUE_VALS[] = { "true", "True", "TRUE", nullptr };
+    static const char* FALSE_VALS[] = { "false", "False", "FALSE", nullptr };
+
+    for (int i = 0; TRUE_VALS[i]; ++i)
+    {
+        if (Equals(str, TRUE_VALS[i]))
+        {
+            *value = true;
+            return true;
+        }
+    }
+    for (int i = 0; FALSE_VALS[i]; ++i)
+    {
+        if (Equals(str, FALSE_VALS[i]))
+        {
+            *value = false;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+const char* ToString(int value)
+{
+    static char buf[64];
+    sprintf(buf, "%d", value);
+    return buf;
+}
+
+const char* ToString(bool value)
+{
+    return value ? "true" : "false";
+}
+
 }
 
 TOMIC_END
