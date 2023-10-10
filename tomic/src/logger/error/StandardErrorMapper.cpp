@@ -10,6 +10,8 @@ TOMIC_BEGIN
 
 StandardErrorMapper::StandardErrorMapper()
 {
+    _descriptions[static_cast<int>(ErrorType::ERR_UNKNOWN)] = "Unknown error";
+
     _descriptions[static_cast<int>(ErrorType::ERR_UNEXPECTED_TOKEN)] = "a";
 
     _descriptions[static_cast<int>(ErrorType::ERR_REDEFINED_SYMBOL)] = "b";
@@ -26,6 +28,7 @@ StandardErrorMapper::StandardErrorMapper()
     _descriptions[static_cast<int>(ErrorType::ERR_MISSING_SEMICOLON)] = "h";
     _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_PARENTHESIS)] = "i";
     _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_BRACKET)] = "j";
+    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_BRACE)] = "z";
 
     _descriptions[static_cast<int>(ErrorType::ERR_PRINTF_EXTRA_ARGUMENTS)] = "k";
 

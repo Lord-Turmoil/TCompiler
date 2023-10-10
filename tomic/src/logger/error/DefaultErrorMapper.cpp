@@ -10,6 +10,7 @@ TOMIC_BEGIN
 
 DefaultErrorMapper::DefaultErrorMapper()
 {
+    _descriptions[static_cast<int>(ErrorType::ERR_UNKNOWN)] = "Unknown error";
     _descriptions[static_cast<int>(ErrorType::ERR_UNEXPECTED_TOKEN)] = "Unexpected token";
 
     _descriptions[static_cast<int>(ErrorType::ERR_REDEFINED_SYMBOL)] = "Redefined symbol";
@@ -26,6 +27,7 @@ DefaultErrorMapper::DefaultErrorMapper()
     _descriptions[static_cast<int>(ErrorType::ERR_MISSING_SEMICOLON)] = "Missing ;";
     _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_PARENTHESIS)] = "Missing )";
     _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_BRACKET)] = "Missing ]";
+    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_BRACE)] = "Missing }";
 
     _descriptions[static_cast<int>(ErrorType::ERR_PRINTF_EXTRA_ARGUMENTS)] = "Extra arguments for printf";
 

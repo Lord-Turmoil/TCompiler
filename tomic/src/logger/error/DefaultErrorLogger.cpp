@@ -30,6 +30,16 @@ public:
     }
 };
 
+bool DefaultErrorEntryPred(const DefaultErrorEntry& lhs, const DefaultErrorEntry& rhs)
+{
+    if (lhs._line == rhs._line && lhs._column == rhs._column && lhs._type == rhs._type)
+    {
+        return lhs._msg == rhs._msg;
+    }
+
+    return false;
+}
+
 DefaultErrorLogger::DefaultErrorLogger(IErrorMapperPtr mapper)
         : _mapper(mapper)
 {
@@ -63,14 +73,15 @@ void DefaultErrorLogger::Dumps(twio::IWriterPtr writer)
 {
     // It may be sorted many times, but it doesn't matter. :)
     std::sort(_entries.begin(), _entries.end(), CompareDefaultErrorEntry());
+    auto last = std::unique(_entries.begin(), _entries.end(), DefaultErrorEntryPred);
 
-    for (auto& entry: _entries)
+    for (auto entry = _entries.begin(); entry != last; entry++)
     {
         writer->WriteFormat("Line %d, Column %d: %s\n",
-                            entry._line,
-                            entry._column,
-                            _mapper->Description(entry._type));
-        writer->WriteFormat("    %s\n", entry._msg.c_str());
+                            entry->_line,
+                            entry->_column,
+                            _mapper->Description(entry->_type));
+        writer->WriteFormat("    %s\n", entry->_msg.c_str());
     }
 }
 

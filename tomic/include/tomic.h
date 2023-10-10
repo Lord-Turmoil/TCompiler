@@ -21,6 +21,7 @@
 // parser
 #include "tomic/parser/ISyntacticParser.h"
 #include "tomic/parser/impl/DefaultSyntacticParser.h"
+#include "tomic/parser/impl/ResilientSyntacticParser.h"
 
 #include "tomic/parser/ast/SyntaxType.h"
 #include "tomic/parser/ast/mapper/ISyntaxMapper.h"

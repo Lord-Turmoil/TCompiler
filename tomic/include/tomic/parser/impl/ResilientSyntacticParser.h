@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_DEFAULT_SYNTACTIC_PARSER_
-#define _TOMIC_DEFAULT_SYNTACTIC_PARSER_
+#ifndef _TOMIC_RESILIENT_SYNTACTIC_PARSER_H_
+#define _TOMIC_RESILIENT_SYNTACTIC_PARSER_H_
 
 #include "../../Common.h"
 #include "../ISyntacticParser.h"
@@ -15,24 +15,23 @@
 #include "../ast/SyntaxTree.h"
 #include "../ast/mapper/ISyntaxMapper.h"
 #include "../../logger/debug/ILogger.h"
+#include "../../logger/error/IErrorLogger.h"
 #include <vector>
 
 TOMIC_BEGIN
 
-/*
- * Default syntactic parser will fail fast when it encounters an error.
- */
-class DefaultSyntacticParser : public ISyntacticParser
+class ResilientSyntacticParser : public ISyntacticParser
 {
 public:
-    DefaultSyntacticParser(
+    ResilientSyntacticParser(
             ILexicalParserPtr lexicalParser,
             ISyntaxMapperPtr syntaxMapper,
             ITokenMapperPtr tokenMapper,
+            IErrorLoggerPtr errorLogger,
             ILoggerPtr logger);
-    ~DefaultSyntacticParser() override = default;
+    ~ResilientSyntacticParser() override = default;
 
-    DefaultSyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) override;
+    ResilientSyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) override;
 
     SyntaxTreePtr Parse() override;
 
@@ -40,8 +39,10 @@ private:
     ILexicalParserPtr _lexicalParser;
     ISyntaxMapperPtr _syntaxMapper;
     ITokenMapperPtr _tokenMapper;
-    SyntaxTreePtr _tree;
+    IErrorLoggerPtr _errorLogger;
     ILoggerPtr _logger;
+
+    SyntaxTreePtr _tree;
 
     // Set to true if we are not sure what lies ahead. Since recursive
     // set may happen, so we make it int, and use it as a counter.
@@ -69,6 +70,11 @@ private:
     void _LogExpect(TokenType expected, LogLevel level = LogLevel::ERROR);
     void _LogExpect(const std::vector<TokenType>& expected, LogLevel level = LogLevel::ERROR);
     void _LogExpectAfter(TokenType expected, LogLevel level = LogLevel::ERROR);
+
+    // Try to recover from missing token.
+    // Will create an error log.
+    void _RecoverFromMissingToken(SyntaxNodePtr node, TokenType expected);
+    void _MarkCorrupted(SyntaxNodePtr node);
 
 private:
     SyntaxNodePtr _ParseCompUnit();
@@ -145,4 +151,4 @@ private:
 
 TOMIC_END
 
-#endif // _TOMIC_DEFAULT_SYNTACTIC_PARSER_
+#endif // _TOMIC_RESILIENT_SYNTACTIC_PARSER_H_

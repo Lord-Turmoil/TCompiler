@@ -26,6 +26,10 @@ public:
     }
 };
 
+bool StandardErrorEntryPred(const StandardErrorEntry& lhs, const StandardErrorEntry& rhs)
+{
+    return lhs._line == rhs._line && lhs._type == rhs._type;
+}
 
 StandardErrorLogger::StandardErrorLogger(IErrorMapperPtr mapper)
         : _mapper(mapper)
@@ -46,10 +50,12 @@ void StandardErrorLogger::LogFormat(int line, int column, ErrorType type, const 
 void StandardErrorLogger::Dumps(twio::IWriterPtr writer)
 {
     std::sort(_entries.begin(), _entries.end(), CompareStandardErrorEntry());
+    // filter out duplicate entries
+    auto last = std::unique(_entries.begin(), _entries.end(), StandardErrorEntryPred);
 
-    for (auto& entry: _entries)
+    for (auto entry = _entries.begin(); entry != last; entry++)
     {
-        writer->WriteFormat("%d %s\n", entry._line, _mapper->Description(entry._type));
+        writer->WriteFormat("%d %s\n", entry->_line, _mapper->Description(entry->_type));
     }
 }
 
