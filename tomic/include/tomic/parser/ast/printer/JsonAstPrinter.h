@@ -10,13 +10,14 @@
 #include "../../../Common.h"
 #include "IAstPrinter.h"
 #include "../AstForward.h"
+#include "../AstVisitor.h"
 #include "../SyntaxType.h"
 #include "../mapper/ISyntaxMapper.h"
 #include "../../../lexer/token/ITokenMapper.h"
 
 TOMIC_BEGIN
 
-class JsonAstPrinter : public IAstPrinter
+class JsonAstPrinter : public IAstPrinter, private AstVisitor
 {
 public:
     JsonAstPrinter(ISyntaxMapperPtr syntaxMapperPtr, ITokenMapperPtr tokenMapper);
@@ -24,11 +25,11 @@ public:
 
     void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) override;
 
+private:
     bool VisitEnter(SyntaxNodePtr node) override;
     bool VisitExit(SyntaxNodePtr node) override;
     bool Visit(SyntaxNodePtr node) override;
-
-private:
+    
     void _VisitNonTerminal(SyntaxNodePtr node);
     void _VisitTerminal(SyntaxNodePtr node);
     void _VisitEpsilon(SyntaxNodePtr node);

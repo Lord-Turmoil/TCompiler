@@ -15,15 +15,14 @@
 #define _TOMIC_AST_PRINTER_H_
 
 #include "../../../Common.h"
-#include "../AstVisitor.h"
 
 TOMIC_BEGIN
 
 // This is just a transitional interface class for DI. No other usage.
-class IAstPrinter : public AstVisitor
+class IAstPrinter
 {
 public:
-    ~IAstPrinter() override = default;
+    virtual ~IAstPrinter() = default;
 
     virtual void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) = 0;
 };
