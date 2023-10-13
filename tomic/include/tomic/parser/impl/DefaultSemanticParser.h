@@ -7,11 +7,11 @@
 #ifndef _TOMIC_DEFAULT_SEMANTIC_PARSER_H_
 #define _TOMIC_DEFAULT_SEMANTIC_PARSER_H_
 
-#include "../../Common.h"
-#include "../ISemanticParser.h"
-#include "../ISemanticAnalyzer.h"
-#include "../ast/AstVisitor.h"
-#include "../../logger/debug/ILogger.h"
+#include <tomic/Shared.h>
+#include <tomic/parser/ISemanticParser.h>
+#include <tomic/parser/ISemanticAnalyzer.h>
+#include <tomic/parser/ast/AstVisitor.h>
+#include <tomic/logger/debug/ILogger.h>
 
 TOMIC_BEGIN
 

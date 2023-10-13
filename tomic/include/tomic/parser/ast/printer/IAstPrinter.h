@@ -14,7 +14,7 @@
 #ifndef _TOMIC_AST_PRINTER_H_
 #define _TOMIC_AST_PRINTER_H_
 
-#include "../../../Common.h"
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

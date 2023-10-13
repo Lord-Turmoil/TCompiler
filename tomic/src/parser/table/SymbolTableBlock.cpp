@@ -4,9 +4,9 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../include/tomic/parser/table/SymbolTable.h"
-#include "../../../include/tomic/parser/table/SymbolTableBlock.h"
-#include "../../../include/tomic/parser/table/SymbolTableEntry.h"
+#include <tomic/parser/table/SymbolTable.h>
+#include <tomic/parser/table/SymbolTableBlock.h>
+#include <tomic/parser/table/SymbolTableEntry.h>
 
 TOMIC_BEGIN
 

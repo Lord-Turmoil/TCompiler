@@ -11,10 +11,10 @@
 #ifndef _TOMIC_SYNTAX_NODE_H_
 #define _TOMIC_SYNTAX_NODE_H_
 
-#include "../../../../include/tomic/Common.h"
-#include "../../lexer/token/Token.h"
-#include "SyntaxType.h"
-#include "AstForward.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/token/Token.h>
+#include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/parser/ast/AstForward.h>
 #include <vector>
 #include <string>
 #include <map>

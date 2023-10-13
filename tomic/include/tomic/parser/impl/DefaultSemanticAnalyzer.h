@@ -7,12 +7,12 @@
 #ifndef _TOMIC_DEFAULT_SEMANTIC_ANALYZER_H_
 #define _TOMIC_DEFAULT_SEMANTIC_ANALYZER_H_
 
-#include "../../Common.h"
-#include "../ISemanticAnalyzer.h"
-#include "../ast/AstVisitor.h"
-#include "../ast/SyntaxTree.h"
-#include "../ast/SyntaxType.h"
-#include "../../logger/error/IErrorLogger.h"
+#include <tomic/Shared.h>
+#include <tomic/parser/ISemanticAnalyzer.h>
+#include <tomic/parser/ast/AstVisitor.h>
+#include <tomic/parser/ast/SyntaxTree.h>
+#include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/logger/error/IErrorLogger.h>
 #include <vector>
 
 TOMIC_BEGIN

@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/parser/impl/DefaultSemanticAnalyzer.h"
+#include <tomic/parser/impl/DefaultSemanticAnalyzer.h>
 
 TOMIC_BEGIN
 

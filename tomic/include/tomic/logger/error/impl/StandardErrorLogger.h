@@ -7,8 +7,8 @@
 #ifndef _TOMIC_STANDARD_ERROR_LOGGER_H_
 #define _TOMIC_STANDARD_ERROR_LOGGER_H_
 
-#include "../IErrorLogger.h"
-#include "../IErrorMapper.h"
+#include <tomic/logger/error/IErrorLogger.h>
+#include <tomic/logger/error/IErrorMapper.h>
 #include <memory>
 #include <vector>
 

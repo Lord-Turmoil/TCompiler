@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../include/tomic/lexer/impl/token/DefaultTokenMapper.h"
+#include <tomic/lexer/impl/token/DefaultTokenMapper.h>
 
 TOMIC_BEGIN
 

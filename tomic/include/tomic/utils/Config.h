@@ -7,7 +7,7 @@
 #ifndef _TOMIC_CONFIG_H_
 #define _TOMIC_CONFIG_H_
 
-#include "../Common.h"
+#include <tomic/Shared.h>
 #include <memory>
 #include <string>
 

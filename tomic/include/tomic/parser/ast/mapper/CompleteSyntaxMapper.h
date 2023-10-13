@@ -7,7 +7,7 @@
 #ifndef _TOMIC_COMPLETE_SYNTAX_MAPPER_H_
 #define _TOMIC_COMPLETE_SYNTAX_MAPPER_H_
 
-#include "BaseSyntaxMapper.h"
+#include <tomic/parser/ast/mapper/BaseSyntaxMapper.h>
 #include <memory>
 
 TOMIC_BEGIN

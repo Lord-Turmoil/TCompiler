@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/Common.h"
-#include "../../include/tomic/lexer/impl/DefaultPreprocessor.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/impl/DefaultPreprocessor.h>
 
 TOMIC_BEGIN
 

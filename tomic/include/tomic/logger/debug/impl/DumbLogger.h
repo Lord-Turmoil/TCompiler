@@ -7,7 +7,7 @@
 #ifndef _TOMIC_DUMB_LOGGER_H_
 #define _TOMIC_DUMB_LOGGER_H_
 
-#include "../ILogger.h"
+#include <tomic/logger/debug/ILogger.h>
 #include <memory>
 
 TOMIC_BEGIN

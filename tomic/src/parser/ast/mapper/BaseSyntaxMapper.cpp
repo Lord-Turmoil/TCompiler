@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../../include/tomic/parser/ast/mapper/BaseSyntaxMapper.h"
+#include <tomic/parser/ast/mapper/BaseSyntaxMapper.h>
 
 TOMIC_BEGIN
 

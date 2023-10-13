@@ -5,7 +5,7 @@
 #ifndef _TWIOC_FILE_INPUT_STREAM_H_
 #define _TWIOC_FILE_INPUT_STREAM_H_
 
-#include "IStream.h"
+#include <twio/stream/IStream.h>
 #include <cstdio>
 #include <memory>
 

@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/parser/impl/DefaultSyntacticParser.h"
-#include "../../include/tomic/parser/ast/trans/RightRecursiveAstTransformer.h"
+#include <tomic/parser/impl/DefaultSyntacticParser.h>
+#include <tomic/parser/ast/trans/RightRecursiveAstTransformer.h>
 #include <cstdio>
 #include <cstdarg>
 #include <string>

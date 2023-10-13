@@ -5,8 +5,8 @@
 #ifndef _TWIO_BUFFER_INPUT_STREAM_H_
 #define _TWIO_BUFFER_INPUT_STREAM_H_
 
-#include "../Common.h"
-#include "IStream.h"
+#include <twio/Common.h>
+#include <twio/stream/IStream.h>
 #include <memory>
 
 TWIO_BEGIN

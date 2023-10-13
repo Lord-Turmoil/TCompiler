@@ -7,8 +7,8 @@
 #ifndef _TOMIC_LEXICAL_ANALYSER_H_
 #define _TOMIC_LEXICAL_ANALYSER_H_
 
-#include "../Common.h"
-#include "token/Token.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/token/Token.h>
 #include <memory>
 
 TOMIC_BEGIN

@@ -7,8 +7,8 @@
 #ifndef _TOMIC_SYMBOL_TABLE_ENTRY_H_
 #define _TOMIC_SYMBOL_TABLE_ENTRY_H_
 
-#include "../../Common.h"
-#include "SymbolTableForward.h"
+#include <tomic/Shared.h>
+#include <tomic/parser/table/SymbolTableForward.h>
 #include <string>
 
 TOMIC_BEGIN

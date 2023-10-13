@@ -7,10 +7,11 @@
 #ifndef _DEFAULT_ERROR_LOGGER_
 #define _DEFAULT_ERROR_LOGGER_
 
-#include "../IErrorLogger.h"
-#include "../IErrorMapper.h"
+#include <tomic/logger/error/IErrorLogger.h>
+#include <tomic/logger/error/IErrorMapper.h>
 #include <memory>
 #include <string>
+#include <vector>
 
 TOMIC_BEGIN
 

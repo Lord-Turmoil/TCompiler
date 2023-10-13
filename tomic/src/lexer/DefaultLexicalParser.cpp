@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/lexer/impl/DefaultLexicalParser.h"
+#include <tomic/lexer/impl/DefaultLexicalParser.h>
 
 TOMIC_BEGIN
 

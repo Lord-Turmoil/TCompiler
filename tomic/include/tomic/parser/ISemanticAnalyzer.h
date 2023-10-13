@@ -7,9 +7,9 @@
 #ifndef _TOMIC_SEMANTIC_ANALYZER_H_
 #define _TOMIC_SEMANTIC_ANALYZER_H_
 
-#include "../Common.h"
-#include "ast/SyntaxTree.h"
-#include "table/SymbolTable.h"
+#include <tomic/Shared.h>
+#include <tomic/parser/ast/SyntaxTree.h>
+#include <tomic/parser/table/SymbolTable.h>
 #include <memory>
 
 TOMIC_BEGIN

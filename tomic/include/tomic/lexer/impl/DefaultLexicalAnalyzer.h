@@ -8,9 +8,9 @@
 #define _TOMIC_DEFAULT_LEXICAL_ANALYZER_H_
 
 #include <vector>
-#include "../../Common.h"
-#include "../ILexicalAnalyzer.h"
-#include "../token/ITokenMapper.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/ILexicalAnalyzer.h>
+#include <tomic/lexer/token/ITokenMapper.h>
 #include <memory>
 
 TOMIC_BEGIN

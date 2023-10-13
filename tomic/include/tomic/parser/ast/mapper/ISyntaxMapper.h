@@ -7,7 +7,7 @@
 #ifndef _TOMIC_SYNTAX_MAPPER_H_
 #define _TOMIC_SYNTAX_MAPPER_H_
 
-#include "../SyntaxType.h"
+#include <tomic/parser/ast/SyntaxType.h>
 
 TOMIC_BEGIN
 

@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../include/tomic/logger/error/impl/StandardErrorMapper.h"
+#include <tomic/logger/error/impl/StandardErrorMapper.h>
 
 TOMIC_BEGIN
 

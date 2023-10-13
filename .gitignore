@@ -81,3 +81,5 @@ pre/publish/
 works/
 *.zip
 output/
+publish/
+

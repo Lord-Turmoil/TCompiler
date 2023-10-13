@@ -7,13 +7,13 @@
 #ifndef _TOMIC_JSON_AST_PRINTER_H_
 #define _TOMIC_JSON_AST_PRINTER_H_
 
-#include "../../../Common.h"
-#include "IAstPrinter.h"
-#include "../AstForward.h"
-#include "../AstVisitor.h"
-#include "../SyntaxType.h"
-#include "../mapper/ISyntaxMapper.h"
-#include "../../../lexer/token/ITokenMapper.h"
+#include <tomic/Shared.h>
+#include <tomic/parser/ast/printer/IAstPrinter.h>
+#include <tomic/parser/ast/AstForward.h>
+#include <tomic/parser/ast/AstVisitor.h>
+#include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/parser/ast/mapper/ISyntaxMapper.h>
+#include <tomic/lexer/token/ITokenMapper.h>
 
 TOMIC_BEGIN
 

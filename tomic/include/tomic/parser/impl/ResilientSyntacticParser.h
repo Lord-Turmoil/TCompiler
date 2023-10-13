@@ -7,15 +7,15 @@
 #ifndef _TOMIC_RESILIENT_SYNTACTIC_PARSER_H_
 #define _TOMIC_RESILIENT_SYNTACTIC_PARSER_H_
 
-#include "../../Common.h"
-#include "../ISyntacticParser.h"
-#include "../../lexer/ILexicalParser.h"
-#include "../../lexer/token/ITokenMapper.h"
-#include "../ast/SyntaxNode.h"
-#include "../ast/SyntaxTree.h"
-#include "../ast/mapper/ISyntaxMapper.h"
-#include "../../logger/debug/ILogger.h"
-#include "../../logger/error/IErrorLogger.h"
+#include <tomic/Shared.h>
+#include <tomic/parser/ISyntacticParser.h>
+#include <tomic/lexer/ILexicalParser.h>
+#include <tomic/lexer/token/ITokenMapper.h>
+#include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/ast/SyntaxTree.h>
+#include <tomic/parser/ast/mapper/ISyntaxMapper.h>
+#include <tomic/logger/debug/ILogger.h>
+#include <tomic/logger/error/IErrorLogger.h>
 #include <vector>
 
 TOMIC_BEGIN

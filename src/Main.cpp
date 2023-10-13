@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../tomic/include/tomic.h"
+#include <tomic.h>
 #include "Compiler.h"
 #include "Argument.h"
 

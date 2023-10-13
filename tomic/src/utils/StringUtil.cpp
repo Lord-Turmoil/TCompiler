@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/utils/StringUtil.h"
+#include <tomic/utils/StringUtil.h>
 #include <cstring>
 #include <cstdio>
 

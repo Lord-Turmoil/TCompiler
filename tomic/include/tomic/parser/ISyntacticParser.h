@@ -7,7 +7,7 @@
 #ifndef _TMOIC_ISYNTACTIC_PARSER_H_
 #define _TMOIC_ISYNTACTIC_PARSER_H_
 
-#include "../Common.h"
+#include <tomic/Shared.h>
 #include <memory>
 
 TOMIC_BEGIN

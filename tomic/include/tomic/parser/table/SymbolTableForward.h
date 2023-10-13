@@ -7,7 +7,7 @@
 #ifndef _TOMIC_SYMBOL_TABLE_FORWARD_H_
 #define _TOMIC_SYMBOL_TABLE_FORWARD_H_
 
-#include "../../Common.h"
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

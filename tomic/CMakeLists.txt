@@ -9,3 +9,6 @@ add_library(tomic STATIC ${SRC_LIST})
 
 target_include_directories(tomic PUBLIC include)
 target_compile_definitions(tomic PUBLIC TOMIC_ENABLE_ASSERT)
+
+target_include_directories(tomic PRIVATE ../3rd-party/mioc/include)
+target_include_directories(tomic PRIVATE ../3rd-party/twio/include)

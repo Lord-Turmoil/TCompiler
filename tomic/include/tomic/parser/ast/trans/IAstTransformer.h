@@ -7,8 +7,8 @@
 #ifndef _TOMIC_AST_TRANSFORMER_H_
 #define _TOMIC_AST_TRANSFORMER_H_
 
-#include "../../../Common.h"
-#include "../AstVisitor.h"
+#include <tomic/Shared.h>
+#include <tomic/parser/ast/AstVisitor.h>
 
 TOMIC_BEGIN
 

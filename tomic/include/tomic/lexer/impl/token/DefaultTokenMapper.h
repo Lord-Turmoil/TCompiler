@@ -7,8 +7,8 @@
 #ifndef _TOMIC_DEFAULT_TOKEN_MAPPER_H_
 #define _TOMIC_DEFAULT_TOKEN_MAPPER_H_
 
-#include "../../../Common.h"
-#include "../../token/ITokenMapper.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/token/ITokenMapper.h>
 #include <unordered_map>
 #include <string>
 

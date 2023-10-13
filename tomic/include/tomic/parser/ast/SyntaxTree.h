@@ -7,10 +7,10 @@
 #ifndef _TMOIC_SYNTAX_TREE_H_
 #define _TMOIC_SYNTAX_TREE_H_
 
-#include "../../Common.h"
-#include "../../lexer/token/Token.h"
-#include "SyntaxType.h"
-#include "AstForward.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/token/Token.h>
+#include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/parser/ast/AstForward.h>
 #include <memory>
 #include <vector>
 #include <unordered_set>

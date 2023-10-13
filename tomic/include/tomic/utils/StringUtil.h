@@ -7,7 +7,7 @@
 #ifndef _TOMIC_STRING_UTIL_H_
 #define _TOMIC_STRING_UTIL_H_
 
-#include "../Common.h"
+#include <tomic/Shared.h>
 #include <string>
 
 TOMIC_BEGIN

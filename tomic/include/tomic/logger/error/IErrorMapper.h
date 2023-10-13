@@ -7,8 +7,8 @@
 #ifndef _TOMIC_ERROR_MAPPER_H_
 #define _TOMIC_ERROR_MAPPER_H_
 
-#include "../../Common.h"
-#include "ErrorType.h"
+#include <tomic/Shared.h>
+#include <tomic/logger/error/ErrorType.h>
 #include <memory>
 
 TOMIC_BEGIN

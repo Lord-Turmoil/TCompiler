@@ -7,7 +7,7 @@
 #ifndef _TOMIC_ERROR_TYPE_H_
 #define _TOMIC_ERROR_TYPE_H_
 
-#include "../../Common.h"
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

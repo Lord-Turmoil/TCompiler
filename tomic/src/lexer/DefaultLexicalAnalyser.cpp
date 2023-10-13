@@ -4,9 +4,9 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../include/tomic/lexer/impl/DefaultLexicalAnalyzer.h"
-#include "../../include/tomic/lexer/token/ITokenMapper.h"
-#include "../../include/tomic/utils/StringUtil.h"
+#include <tomic/lexer/impl/DefaultLexicalAnalyzer.h>
+#include <tomic/lexer/token/ITokenMapper.h>
+#include <tomic/utils/StringUtil.h>
 
 #include <cctype>
 

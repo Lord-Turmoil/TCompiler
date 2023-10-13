@@ -5,7 +5,7 @@
 #ifndef _TWIO_FILEUTIL_H_
 #define _TWIO_FILEUTIL_H_
 
-#include "../Common.h"
+#include <twio/Common.h>
 #include <cstdio>
 
 TWIO_BEGIN

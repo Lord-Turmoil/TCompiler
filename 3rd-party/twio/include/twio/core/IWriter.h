@@ -5,8 +5,8 @@
 #ifndef _TWIO_IWRITER_H_
 #define _TWIO_IWRITER_H_
 
-#include "../Common.h"
-#include "../stream/IStream.h"
+#include <twio/Common.h>
+#include <twio/stream/IStream.h>
 #include <memory>
 #include <cstdarg>
 

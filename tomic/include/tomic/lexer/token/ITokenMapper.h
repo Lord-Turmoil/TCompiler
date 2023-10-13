@@ -7,8 +7,8 @@
 #ifndef _TOMIC__TOKEN_MAPPER_H_
 #define _TOMIC__TOKEN_MAPPER_H_
 
-#include "../../Common.h"
-#include "Token.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/token/Token.h>
 #include <memory>
 
 TOMIC_BEGIN

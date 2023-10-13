@@ -7,12 +7,12 @@
 #ifndef _TOMIC_DEFULAT_LEXICAL_PARSER_H_
 #define _TOMIC_DEFULAT_LEXICAL_PARSER_H_
 
-#include "../../Common.h"
-#include "../ILexicalParser.h"
-#include "../ILexicalAnalyzer.h"
-#include "../token/ITokenMapper.h"
-#include "../../logger/debug/ILogger.h"
-#include "../../logger/error/IErrorLogger.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/ILexicalParser.h>
+#include <tomic/lexer/ILexicalAnalyzer.h>
+#include <tomic/lexer/token/ITokenMapper.h>
+#include <tomic/logger/debug/ILogger.h>
+#include <tomic/logger/error/IErrorLogger.h>
 #include <vector>
 
 TOMIC_BEGIN

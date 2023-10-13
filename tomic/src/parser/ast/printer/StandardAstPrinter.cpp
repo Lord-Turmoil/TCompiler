@@ -4,9 +4,9 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../../include/tomic/parser/ast/SyntaxTree.h"
-#include "../../../../include/tomic/parser/ast/SyntaxNode.h"
-#include "../../../../include/tomic/parser/ast/printer/StandardAstPrinter.h"
+#include <tomic/parser/ast/SyntaxTree.h>
+#include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/ast/printer/StandardAstPrinter.h>
 
 TOMIC_BEGIN
 

@@ -7,8 +7,8 @@
 #ifndef _TOMIC_DEFAULT_ERROR_MAPPER_H_
 #define _TOMIC_DEFAULT_ERROR_MAPPER_H_
 
-#include "../IErrorMapper.h"
-#include "../ErrorType.h"
+#include <tomic/logger/error/IErrorMapper.h>
+#include <tomic/logger/error/ErrorType.h>
 
 TOMIC_BEGIN
 

@@ -7,8 +7,8 @@
 #ifndef _TOMIC_DEFAULT_PREPROCESSOR_H_
 #define _TOMIC_DEFAULT_PREPROCESSOR_H_
 
-#include "../../Common.h"
-#include "../IPreprocessor.h"
+#include <tomic/Shared.h>
+#include <tomic/lexer/IPreprocessor.h>
 
 TOMIC_BEGIN
 

@@ -1,6 +1,6 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include "../../include/twio/core/Writer.h"
+#include <twio/core/Writer.h>
 #include <cstdarg>
 
 TWIO_BEGIN

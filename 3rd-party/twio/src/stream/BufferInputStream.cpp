@@ -1,7 +1,7 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
-#include "../../include/twio/stream/BufferInputStream.h"
-#include "../../include/twio/stream/RedirectRequest.h"
+#include <twio/stream/BufferInputStream.h>
+#include <twio/stream/RedirectRequest.h>
 #include <cstring>
 #include <utility>
 #include <cstdio>   // EOF

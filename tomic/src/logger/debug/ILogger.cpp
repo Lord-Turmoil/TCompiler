@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include "../../../include/tomic/logger/debug/ILogger.h"
+#include <tomic/logger/debug/ILogger.h>
 
 TOMIC_BEGIN
 
