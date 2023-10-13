@@ -5,7 +5,7 @@
  */
 
 #include "Compiler.h"
-#include "../tomic/include/tomic.h"
+#include <tomic.h>
 
 using namespace tomic;
 
