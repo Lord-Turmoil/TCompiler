@@ -80,6 +80,9 @@ public:
     // Remove the attribute.
     SyntaxNodePtr RemoveAttribute(const char* name);
 
+    // Get all attributes.
+    const std::map<std::string, std::string>& Attributes() const { return _attributes; }
+
 private:
     bool _FindAttribute(const char* name, std::map<std::string, std::string>::iterator* attr);
     bool _FindOrCreateAttribute(const char* name, std::map<std::string, std::string>::iterator* attr);

@@ -10,6 +10,11 @@
 
 TOMIC_BEGIN
 
+SymbolTableBlockPtr SymbolTableBlock::NewChild()
+{
+    return _table->NewBlock(shared_from_this());
+}
+
 SymbolTableBlock* SymbolTableBlock::AddEntry(SymbolTableEntryPtr entry)
 {
     TOMIC_ASSERT(entry);

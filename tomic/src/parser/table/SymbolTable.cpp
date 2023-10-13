@@ -12,12 +12,12 @@ TOMIC_BEGIN
 
 SymbolTableBlockPtr SymbolTable::NewRoot()
 {
-    return SymbolTableBlock::New(_nextId++, nullptr);
+    return SymbolTableBlock::New(_nextId++, this, nullptr);
 }
 
 SymbolTableBlockPtr SymbolTable::NewBlock(SymbolTableBlockPtr parent)
 {
-    return SymbolTableBlock::New(_nextId++, parent);
+    return SymbolTableBlock::New(_nextId++, this, parent);
 }
 
 SymbolTableBlockPtr SymbolTable::GetBlock(int id) const

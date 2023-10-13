@@ -36,16 +36,16 @@ bool XmlAstPrinter::VisitEnter(SyntaxNodePtr node)
 
     auto descr = _syntaxMapper->Description(node->Type());
 
-    _depth++;
-
-    _PrintIndent(_depth);
     if (descr)
     {
-        _writer->WriteFormat("<%s>\n", descr);
-    }
-    else
-    {
-        // _writer->WriteFormat("<MISSING-%d>\n", _depth);
+        _depth++;
+        _PrintIndent(_depth);
+        _writer->WriteFormat("<%s", descr);
+        for (auto attr : node->Attributes())
+        {
+            _writer->WriteFormat(" %s=\'%s\'", attr.first.c_str(), attr.second.c_str());
+        }
+        _writer->Write(">\n");
     }
 
     return true;
@@ -55,17 +55,12 @@ bool XmlAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
 {
     auto descr = _syntaxMapper->Description(node->Type());
 
-    _PrintIndent(_depth);
     if (descr)
     {
+        _PrintIndent(_depth);
         _writer->WriteFormat("</%s>\n", descr);
+        _depth--;
     }
-    else
-    {
-        // _writer->WriteFormat("</MISSING-%d>\n", _depth);
-    }
-
-    _depth--;
 
     return true;
 }
@@ -102,14 +97,15 @@ void XmlAstPrinter::_VisitNonTerminal(tomic::SyntaxNodePtr node)
 {
     auto descr = _syntaxMapper->Description(node->Type());
 
-    _PrintIndent(_depth);
     if (descr)
     {
-        _writer->WriteFormat("<%s />\n", descr);
-    }
-    else
-    {
-        // _writer->WriteFormat("<MISSING-%d />\n", _depth);
+        _PrintIndent(_depth);
+        _writer->WriteFormat("<%s", descr);
+        for (auto attr : node->Attributes())
+        {
+            _writer->WriteFormat(" %s=\'%s\'", attr.first.c_str(), attr.second.c_str());
+        }
+        _writer->Write(" />\n");
     }
 
     // Visit will not recurse into children.
@@ -119,26 +115,16 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
 {
     auto syntacticDescr = _syntaxMapper->Description(node->Type());
 
+    if (!syntacticDescr)
+    {
+        return;
+    }
+
     _PrintIndent(_depth);
-    if (syntacticDescr)
-    {
-        _writer->WriteFormat("<%s", syntacticDescr);
-    }
-    else
-    {
-        _writer->WriteFormat("<MISSING-%d", _depth);
-    }
+    _writer->WriteFormat("<%s", syntacticDescr);
 
     const char* tokenDescr = _tokenMapper->Description(node->Token()->type);
-    if (tokenDescr)
-    {
-        _writer->WriteFormat(" token=\'%s\'", tokenDescr);
-    }
-    else
-    {
-        _writer->WriteFormat(" token=\'MISSING-%d\'", _depth);
-    }
-
+    _writer->WriteFormat(" token=\'%s\'", tokenDescr ? tokenDescr : "\'\'");
     const char* lexeme = node->Token()->lexeme.c_str();
     _writer->Write(" lexeme=\'");
     for (const char* p = lexeme; *p; p++)
@@ -160,23 +146,23 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
             _writer->WriteFormat("%c", *p);
         }
     }
-    _writer->Write("\' />\n");
+    _writer->Write("\'");
+
+    for (auto attr : node->Attributes())
+    {
+        _writer->WriteFormat(" %s=\'%s\'", attr.first.c_str(), attr.second.c_str());
+    }
+
+    _writer->Write(" />\n");
 }
 
 void XmlAstPrinter::_VisitEpsilon(tomic::SyntaxNodePtr node)
 {
-    auto container = mioc::SingletonContainer::GetContainer();
-    auto mapper = container->Resolve<ISyntaxMapper>();
-    auto descr = mapper->Description(node->Type());
-
-    _PrintIndent(_depth);
+    auto descr = _syntaxMapper->Description(node->Type());
     if (descr)
     {
+        _PrintIndent(_depth);
         _writer->WriteFormat("<%s>\n", descr);
-    }
-    else
-    {
-        _writer->WriteFormat("<EPSILON: %d>\n", _depth);
     }
 }
 

@@ -10,19 +10,15 @@
 #include "../../Common.h"
 #include "SymbolTableForward.h"
 #include <vector>
+#include <memory>
 
 TOMIC_BEGIN
 
-class SymbolTableBlock
+class SymbolTableBlock : private std::enable_shared_from_this<SymbolTableBlock>
 {
+    friend class SymbolTable;
 public:
-    SymbolTableBlock(int id, SymbolTableBlockPtr parent)
-            : _id(id), _parent(parent) {}
-
-    static SymbolTableBlockPtr New(int id, SymbolTableBlockPtr parent)
-    {
-        return std::make_shared<SymbolTableBlock>(id, parent);
-    }
+    SymbolTableBlockPtr NewChild();
 
     int Id() const { return _id; }
     SymbolTableBlockPtr Parent() const { return _parent; }
@@ -36,7 +32,21 @@ public:
     SymbolTableEntryPtr FindLocalEntry(const std::string& name) const;
 
 private:
+    SymbolTableBlock(int id, SymbolTable* table, SymbolTableBlockPtr parent)
+            : _id(id), _table(table), _parent(parent)
+    {
+        TOMIC_ASSERT(_table);
+    }
+
+    static SymbolTableBlockPtr New(int id, SymbolTable* table, SymbolTableBlockPtr parent)
+    {
+        return std::shared_ptr<SymbolTableBlock>(new SymbolTableBlock(id, table, parent));
+    }
+
+private:
     int _id;
+
+    SymbolTable* _table;
     SymbolTableBlockPtr _parent;
 
     std::vector<SymbolTableEntryPtr> _entries;
