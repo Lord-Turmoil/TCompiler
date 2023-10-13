@@ -80,7 +80,6 @@ void RegisterComponents()
 static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter);
 static void LexicalParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
 static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
-// static void SemanticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
 
 void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
 {
@@ -95,9 +94,6 @@ void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
 
     // Syntactic parse only.
     SyntacticParse(reader, dstWriter);
-
-    // Semantic parse only. (Syntactic with error handling.)
-    // SemanticParse(reader, dstWriter);
 }
 
 static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
@@ -149,22 +145,3 @@ static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr 
 
     container->Resolve<IAstPrinter>()->Print(tree, dstWriter);
 }
-
-// static void SemanticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter)
-// {
-//     auto container = mioc::SingletonContainer::GetContainer();
-//     auto syntacticParser = container->Resolve<ISyntacticParser>();
-//
-//     syntacticParser->SetReader(srcReader);
-//
-//     auto logger = container->Resolve<ILogger>();
-//     auto tree = syntacticParser->Parse();
-//     if (!tree)
-//     {
-//         logger->Log(LogLevel::FATAL, "Syntactic parse failed.");
-//     }
-//
-//     auto errorLogger = mioc::SingletonContainer::GetContainer()->Resolve<IErrorLogger>();
-//     auto errorWriter = twio::Writer::New(twio::FileOutputStream::New(stderr, false));
-//     errorLogger->Dumps(errorWriter);
-// }
