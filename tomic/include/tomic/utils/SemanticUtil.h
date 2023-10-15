@@ -11,6 +11,7 @@
 #include <tomic/parser/ast/AstForward.h>
 #include <tomic/parser/ast/SyntaxType.h>
 #include <vector>
+#include <string>
 
 TOMIC_BEGIN
 
@@ -57,9 +58,49 @@ bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, boo
 // Array serialization
 // The format is like this:
 // 1,2,3;4,5,6;7,8,9
-const char* SerializeArray(const std::vector<std::vector<int>>& array);
-std::vector<std::vector<int>> DeserializeArray(const char* str);
+std::string SerializeArray(const std::vector<std::vector<int>>& array)
+{
+    std::string str;
+    for (auto& row : array)
+    {
+        for (auto& col : row)
+        {
+            str += std::to_string(col);
+            str += ",";
+        }
+        str += ";";
+    }
+    return str;
+}
 
+std::vector<std::vector<int>> DeserializeArray(const char* str)
+{
+    std::vector<std::vector<int>> array;
+    std::vector<int> row;
+    int value = 0;
+
+    while (*str != '\0')
+    {
+        if (*str == ',')
+        {
+            row.push_back(value);
+            value = 0;
+        }
+        else if (*str == ';')
+        {
+            row.push_back(value);
+            value = 0;
+            array.emplace_back(row);
+            row.clear();
+        }
+        else
+        {
+            value = value * 10 + (*str - '0');
+        }
+        str++;
+    }
+
+    return array;
 }
 
 TOMIC_END

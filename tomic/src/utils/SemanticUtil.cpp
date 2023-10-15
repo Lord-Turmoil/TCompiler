@@ -283,7 +283,11 @@ bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, boo
 // Array serialization
 // The format is like this:
 // 1,2,3;4,5,6;7,8,9
-const char* SerializeArray(const std::vector<std::vector<int>>& array);
+std::stirng SerializeArray(const std::vector<std::vector<int>>& array)
+{
+
+}
+
 std::vector<std::vector<int>> DeserializeArray(const char* str);
 
 }
