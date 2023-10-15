@@ -1,0 +1,12 @@
+2023/10/14 TS:
+
+Must keep clear in mind what to do in Enter and what to do in Exit!
+Do not mix them up!
+
+For Decl, we can have several utility functions:
+    1. Count how many child node of a given type, for dimension.
+    2. Array serialization, for init value.
+    3. Only add to symbol table in Exit!
+
+And, we may need some utility function that could generate unique name
+for duplicated name.
