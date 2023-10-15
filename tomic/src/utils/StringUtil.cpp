@@ -42,6 +42,11 @@ bool Equals(const char* str1, const char* str2)
 
 bool ToInt(const char* str, int* value)
 {
+    if (str == nullptr)
+    {
+        return false;
+    }
+
     if (sscanf(str, "%d", value) == 1)
     {
         return true;
@@ -52,6 +57,11 @@ bool ToInt(const char* str, int* value)
 
 bool ToBool(const char* str, bool* value)
 {
+    if (str == nullptr)
+    {
+        return false;
+    }
+
     int intVal = 0;
     if (ToInt(str, &intVal))
     {
