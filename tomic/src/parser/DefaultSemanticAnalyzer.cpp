@@ -406,6 +406,7 @@ bool DefaultSemanticAnalyzer::_ExitInitVal(SyntaxNodePtr node)
         if (node->FirstChild()->BoolAttribute("det"))
         {
             node->SetBoolAttribute("det", true);
+            node->SetIntAttribute("value", node->FirstChild()->IntAttribute("value"));
         }
     }
     else
