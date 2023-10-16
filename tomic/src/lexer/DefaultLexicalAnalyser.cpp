@@ -283,7 +283,7 @@ TokenPtr StringLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 
 bool StringLexicalTask::_IsNormalChar(int ch) const
 {
-    return (ch == 32) || (ch == 33) || (ch >= 40 && ch <= 126);
+    return (ch == 32) || (ch == 33) || (40 <= ch && ch < 92) || (92 < ch && ch <= 126);
 }
 
 bool StringLexicalTask::_IsNewLineChar(int ch, const twio::IAdvancedReaderPtr& reader) const
