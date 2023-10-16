@@ -28,6 +28,8 @@ public:
     virtual ~ILogger() = default;
 
     virtual void LogFormat(LogLevel level, const char* format, ...) = 0;
+    virtual void LogVFormat(LogLevel level, const char* format, va_list args) = 0;
+
     virtual int Count(LogLevel level) = 0;
 
     // Only log level higher than or equal to the given level will be logged.

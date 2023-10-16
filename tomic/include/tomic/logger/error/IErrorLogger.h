@@ -18,8 +18,8 @@ class IErrorLogger
 public:
     virtual ~IErrorLogger() {}
 
-    virtual void Log(int line, int column, ErrorType type, const char* msg) = 0;
     virtual void LogFormat(int line, int column, ErrorType type, const char* format, ...) = 0;
+    virtual void LogVFormat(int line, int column, ErrorType type, const char* format, va_list args) = 0;
 
     virtual void Dumps(twio::IWriterPtr writer) = 0;
 

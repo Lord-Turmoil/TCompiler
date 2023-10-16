@@ -45,21 +45,21 @@ DefaultErrorLogger::DefaultErrorLogger(IErrorMapperPtr mapper)
 {
 }
 
-void DefaultErrorLogger::Log(int line, int column, ErrorType type, const char* msg)
+void DefaultErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
 {
-    _entries.emplace_back(line, column, type, msg);
+    va_list args;
+    va_start(args, format);
+    LogVFormat(line, column, type, format, args);
+    va_end(args);
 }
 
-void DefaultErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
+void DefaultErrorLogger::LogVFormat(int line, int column, ErrorType type, const char* format, va_list args)
 {
     static char buffer[1024];
 
     if (format)
     {
-        va_list args;
-        va_start(args, format);
         vsprintf(buffer, format, args);
-        va_end(args);
     }
     else
     {

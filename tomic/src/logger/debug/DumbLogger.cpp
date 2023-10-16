@@ -19,6 +19,11 @@ DumbLoggerPtr DumbLogger::New()
 
 void DumbLogger::LogFormat(LogLevel level, const char* format, ...)
 {
+    LogVFormat(level, format, nullptr);
+}
+
+void DumbLogger::LogVFormat(LogLevel level, const char* format, va_list args)
+{
     _count[(int)level]++;
 }
 

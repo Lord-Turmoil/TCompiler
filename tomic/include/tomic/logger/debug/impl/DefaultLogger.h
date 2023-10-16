@@ -24,6 +24,8 @@ public:
     static DefaultLoggerPtr New();
 
     void LogFormat(LogLevel level, const char* format, ...) override;
+    void LogVFormat(LogLevel level, const char* format, va_list args) override;
+
     int Count(LogLevel level) override;
 
     DefaultLogger* SetLogLevel(LogLevel level) override

@@ -19,6 +19,14 @@ DefaultLoggerPtr DefaultLogger::New()
 
 void DefaultLogger::LogFormat(LogLevel level, const char* format, ...)
 {
+    va_list args;
+    va_start(args, format);
+    LogVFormat(level, format, args);
+    va_end(args);
+}
+
+void DefaultLogger::LogVFormat(LogLevel level, const char* format, va_list args)
+{
     _count[(int)level]++;
 
     if (_writer == nullptr || (level < _level))
@@ -27,10 +35,7 @@ void DefaultLogger::LogFormat(LogLevel level, const char* format, ...)
     }
 
     _writer->WriteFormat("[%s] ", LogLevelToString(level));
-    va_list args;
-    va_start(args, format);
     _writer->WriteFormat(format, args);
-    va_end(args);
 
     _writer->Write("\n");
 }

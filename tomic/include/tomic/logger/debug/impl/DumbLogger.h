@@ -27,6 +27,8 @@ public:
     static DumbLoggerPtr New();
 
     void LogFormat(LogLevel level, const char* format, ...) override;
+    void LogVFormat(LogLevel level, const char* format, va_list args) override;
+
     int Count(LogLevel level) override;
 
     DumbLogger* SetLogLevel(LogLevel level) override { return this; }

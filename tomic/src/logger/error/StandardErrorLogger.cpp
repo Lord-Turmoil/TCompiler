@@ -37,12 +37,12 @@ StandardErrorLogger::StandardErrorLogger(IErrorMapperPtr mapper)
     TOMIC_ASSERT(_mapper);
 }
 
-void StandardErrorLogger::Log(int line, int column, ErrorType type, const char* msg)
+void StandardErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
 {
     _entries.emplace_back(line, type);
 }
 
-void StandardErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
+void StandardErrorLogger::LogVFormat(int line, int column, ErrorType type, const char* format, va_list args)
 {
     _entries.emplace_back(line, type);
 }

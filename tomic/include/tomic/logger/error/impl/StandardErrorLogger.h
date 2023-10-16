@@ -32,8 +32,8 @@ public:
     StandardErrorLogger(IErrorMapperPtr mapper);
     ~StandardErrorLogger() override = default;
 
-    virtual void Log(int line, int column, ErrorType type, const char* msg) override;
     virtual void LogFormat(int line, int column, ErrorType type, const char* format, ...) override;
+    virtual void LogVFormat(int line, int column, ErrorType type, const char* format, va_list args) override;
 
     virtual void Dumps(twio::IWriterPtr writer) override;
 
