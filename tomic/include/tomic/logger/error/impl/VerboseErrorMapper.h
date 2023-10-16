@@ -4,19 +4,19 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_DEFAULT_ERROR_MAPPER_H_
-#define _TOMIC_DEFAULT_ERROR_MAPPER_H_
+#ifndef _TOMIC_VERBOSE_ERROR_MAPPER_H_
+#define _TOMIC_VERBOSE_ERROR_MAPPER_H_
 
 #include <tomic/logger/error/IErrorMapper.h>
 #include <tomic/logger/error/ErrorType.h>
 
 TOMIC_BEGIN
 
-class DefaultErrorMapper final : public IErrorMapper
+class VerboseErrorMapper final : public IErrorMapper
 {
 public:
-    DefaultErrorMapper();
-    ~DefaultErrorMapper() override = default;
+    VerboseErrorMapper();
+    ~VerboseErrorMapper() override = default;
 
     const char* Description(ErrorType type) override;
 
@@ -26,4 +26,4 @@ private:
 
 TOMIC_END
 
-#endif // _TOMIC_STANDARD_ERROR_MAPPER_H_
+#endif // _TOMIC_VERBOSE_ERROR_MAPPER_H_

@@ -46,9 +46,9 @@
 // error
 #include <tomic/logger/error/IErrorLogger.h>
 #include <tomic/logger/error/IErrorMapper.h>
-#include <tomic/logger/error/impl/DefaultErrorMapper.h>
+#include <tomic/logger/error/impl/VerboseErrorMapper.h>
 #include <tomic/logger/error/impl/StandardErrorMapper.h>
-#include <tomic/logger/error/impl/DefaultErrorLogger.h>
+#include <tomic/logger/error/impl/VerboseErrorLogger.h>
 #include <tomic/logger/error/impl/StandardErrorLogger.h>
 
 // others

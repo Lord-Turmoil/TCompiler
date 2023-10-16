@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _DEFAULT_ERROR_LOGGER_
-#define _DEFAULT_ERROR_LOGGER_
+#ifndef _TOMIC_VERBOSE_ERROR_LOGGER_
+#define _TOMIC_VERBOSE_ERROR_LOGGER_
 
 #include <tomic/logger/error/IErrorLogger.h>
 #include <tomic/logger/error/IErrorMapper.h>
@@ -15,10 +15,10 @@
 
 TOMIC_BEGIN
 
-class DefaultErrorEntry
+class VerboseErrorEntry
 {
 public:
-    DefaultErrorEntry(int line, int column, ErrorType type, const char* msg)
+    VerboseErrorEntry(int line, int column, ErrorType type, const char* msg)
             : _line(line), _column(column), _type(type)
     {
         if (msg)
@@ -33,11 +33,11 @@ public:
     std::string _msg;
 };
 
-class DefaultErrorLogger : public IErrorLogger
+class VerboseErrorLogger : public IErrorLogger
 {
 public:
-    DefaultErrorLogger(IErrorMapperPtr mapper);
-    ~DefaultErrorLogger() override = default;
+    VerboseErrorLogger(IErrorMapperPtr mapper);
+    ~VerboseErrorLogger() override = default;
 
     virtual void LogFormat(int line, int column, ErrorType type, const char* format, ...) override;
     virtual void LogVFormat(int line, int column, ErrorType type, const char* format, va_list args) override;
@@ -48,9 +48,9 @@ public:
 
 private:
     IErrorMapperPtr _mapper;
-    std::vector<DefaultErrorEntry> _entries;
+    std::vector<VerboseErrorEntry> _entries;
 };
 
 TOMIC_END
 
-#endif // _DEFAULT_ERROR_LOGGER_
+#endif // _TOMIC_VERBOSE_ERROR_LOGGER_

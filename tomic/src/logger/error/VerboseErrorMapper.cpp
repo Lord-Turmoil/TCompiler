@@ -4,11 +4,11 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/logger/error/impl/DefaultErrorMapper.h>
+#include <tomic/logger/error/impl/VerboseErrorMapper.h>
 
 TOMIC_BEGIN
 
-DefaultErrorMapper::DefaultErrorMapper()
+VerboseErrorMapper::VerboseErrorMapper()
 {
     _descriptions[static_cast<int>(ErrorType::ERR_UNKNOWN)] = "Unknown error";
     _descriptions[static_cast<int>(ErrorType::ERR_UNEXPECTED_TOKEN)] = "Unexpected token";
@@ -35,7 +35,7 @@ DefaultErrorMapper::DefaultErrorMapper()
     _descriptions[static_cast<int>(ErrorType::ERR_ILLEGAL_CONTINUE)] = "Illegal continue";
 }
 
-const char* DefaultErrorMapper::Description(ErrorType type)
+const char* VerboseErrorMapper::Description(ErrorType type)
 {
     return _descriptions[static_cast<int>(type)];
 }

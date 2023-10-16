@@ -11,7 +11,6 @@
 #include "../3rd-party/mioc/include/mioc.h"
 
 void RegisterComponents();
-
-void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter);
+void Compile();
 
 #endif

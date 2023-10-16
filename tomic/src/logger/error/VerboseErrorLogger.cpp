@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/logger/error/impl/DefaultErrorLogger.h>
+#include <tomic/logger/error/impl/VerboseErrorLogger.h>
 #include <string>
 #include <algorithm>
 
@@ -13,7 +13,7 @@ TOMIC_BEGIN
 class CompareDefaultErrorEntry
 {
 public:
-    bool operator()(const DefaultErrorEntry& lhs, const DefaultErrorEntry& rhs)
+    bool operator()(const VerboseErrorEntry& lhs, const VerboseErrorEntry& rhs)
     {
         if (lhs._line != rhs._line)
         {
@@ -30,7 +30,7 @@ public:
     }
 };
 
-bool DefaultErrorEntryPred(const DefaultErrorEntry& lhs, const DefaultErrorEntry& rhs)
+bool DefaultErrorEntryPred(const VerboseErrorEntry& lhs, const VerboseErrorEntry& rhs)
 {
     if (lhs._line == rhs._line && lhs._column == rhs._column && lhs._type == rhs._type)
     {
@@ -40,12 +40,12 @@ bool DefaultErrorEntryPred(const DefaultErrorEntry& lhs, const DefaultErrorEntry
     return false;
 }
 
-DefaultErrorLogger::DefaultErrorLogger(IErrorMapperPtr mapper)
+VerboseErrorLogger::VerboseErrorLogger(IErrorMapperPtr mapper)
         : _mapper(mapper)
 {
 }
 
-void DefaultErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
+void VerboseErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
 {
     va_list args;
     va_start(args, format);
@@ -53,7 +53,7 @@ void DefaultErrorLogger::LogFormat(int line, int column, ErrorType type, const c
     va_end(args);
 }
 
-void DefaultErrorLogger::LogVFormat(int line, int column, ErrorType type, const char* format, va_list args)
+void VerboseErrorLogger::LogVFormat(int line, int column, ErrorType type, const char* format, va_list args)
 {
     static char buffer[1024];
 
@@ -66,10 +66,10 @@ void DefaultErrorLogger::LogVFormat(int line, int column, ErrorType type, const 
         buffer[0] = '\0';
     }
 
-    _entries.emplace_back(DefaultErrorEntry(line, column, type, buffer));
+    _entries.emplace_back(VerboseErrorEntry(line, column, type, buffer));
 }
 
-void DefaultErrorLogger::Dumps(twio::IWriterPtr writer)
+void VerboseErrorLogger::Dumps(twio::IWriterPtr writer)
 {
     // It may be sorted many times, but it doesn't matter. :)
     std::sort(_entries.begin(), _entries.end(), CompareDefaultErrorEntry());
@@ -85,7 +85,7 @@ void DefaultErrorLogger::Dumps(twio::IWriterPtr writer)
     }
 }
 
-int DefaultErrorLogger::Count()
+int VerboseErrorLogger::Count()
 {
     return _entries.size();
 }

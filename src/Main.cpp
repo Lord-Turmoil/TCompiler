@@ -10,15 +10,29 @@
 
 using namespace tomic;
 
-const char* input = "testfile.txt";
-const char* output = "output.txt";
-const char* ext = ".txt";
-bool enableCompleteAst = false;
-bool enableLog = false;
-bool useStandardError = true;
+static const char* input = "testfile.txt";
+static const char* output = "output.txt";
+static const char* error = "error.txt";
+static const char* ext = ".txt";
+static bool silent = false;
+static bool enableCompleteAst = false;
+static bool enableLog = false;
+static bool enableVerboseError = false;
 
 bool ParseArgs(int argc, char* argv[]);
 void Configure();
+
+/*
+ * Usage: ToMiCompiler [input] [-o output] [-e error] [-x ext] [-s] [-c] [-l] [-v]
+ *  input: input file path
+ *  output: output file path
+ *  error: error file path, "stderr" for standard error stream, and "null" for no error output
+ *  ext: output file extension (for syntax tree shape)
+ *  -s: Silent mode, no output (error output is not affected)
+ *  -c: Enable complete syntax tree (for debug)
+ *  -l: Enable log (for debug, output to stdout)
+ *  -v: Use verbose error (for debug)
+ */
 int main(int argc, char* argv[])
 {
 #ifndef INTERNAL
@@ -34,11 +48,8 @@ int main(int argc, char* argv[])
     }
 
     Configure();
-
-    auto reader = twio::Reader::New(twio::FileInputStream::New(input));
-    auto writer = twio::Writer::New(twio::FileOutputStream::New(output));
-
-    Compile(reader, writer);
+    RegisterComponents();
+    Compile();
 
     return 0;
 }
@@ -48,13 +59,15 @@ void Configure()
     auto container = mioc::SingletonContainer::GetContainer();
 
     auto config = tomic::Config::New();
-    config->SetEnableCompleteAst(enableCompleteAst)
+    config->SetInput(input)
+            ->SetOutput(output)
+            ->SetError(error)
+            ->SetExt(ext)
+            ->SetSilent(silent)
+            ->SetEnableCompleteAst(enableCompleteAst)
             ->SetEnableLog(enableLog)
-            ->SetUseStandardError(useStandardError)
-            ->SetOutputExt(ext);
+            ->SetEnableVerboseError(enableVerboseError);
     container->AddSingleton<IConfig>(config);
-
-    RegisterComponents();
 }
 
 bool ParseArgs(int argc, char* argv[])
@@ -62,7 +75,7 @@ bool ParseArgs(int argc, char* argv[])
     int opt;
     int arg_cnt = 0;
     bool err = false;
-    while ((opt = getopt(argc, argv, "o:e:clr")))
+    while ((opt = getopt(argc, argv, "o:e:x:sclv")))
     {
         if (opterr != 0)
         {
@@ -77,6 +90,9 @@ bool ParseArgs(int argc, char* argv[])
             output = optarg;
             break;
         case 'e':
+            error = optarg;
+            break;
+        case 'x':
             ext = optarg;
             break;
         case 'c':
@@ -85,8 +101,8 @@ bool ParseArgs(int argc, char* argv[])
         case 'l':
             enableLog = true;
             break;
-        case 'r':
-            useStandardError = false;
+        case 'v':
+            enableVerboseError = true;
             break;
         case '!':
             arg_cnt++;

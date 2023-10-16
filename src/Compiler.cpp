@@ -28,15 +28,15 @@ void RegisterComponents()
     }
 
     // Error logger
-    if (config->UseStandardErrorMessage())
+    if (config->EnableVerboseError())
     {
-        container->AddSingleton<IErrorMapper, StandardErrorMapper>()
-                ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
+        container->AddSingleton<IErrorMapper, VerboseErrorMapper>()
+                ->AddSingleton<IErrorLogger, VerboseErrorLogger, IErrorMapper>();
     }
     else
     {
-        container->AddSingleton<IErrorMapper, DefaultErrorMapper>()
-                ->AddSingleton<IErrorLogger, DefaultErrorLogger, IErrorMapper>();
+        container->AddSingleton<IErrorMapper, StandardErrorMapper>()
+                ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
     }
 
     // Lexical
@@ -54,7 +54,6 @@ void RegisterComponents()
     {
         container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
     }
-    // container->AddTransient<ISyntacticParser, DefaultSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, ILogger>();
     container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, IErrorLogger, ILogger>();
 
     // Semantic
@@ -62,11 +61,11 @@ void RegisterComponents()
     container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
 
     // Ast printer
-    if (tomic::StringUtil::Equals(config->OutputExt(), ".xml"))
+    if (tomic::StringUtil::Equals(config->Ext(), ".xml"))
     {
         container->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
     }
-    else if (tomic::StringUtil::Equals(config->OutputExt(), ".json"))
+    else if (tomic::StringUtil::Equals(config->Ext(), ".json"))
     {
         container->AddTransient<IAstPrinter, JsonAstPrinter, ISyntaxMapper, ITokenMapper>();
     }
@@ -83,11 +82,15 @@ void RegisterComponents()
 
 static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter);
 static void LexicalParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
-static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
-static void SemanticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
+static SyntaxTreePtr SyntacticParse(twio::IAdvancedReaderPtr srcReader);
+static SymbolTablePtr SemanticParse(SyntaxTreePtr tree);
 
-void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
+void Compile()
 {
+    auto container = mioc::SingletonContainer::GetContainer();
+    auto config = container->Resolve<IConfig>();
+    auto srcReader = twio::AdvancedReader::New(twio::FileInputStream::New(config->Input()));
+
     // Preprocess.
     auto writer = twio::Writer::New(twio::BufferOutputStream::New());
     Preprocess(srcReader, writer);
@@ -97,11 +100,46 @@ void Compile(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
     // Lexical parse only.
     // LexicalParse(reader, dstWriter);
 
-    // Syntactic parse only.
-    // SyntacticParse(reader, dstWriter);
+    auto logger = container->Resolve<ILogger>();
 
-    // Semantic parse only. (Syntactic with error handling.)
-    SemanticParse(reader, dstWriter);
+    // Syntactic parse only.
+    auto tree = SyntacticParse(reader);
+
+    if (tree == nullptr)
+    {
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed, compile aborted");
+        return;
+    }
+
+    // Semantic parse only.
+    SemanticParse(tree);
+
+    if (!config->Silent())
+    {
+        auto dstWriter = twio::Writer::New(twio::FileOutputStream::New(config->Output()));
+        auto printer = container->Resolve<IAstPrinter>();
+        printer->Print(tree, dstWriter);
+    }
+
+    auto errorLogger = mioc::SingletonContainer::GetContainer()->Resolve<IErrorLogger>();
+    twio::WriterPtr errorWriter;
+    if (tomic::StringUtil::Equals(config->Error(), "stderr"))
+    {
+        errorWriter = twio::Writer::New(twio::FileOutputStream::New(stderr, false));
+    }
+    else if (tomic::StringUtil::Equals(config->Error(), "null"))
+    {
+        errorWriter = nullptr;
+    }
+    else
+    {
+        errorWriter = twio::Writer::New(twio::FileOutputStream::New(config->Error()));
+    }
+
+    if (errorWriter)
+    {
+        errorLogger->Dumps(errorWriter);
+    }
 }
 
 static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
@@ -132,7 +170,7 @@ static void LexicalParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr ds
     }
 }
 
-static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter)
+static SyntaxTreePtr SyntacticParse(twio::IAdvancedReaderPtr srcReader)
 {
     auto container = mioc::SingletonContainer::GetContainer();
     auto syntacticParser = container->Resolve<ISyntacticParser>();
@@ -144,37 +182,20 @@ static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr 
     if (!tree)
     {
         logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed.");
-        return;
+        return nullptr;
     }
     if (logger->Count(LogLevel::ERROR) > 0)
     {
         logger->LogFormat(LogLevel::FATAL, "Syntactic parse completed with errors.");
     }
 
-    container->Resolve<IAstPrinter>()->Print(tree, dstWriter);
+    return tree;
 }
 
-static void SemanticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter)
+static SymbolTablePtr SemanticParse(SyntaxTreePtr tree)
 {
     auto container = mioc::SingletonContainer::GetContainer();
-    auto syntacticParser = container->Resolve<ISyntacticParser>();
-
-    syntacticParser->SetReader(srcReader);
-
-    auto logger = container->Resolve<ILogger>();
-    auto tree = syntacticParser->Parse();
-    if (!tree)
-    {
-        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed, compile aborted");
-        return;
-    }
 
     auto parser = container->Resolve<ISemanticParser>();
-    auto table = parser->Parse(tree);
-
-    container->Resolve<IAstPrinter>()->Print(tree, dstWriter);
-
-    auto errorLogger = mioc::SingletonContainer::GetContainer()->Resolve<IErrorLogger>();
-    auto errorWriter = twio::Writer::New(twio::FileOutputStream::New(stderr, false));
-    errorLogger->Dumps(errorWriter);
+    return parser->Parse(tree);
 }
