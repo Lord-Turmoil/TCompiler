@@ -128,27 +128,35 @@ private:
     bool _ExitBreakStmt(SyntaxNodePtr node);
     bool _EnterContinueStmt(SyntaxNodePtr node) { return true; }
     bool _ExitContinueStmt(SyntaxNodePtr node);
-    bool _AnalyzeReturnStmt(SyntaxNodePtr node);
+    bool _EnterReturnStmt(SyntaxNodePtr node) { return true; }
+    bool _ExitReturnStmt(SyntaxNodePtr node);
 
-    bool _EnterInStmt(SyntaxNodePtr node);
+    bool _EnterInStmt(SyntaxNodePtr node) { return true; }
     bool _ExitInStmt(SyntaxNodePtr node);
-    bool _EnterOutStmt(SyntaxNodePtr node);
+    bool _EnterOutStmt(SyntaxNodePtr node) { return true; }
     bool _ExitOutStmt(SyntaxNodePtr node);
 
     ////////// Exp
-    bool _EnterExp(SyntaxNodePtr node);
+    // Since many node just pass value or check value, we can combine them.
+    bool _DefaultExitExp(SyntaxNodePtr node);
+
+    bool _EnterExp(SyntaxNodePtr node) { return true; }
     bool _ExitExp(SyntaxNodePtr node);
     bool _EnterConstExp(SyntaxNodePtr node);
     bool _ExitConstExp(SyntaxNodePtr node);
-    bool _EnterAddExp(SyntaxNodePtr node);
-    bool _ExitAddExp(SyntaxNodePtr node);
-    bool _AnalyzeMulExp(SyntaxNodePtr node);
-    bool _AnalyzeUnaryExp(SyntaxNodePtr node);
-    bool _AnalyzeUnaryOp(SyntaxNodePtr node);
-    bool _AnalyzePrimaryExp(SyntaxNodePtr node);
-    bool _EnterFuncCall(SyntaxNodePtr node);
+    bool _EnterAddExp(SyntaxNodePtr node) { return true; }
+    bool _ExitAddExp(SyntaxNodePtr node) { return true; }
+    bool _EnterMulExp(SyntaxNodePtr node) { return true; }
+    bool _ExitMulExp(SyntaxNodePtr node) { return true; }
+    bool _EnterUnaryExp(SyntaxNodePtr node) { return true; }
+    bool _ExitUnaryExp(SyntaxNodePtr node);
+    bool _EnterUnaryOp(SyntaxNodePtr node) { return true; }
+    bool _ExitUnaryOp(SyntaxNodePtr node);
+    bool _EnterPrimaryExp(SyntaxNodePtr node) { return true; }
+    bool _ExitPrimaryExp(SyntaxNodePtr node);
+    bool _EnterFuncCall(SyntaxNodePtr node) { return true; }
     bool _ExitFuncCall(SyntaxNodePtr node);
-    bool _EnterNumber(SyntaxNodePtr node);
+    bool _EnterNumber(SyntaxNodePtr node) { return true; }
     bool _ExitNumber(SyntaxNodePtr node);
 
     bool _EnterOrExp(SyntaxNodePtr node);

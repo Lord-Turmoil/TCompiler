@@ -114,13 +114,50 @@ void DefaultSemanticAnalyzerActionMapper::_Init()
     _exitActions[SyntaxType::ST_FOR_STEP_STMT] = &DefaultSemanticAnalyzer::_ExitForInnerStmt;
 
     _enterActions[SyntaxType::ST_EXP_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
-    _exitActions[SyntaxType::ST_EXP_STMT] = &DefaultSemanticAnalyzer::_DefaultExit;
+    _exitActions[SyntaxType::ST_EXP_STMT] = &DefaultSemanticAnalyzer::_ExitExp;
+
+    _enterActions[SyntaxType::ST_CONST_EXP] = &DefaultSemanticAnalyzer::_EnterConstExp;
+    _exitActions[SyntaxType::ST_CONST_EXP] = &DefaultSemanticAnalyzer::_ExitConstExp;
 
     _enterActions[SyntaxType::ST_BREAK_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
     _exitActions[SyntaxType::ST_BREAK_STMT] = &DefaultSemanticAnalyzer::_ExitBreakStmt;
 
-    _enterActions[SyntaxType::ST_BREAK_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
-    _exitActions[SyntaxType::ST_CONTINUE_STMT] = &DefaultSemanticAnalyzer::_ExitBreakStmt;
+    _enterActions[SyntaxType::ST_CONTINUE_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_CONTINUE_STMT] = &DefaultSemanticAnalyzer::_ExitContinueStmt;
+
+    _enterActions[SyntaxType::ST_RETURN_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_RETURN_STMT] = &DefaultSemanticAnalyzer::_ExitReturnStmt;
+
+    _enterActions[SyntaxType::ST_IN_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_IN_STMT] = &DefaultSemanticAnalyzer::_ExitInStmt;
+
+    _enterActions[SyntaxType::ST_OUT_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_OUT_STMT] = &DefaultSemanticAnalyzer::_ExitOutStmt;
+
+    _enterActions[SyntaxType::ST_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
+
+    _enterActions[SyntaxType::ST_ADD_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_ADD_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
+
+    _enterActions[SyntaxType::ST_MUL_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_MUL_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
+
+    _enterActions[SyntaxType::ST_UNARY_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_UNARY_EXP] = &DefaultSemanticAnalyzer::_ExitUnaryExp;
+
+    _enterActions[SyntaxType::ST_UNARY_OP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_UNARY_OP] = &DefaultSemanticAnalyzer::_ExitUnaryOp;
+
+    _enterActions[SyntaxType::ST_PRIMARY_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_PRIMARY_EXP] = &DefaultSemanticAnalyzer::_ExitPrimaryExp;
+
+    _enterActions[SyntaxType::ST_FUNC_CALL] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_CALL] = &DefaultSemanticAnalyzer::_ExitFuncCall;
+
+    _enterActions[SyntaxType::ST_NUMBER] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_NUMBER] = &DefaultSemanticAnalyzer::_ExitNumber;
+
 }
 
 TOMIC_END

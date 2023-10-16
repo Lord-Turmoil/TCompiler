@@ -7,6 +7,9 @@
 #include <tomic/utils/SemanticUtil.h>
 #include <tomic/utils/StringUtil.h>
 #include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/table/SymbolTable.h>
+#include <tomic/parser/table/SymbolTableBlock.h>
+#include <tomic/parser/table/SymbolTableEntry.h>
 
 TOMIC_BEGIN
 
@@ -51,7 +54,7 @@ SyntaxNodePtr GetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int 
     {
         return nullptr;
     }
-    
+
     if (index > 0)
     {
         return _FrontGetDirectChildNode(node, type, index);
@@ -455,7 +458,7 @@ bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, boo
 
 // Array serialization
 // The format is like this:
-// 1,2,3;4,5,6;7,8,9
+// 1,2,3;4,5,6;7,8,9;
 std::string SerializeArray(const std::vector<std::vector<int>>& array)
 {
     std::string str;
@@ -464,7 +467,10 @@ std::string SerializeArray(const std::vector<std::vector<int>>& array)
         for (auto& col : row)
         {
             str += std::to_string(col);
-            str += ',';
+            if (col != row.back())
+            {
+                str += ',';
+            }
         }
         str += ';';
     }
@@ -474,6 +480,12 @@ std::string SerializeArray(const std::vector<std::vector<int>>& array)
 std::vector<std::vector<int>> DeserializeArray(const char* str)
 {
     std::vector<std::vector<int>> array;
+    if (!str)
+    {
+        array.emplace_back();
+        return array;
+    }
+
     std::vector<int> row;
     int value = 0;
 
@@ -499,6 +511,225 @@ std::vector<std::vector<int>> DeserializeArray(const char* str)
     }
 
     return array;
+}
+
+// For format string.
+int GetFormatStringArgCount(const char* format)
+{
+    int count = 0;
+    while (*format != '\0')
+    {
+        if (*format == '%')
+        {
+            format++;
+            if (*format == '%')
+            {
+                format++;
+            }
+            else
+            {
+                count++;
+            }
+        }
+        else
+        {
+            format++;
+        }
+    }
+
+    return count;
+}
+
+// Compile-time calculation.
+typedef int (* BinaryFunc)(int, int);
+static int _Add(int left, int right) { return left + right; }
+static int _Sub(int left, int right) { return left - right; }
+static int _Mul(int left, int right) { return left * right; }
+static int _Div(int left, int right) { return left / right; }
+static int _Mod(int left, int right) { return left % right; }
+static int _And(int left, int right) { return left && right; }
+static int _Or(int left, int right) { return left || right; }
+
+static int _Less(int left, int right) { return left < right; }
+static int _Greater(int left, int right) { return left > right; }
+static int _LessEqual(int left, int right) { return left <= right; }
+static int _GreaterEqual(int left, int right) { return left >= right; }
+static int _Equal(int left, int right) { return left == right; }
+static int _NotEqual(int left, int right) { return left != right; }
+
+static BinaryFunc _GetBinaryEvaluator(const char* op);
+
+typedef int (* UnaryFunc)(int);
+static int _UnaryAdd(int value) { return value; }
+static int _UnarySub(int value) { return -value; }
+static int _Not(int value) { return !value; }
+static UnaryFunc _GetUnaryEvaluator(const char* op);
+
+int EvaluateBinary(const char* op, int left, int right)
+{
+    return _GetBinaryEvaluator(op)(left, right);
+}
+
+int EvaluateUnary(const char* op, int value)
+{
+    return _GetUnaryEvaluator(op)(value);
+}
+
+static BinaryFunc _GetBinaryEvaluator(const char* op)
+{
+    // For now, we do not differentiate && and &.
+    switch (*op)
+    {
+    case '+':
+        return _Add;
+    case '-':
+        return _Sub;
+    case '*':
+        return _Mul;
+    case '/':
+        return _Div;
+    case '%':
+        return _Mod;
+    case '&':
+        if (*(op + 1) == '&')
+        {
+            return _And;
+        }
+        else
+        {
+            TOMIC_ASSERT(false && "Invalid operator");
+            return _Add;
+        }
+    case '|':
+        if (*(op + 1) == '|')
+        {
+            return _Or;
+        }
+        else
+        {
+            TOMIC_ASSERT(false && "Invalid operator");
+            return _Add;
+        }
+    case '<':
+        if (*(op + 1) == '=')
+        {
+            return _LessEqual;
+        }
+        else
+        {
+            return _Less;
+        }
+    case '>':
+        if (*(op + 1) == '=')
+        {
+            return _GreaterEqual;
+        }
+        else
+        {
+            return _Greater;
+        }
+    case '=':
+        if (*(op + 1) == '=')
+        {
+            return _Equal;
+        }
+        else
+        {
+            TOMIC_ASSERT(false && "Invalid operator");
+            return _Add;
+        }
+    case '!':
+        if (*(op + 1) == '=')
+        {
+            return _NotEqual;
+        }
+        else
+        {
+            TOMIC_ASSERT(false && "Invalid operator");
+            return _Add;
+        }
+    default:
+        TOMIC_ASSERT(false && "Invalid operator");
+        return _Add;
+    }
+}
+
+static UnaryFunc _GetUnaryEvaluator(const char* op)
+{
+    switch (*op)
+    {
+    case '+':
+        return _UnaryAdd;
+    case '-':
+        return _UnarySub;
+    case '!':
+        return _Not;
+    default:
+        TOMIC_ASSERT(false && "Invalid operator");
+        return _UnaryAdd;
+    }
+}
+
+int EvaluateNumber(const SyntaxNodePtr node)
+{
+    const char* number = node->FirstChild()->Token()->lexeme.c_str();
+    int value;
+    if (StringUtil::ToInt(number, &value))
+    {
+        return value;
+    }
+    else
+    {
+        TOMIC_ASSERT(false && "Invalid number");
+        return 0;
+    }
+}
+
+bool TryEvaluateLVal(const SyntaxNodePtr node, SymbolTableBlockPtr block, int* value)
+{
+    if (node->IntAttribute("dim", -1) != 0)
+    {
+        return false;
+    }
+
+    const char* name = node->FirstChild()->Token()->lexeme.c_str();
+    auto rawEntry = block->FindEntry(name);
+
+    if ((!rawEntry) || (rawEntry->EntryType() != SymbolTableEntryType::ET_CONSTANT))
+    {
+        return false;
+    }
+
+    auto entry = std::static_pointer_cast<ConstantEntry>(rawEntry);
+    int dim = entry->Dimension();
+    if (dim == 0)
+    {
+        *value = entry->Value();
+        return true;
+    }
+    else if (dim == 1)
+    {
+        auto index = GetDirectChildNode(node, SyntaxType::ST_EXP);
+        if (!index->BoolAttribute("det"))
+        {
+            return false;
+        }
+        *value = entry->Value(index->IntAttribute("value"));
+        return true;
+    }
+    else if (dim == 2)
+    {
+        auto index1 = GetDirectChildNode(node, SyntaxType::ST_EXP, 1);
+        auto index2 = GetDirectChildNode(node, SyntaxType::ST_EXP, 2);
+        if (!index1->BoolAttribute("det") || !index2->BoolAttribute("det"))
+        {
+            return false;
+        }
+        *value = entry->Value(index1->IntAttribute("value"), index2->IntAttribute("value"));
+        return true;
+    }
+
+    return false;
 }
 
 }

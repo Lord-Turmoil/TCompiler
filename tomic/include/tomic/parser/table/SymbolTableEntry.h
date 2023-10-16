@@ -170,26 +170,13 @@ public:
 
     ValueType Type() const { return _props.type; }
 
-    int ArraySize(int dimension) const
-    {
-        TOMIC_ASSERT(dimension < MAX_ARRAY_DIMENSION);
-        return _props.size[dimension];
-    }
+    int Dimension() const { return _props.dimension; }
 
-    int Value() const
-    {
-        return _props.value;
-    }
+    int ArraySize(int dimension) const { return _props.size[dimension]; }
 
-    int Value(int index) const
-    {
-        return _props.values[0][index];
-    }
-
-    int Value(int index1, int index2) const
-    {
-        return _props.values[index1][index2];
-    }
+    int Value() const { return _props.value; }
+    int Value(int index) const { return _props.values[0][index]; }
+    int Value(int index1, int index2) const { return _props.values[index1][index2]; }
 
 private:
     ConstantEntry(const std::string& name)
@@ -220,7 +207,7 @@ public:
     ConstantEntryBuilder* Size(int n)
     {
         _props.dimension = 1;
-        _props.size[0] = 1;
+        _props.size[0] = n;
         _props.values.resize(1, std::vector<int>(n, 0));
         return this;
     }
@@ -229,8 +216,8 @@ public:
     ConstantEntryBuilder* Size(int n, int m)
     {
         _props.dimension = 2;
-        _props.size[0] = m;
-        _props.size[1] = 1;
+        _props.size[0] = n;
+        _props.size[1] = m;
         _props.values.resize(n, std::vector<int>(m, 0));
         return this;
     }
@@ -346,7 +333,7 @@ public:
 
     FunctionEntryBuilder* AddParam(ValueType type, std::string name, int dimension, int size)
     {
-        _props.params.emplace_back(type, name, dimension, size, 1);
+        _props.params.emplace_back(type, name, dimension, 0, size);
         return this;
     }
 

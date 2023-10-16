@@ -10,6 +10,7 @@
 #include <tomic/utils/SemanticUtil.h>
 #include <tomic/utils/StringUtil.h>
 #include <tomic/utils/SymbolTableUtil.h>
+#include <algorithm> // for std::min
 
 TOMIC_BEGIN
 
@@ -218,52 +219,53 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
     int dim = SemanticUtil::CountDirectTerminalNode(node, TokenType::TK_LEFT_BRACKET);
     SyntaxNodePtr constInitVal = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_INIT_VAL);
 
-    if (!constInitVal->BoolAttribute("det"))
-    {
-        // TODO: Error handing
-        // const expression not determined
-        return true;
-    }
-
-    if (dim != constInitVal->IntAttribute("dim"))
-    {
-        // TODO: Error handing
-        // Wrong dimension.
-        return true;
-    }
-
     SyntaxNodePtr ident = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR);
-    ConstantEntryPtr entry;
     ConstantEntryBuilder builder(ident->Token()->lexeme.c_str());
     if (dim == 0)
     {
-        entry = builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Value(constInitVal->IntAttribute("value"))->Build();
+        builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")));
     }
     else if (dim == 1)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
-        entry = builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Size(size)
-                ->Values(SemanticUtil::DeserializeArray(constInitVal->Attribute("values")))
-                ->Build();
+        builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
+                ->Size(size);
     }
     else if (dim == 2)
     {
         int size1 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
-        entry = builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Size(size1, size2)
-                ->Values(SemanticUtil::DeserializeArray(constInitVal->Attribute("values")))
-                ->Build();
+        builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
+                ->Size(size1, size2);
     }
     else
     {
         // TODO: Error handing.
     }
 
-    _AddToSymbolTable(entry);
+    if (!constInitVal->BoolAttribute("det"))
+    {
+        // TODO: Error handing - const expression not determined
+    }
+    else
+    {
+        if (dim == 0)
+        {
+            builder.Value(constInitVal->IntAttribute("value"));
+        }
+        else
+        {
+            builder.Values(SemanticUtil::DeserializeArray(constInitVal->Attribute("values")));
+        }
+    }
+
+    if (dim != constInitVal->IntAttribute("dim"))
+    {
+        // TODO: Error handing - dimension mismatch
+    }
+
+    _AddToSymbolTable(builder.Build());
 
     return true;
 }
@@ -276,45 +278,58 @@ bool DefaultSemanticAnalyzer::_ExitConstInitVal(SyntaxNodePtr node)
         if (node->FirstChild()->BoolAttribute("det"))
         {
             node->SetBoolAttribute("det", true);
+            node->SetIntAttribute("value", node->FirstChild()->IntAttribute("value"));
         }
+        return true;
     }
-    else
+
+    std::vector<SyntaxNodePtr> children;
+    SemanticUtil::GetDirectChildNodes(node, SyntaxType::ST_CONST_INIT_VAL, children);
+    int size = children.size();
+    int childDim = children[0]->IntAttribute("dim");
+    int childSize = children[0]->IntAttribute("size");
+    bool det = true;
+
+    for (auto& child : children)
     {
-        int size = SemanticUtil::CountDirectChildNode(node, SyntaxType::ST_CONST_INIT_VAL);
-        auto child = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_INIT_VAL);
-        int dim = child->IntAttribute("dim");
-        int childSize = child->IntAttribute("size");
-        bool det = true;
-        for (child = node->FirstChild(); child; child = child->NextSibling())
+        if (child->IntAttribute("dim") != childDim)
         {
-            if (child->Type() != SyntaxType::ST_CONST_INIT_VAL)
-            {
-                continue;
-            }
-            if (child->IntAttribute("dim") != dim)
-            {
-                // TODO: Error handing - dimension mismatch
-            }
-            if (child->IntAttribute("size") != childSize)
-            {
-                // TODO: Error handing - size mismatch
-            }
-            if (!child->BoolAttribute("det"))
-            {
-                det = false;
-            }
+            // TODO: Error handing - dimension mismatch
         }
-        node->SetIntAttribute("dim", dim + 1);
-        node->SetIntAttribute("size", size);
-        if (det)
+        if (child->IntAttribute("size") != childSize)
         {
-            node->SetBoolAttribute("det", true);
+            // TODO: Error handing - size mismatch
+        }
+        if (!child->BoolAttribute("det"))
+        {
+            // TODO: Error handing - undetermined expression
+            det = false;
         }
     }
 
-    if (node->BoolAttribute("det"))
+    int dim = childDim + 1;
+    node->SetIntAttribute("dim", dim);
+    node->SetIntAttribute("size", size);
+    std::vector<std::vector<int>> values;
+    if (det)
     {
-        // TODO: Initialize the value.
+        node->SetBoolAttribute("det", true);
+        if (dim == 1)
+        {
+            values.emplace_back();
+            for (auto& child : children)
+            {
+                values[0].push_back(child->IntAttribute("value"));
+            }
+        }
+        else if (dim == 2)
+        {
+            for (auto& child : children)
+            {
+                values.emplace_back(SemanticUtil::DeserializeArray(child->Attribute("values"))[0]);
+            }
+        }
+        node->SetAttribute("values", SemanticUtil::SerializeArray(values).c_str());
     }
 
     return true;
@@ -603,28 +618,53 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     SyntaxNodePtr ident = node->FirstChild();
     const char* name = ident->Token()->lexeme.c_str();
     SymbolTableEntryPtr rawEntry = _currentBlock->FindEntry(name);
+
+    // In case any error occurs, we set the type to int by default.
+    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+
     if (!rawEntry)
     {
         // TODO: Error handing - undefined variable.
         return true;
     }
+
+    int expectedDim = 0;
+    ValueType type;
+    int size;
     if (rawEntry->EntryType() == SymbolTableEntryType::ET_CONSTANT)
     {
-        // TODO: Error handing - constant cannot be assigned.
+        node->SetBoolAttribute("const", true);
+
+        ConstantEntryPtr entry = std::static_pointer_cast<ConstantEntry>(rawEntry);
+        type = entry->Type();
+        expectedDim = entry->Dimension();
+        if (expectedDim == 2)
+        {
+            size = entry->ArraySize(1);
+        }
     }
-    if (rawEntry->EntryType() != SymbolTableEntryType::ET_VARIABLE)
+    else if (rawEntry->EntryType() == SymbolTableEntryType::ET_VARIABLE)
+    {
+        VariableEntryPtr entry = std::static_pointer_cast<VariableEntry>(rawEntry);
+        type = entry->Type();
+        expectedDim = entry->Dimension();
+        if (expectedDim == 2)
+        {
+            size = entry->ArraySize(1);
+        }
+    }
+    else
     {
         // TODO: Error handing - invalid lvalue.
     }
 
     // Now we get the correct LVal
-    VariableEntryPtr entry = std::static_pointer_cast<VariableEntry>(rawEntry);
-    int expectedDim = entry->Dimension();
     int actualDim = SemanticUtil::CountDirectChildNode(node, SyntaxType::ST_EXP);
 
     if (actualDim > expectedDim)
     {
         // TODO: Error handling - dimension mismatch.
+        actualDim = expectedDim;
     }
 
     /*
@@ -637,17 +677,17 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
      *    2       2           0
      */
     int finalDim = expectedDim - actualDim;
+    node->SetIntAttribute("dim", finalDim);
     if (finalDim == 0)
     {
-        node->SetIntAttribute("type", static_cast<int>(entry->EntryType()));
+        node->SetIntAttribute("type", static_cast<int>(type));
     }
     else
     {
         node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ARRAY));
-        node->SetIntAttribute("dim", finalDim);
         if (finalDim == 2)
         {
-            node->SetIntAttribute("size", entry->ArraySize(1));
+            node->SetIntAttribute("size", size);
         }
     }
 
@@ -680,6 +720,392 @@ bool DefaultSemanticAnalyzer::_ExitForInnerStmt(tomic::SyntaxNodePtr node)
     {
         // TODO: Error handling - Type mismatch
     }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitBreakStmt(tomic::SyntaxNodePtr node)
+{
+    if (!SemanticUtil::GetInheritedBoolAttribute(node, "loop"))
+    {
+        // TODO: Error handing - break outside loop.
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitContinueStmt(tomic::SyntaxNodePtr node)
+{
+    if (!SemanticUtil::GetInheritedBoolAttribute(node, "loop"))
+    {
+        // TODO: Error handing - continue outside loop.
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
+{
+    ValueType funcType = static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
+
+    if (funcType == ValueType::VT_VOID)
+    {
+        if (SemanticUtil::CountDirectChildNode(node, SyntaxType::ST_EXP) > 0)
+        {
+            // TODO: Error handing - return value in void function.
+        }
+    }
+    else
+    {
+        auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
+        if (exp == nullptr)
+        {
+            // TODO: Error handing - missing return value.
+        }
+        else
+        {
+            ValueType type = static_cast<ValueType>(node->IntAttribute("type"));
+            if (type != funcType)
+            {
+                // TODO: Error handing - return type mismatch.
+            }
+        }
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitInStmt(tomic::SyntaxNodePtr node)
+{
+    auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
+    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(lval, "type"));
+    if (type != ValueType::VT_INT)
+    {
+        // TODO: Error handing - invalid lvalue.
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
+{
+    auto formatStr = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR, 3);
+    const char* format = formatStr->Token()->lexeme.c_str();
+
+    int formatArgc = SemanticUtil::GetFormatStringArgCount(format);
+    std::vector<SyntaxNodePtr> args;
+    SemanticUtil::GetDirectChildNodes(node, SyntaxType::ST_EXP, args);
+    int argc = args.size();
+
+    if (argc != formatArgc)
+    {
+        // TODO: Error handing - argument count mismatch.
+    }
+    for (auto& arg : args)
+    {
+        ValueType type = static_cast<ValueType>(arg->IntAttribute("type"));
+        if (type != ValueType::VT_INT)
+        {
+            // TODO: Error handing - invalid argument type.
+        }
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
+{
+    // In case any error occurs, this node will have a default int type.
+    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+
+    if (node->HasManyChildren())
+    {
+        // Combine all children's type.
+        auto left = node->FirstChild();
+        ValueType leftType = static_cast<ValueType>(left->IntAttribute("type"));
+        auto right = node->LastChild();
+        ValueType rightType = static_cast<ValueType>(right->IntAttribute("type"));
+
+        if (leftType != rightType)
+        {
+            // TODO: Error handing - type mismatch.
+        }
+        else
+        {
+            if (leftType == ValueType::VT_ARRAY)
+            {
+                // TODO: Error handing - array cannot be operated.
+            }
+            else
+            {
+                node->SetIntAttribute("type", static_cast<int>(leftType));
+                if (left->BoolAttribute("det") && right->BoolAttribute("det"))
+                {
+                    node->SetBoolAttribute("det", true);
+
+                    // TODO: Perform compile-time calculation
+                    int leftValue = left->IntAttribute("value");
+                    int rightValue = right->IntAttribute("value");
+                    auto opNode = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR);
+                    const char* op = opNode->Token()->lexeme.c_str();
+                    int value = SemanticUtil::EvaluateBinary(op, leftValue, rightValue);
+                    node->SetIntAttribute("value", value);
+                }
+            }
+        }
+    }
+    else
+    {
+        // Simple get the type from its single child.
+        ValueType type = static_cast<ValueType>(node->FirstChild()->IntAttribute("type"));
+        node->SetIntAttribute("type", static_cast<int>(type));
+        if (type == ValueType::VT_ARRAY)
+        {
+            int dim = node->FirstChild()->IntAttribute("dim");
+            node->SetIntAttribute("dim", dim);
+            if (node->IntAttribute("dim") == 2)
+            {
+                node->SetIntAttribute("size", node->FirstChild()->IntAttribute("size"));
+            }
+        }
+        else if (type == ValueType::VT_INT)
+        {
+            if (node->FirstChild()->BoolAttribute("det"))
+            {
+                node->SetBoolAttribute("det", true);
+                node->SetIntAttribute("value", node->FirstChild()->IntAttribute("value"));
+            }
+        }
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitExp(SyntaxNodePtr node)
+{
+    auto child = node->FirstChild();
+    ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
+
+    node->SetIntAttribute("type", static_cast<int>(type));
+
+    if (child->BoolAttribute("det"))
+    {
+        node->SetBoolAttribute("det", true);
+        node->SetIntAttribute("value", child->IntAttribute("value"));
+    }
+    else
+    {
+        if (type == ValueType::VT_ARRAY)
+        {
+            node->SetIntAttribute("dim", child->IntAttribute("dim"));
+            if (node->IntAttribute("dim") == 2)
+            {
+                node->SetIntAttribute("size", child->IntAttribute("size"));
+            }
+        }
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_EnterConstExp(SyntaxNodePtr node)
+{
+    node->SetBoolAttribute("const", true);
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitConstExp(tomic::SyntaxNodePtr node)
+{
+    _ExitExp(node);
+
+    if (!node->BoolAttribute("det"))
+    {
+        // TODO: Error handing - undetermined const expression.
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitUnaryExp(tomic::SyntaxNodePtr node)
+{
+    // Set a default type.
+    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+
+    if (node->HasManyChildren())
+    {
+        auto exp = node->LastChild();
+        ValueType type = static_cast<ValueType>(exp->IntAttribute("type"));
+        if (type != ValueType::VT_INT)
+        {
+            // TODO: Error handing - invalid operand type.
+        }
+        else if (exp->BoolAttribute("det"))
+        {
+            node->SetBoolAttribute("det", true);
+            // Compile-time calculation
+            int value = exp->IntAttribute("value");
+            const char* op = node->FirstChild()->Attribute("op");
+
+            // TODO: check '!' in non-condition statement.
+            node->SetIntAttribute("value", SemanticUtil::EvaluateUnary(op, value));
+        }
+    }
+    else
+    {
+        auto child = node->FirstChild();
+        ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
+        node->SetIntAttribute("type", static_cast<int>(type));
+        if (type == ValueType::VT_INT)
+        {
+            if (child->BoolAttribute("det"))
+            {
+                node->SetBoolAttribute("det", true);
+                node->SetIntAttribute("value", child->IntAttribute("value"));
+            }
+        }
+        else if (type == ValueType::VT_ARRAY)
+        {
+            node->SetIntAttribute("dim", child->IntAttribute("dim"));
+            if (node->IntAttribute("dim") == 2)
+            {
+                node->SetIntAttribute("size", child->IntAttribute("size"));
+            }
+        }
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitUnaryOp(tomic::SyntaxNodePtr node)
+{
+    node->SetAttribute("op", node->FirstChild()->Token()->lexeme.c_str());
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitPrimaryExp(tomic::SyntaxNodePtr node)
+{
+    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+
+    SyntaxNodePtr child = node->FirstChild();
+    if (node->HasManyChildren())
+    {
+        // Skip '('
+        child = child->NextSibling();
+    }
+
+    if (child->Type() == SyntaxType::ST_LVAL)
+    {
+        ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
+        if (type != ValueType::VT_INT)
+        {
+            node->SetIntAttribute("type", static_cast<int>(type));
+            node->SetIntAttribute("dim", child->IntAttribute("dim"));
+            if (node->IntAttribute("dim") == 2)
+            {
+                node->SetIntAttribute("size", child->IntAttribute("size"));
+            }
+        }
+        else
+        {
+            int value;
+            if (SemanticUtil::TryEvaluateLVal(child, _currentBlock, &value))
+            {
+                node->SetBoolAttribute("det", true);
+                node->SetIntAttribute("value", value);
+            }
+        }
+    }
+    else if (child->Type() == SyntaxType::ST_NUMBER)
+    {
+        node->SetBoolAttribute("det", true);
+        node->SetIntAttribute("value", child->IntAttribute("value"));
+    }
+    else    // Exp
+    {
+        ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
+        if (type != ValueType::VT_INT)
+        {
+            // TODO: Error handing - invalid expression.
+        }
+        else if (child->BoolAttribute("det"))
+        {
+            node->SetBoolAttribute("det", true);
+            node->SetIntAttribute("value", child->IntAttribute("value"));
+        }
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
+{
+    const char* name = node->FirstChild()->Token()->lexeme.c_str();
+    auto rawEntry = _currentBlock->FindEntry(name);
+    if (!rawEntry)
+    {
+        // TODO: Error handing - undefined function.
+        return true;
+    }
+
+    if (rawEntry->EntryType() != SymbolTableEntryType::ET_FUNCTION)
+    {
+        // TODO: Error handing - not a function.
+        return true;
+    }
+
+    auto entry = std::static_pointer_cast<FunctionEntry>(rawEntry);
+
+    // Check argc.
+    int argc = SemanticUtil::GetSynthesizedIntAttribute(node, "argc");
+    if (argc != entry->ArgsCount())
+    {
+        // TODO: Error handing - argument count mismatch.
+    }
+
+    // Check argument type.
+    int upper = std::min(argc, entry->ArgsCount());
+    std::vector<SyntaxNodePtr> args;
+    SemanticUtil::GetDirectChildNodes(node, SyntaxType::ST_FUNC_APARAM, args);
+    for (int i = 0; i < upper; i++)
+    {
+        auto param = entry->Param(i);
+        ValueType argType = static_cast<ValueType>(args[i]->IntAttribute("type"));
+        if (argType != param.type)
+        {
+            // TODO: Error handing - argument type mismatch.
+            continue;
+        }
+        if (argType == ValueType::VT_ARRAY)
+        {
+            if (args[i]->IntAttribute("dim") != param.dimension)
+            {
+                // TODO: Error handing - argument dimension mismatch.
+                continue;
+            }
+            if (param.dimension == 2)
+            {
+                if (args[i]->IntAttribute("size") != param.size[1])
+                {
+                    // TODO: Error handing - argument size mismatch.
+                }
+            }
+        }
+    }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitNumber(tomic::SyntaxNodePtr node)
+{
+    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    node->SetBoolAttribute("det", true);
+
+    int value;
+    if (!StringUtil::ToInt(node->FirstChild()->Token()->lexeme.c_str(), &value))
+    {
+        value = 0;
+    }
+    node->SetIntAttribute("value", value);
 
     return true;
 }

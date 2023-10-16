@@ -10,6 +10,7 @@
 #include <tomic/Shared.h>
 #include <tomic/parser/ast/SyntaxType.h>
 #include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/table/SymbolTableForward.h>
 #include <vector>
 #include <string>
 
@@ -68,6 +69,18 @@ bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, boo
 // 1,2,3;4,5,6;7,8,9
 std::string SerializeArray(const std::vector<std::vector<int>>& array);
 std::vector<std::vector<int>> DeserializeArray(const char* str);
+
+// For format string.
+int GetFormatStringArgCount(const char* format);
+
+// Compile-time calculation.
+int EvaluateBinary(const char* op, int left, int right);
+int EvaluateUnary(const char* op, int value);
+
+int EvaluateNumber(const SyntaxNodePtr node);
+
+bool TryEvaluateLVal(const SyntaxNodePtr node, SymbolTableBlockPtr block, int* value);
+
 
 }
 
