@@ -14,7 +14,7 @@
 
 TOMIC_BEGIN
 
-class SymbolTableBlock : private std::enable_shared_from_this<SymbolTableBlock>
+class SymbolTableBlock
 {
     friend class SymbolTable;
 public:
@@ -24,7 +24,7 @@ public:
     SymbolTableBlockPtr Parent() const { return _parent; }
 
     // Warning: Add entry do not check legality.
-    SymbolTableBlock* AddEntry(SymbolTableEntryPtr entry);
+    SymbolTableBlockPtr AddEntry(SymbolTableEntryPtr entry);
 
     // Find entry in this block and its ancestors.
     SymbolTableEntryPtr FindEntry(const std::string& name) const;
@@ -38,7 +38,7 @@ private:
         TOMIC_ASSERT(_table);
     }
 
-    static SymbolTableBlockPtr New(int id, SymbolTable* table, SymbolTableBlockPtr parent)
+    static SymbolTableBlockSmartPtr New(int id, SymbolTable* table, SymbolTableBlockPtr parent)
     {
         return std::shared_ptr<SymbolTableBlock>(new SymbolTableBlock(id, table, parent));
     }

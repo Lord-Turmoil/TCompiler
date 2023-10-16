@@ -35,6 +35,7 @@ void ReducedSyntaxMapper::_Init()
     _typeToDescription[SyntaxType::ST_FUNC_FPARAMS] = "FuncFParams";
     _typeToDescription[SyntaxType::ST_FUNC_FPARAM] = "FuncFParam";
     _typeToDescription[SyntaxType::ST_FUNC_APARAMS] = "FuncRParams";
+    // _typeToDescription[SyntaxType::ST_FUNC_APARAM] = "FuncRParam";
     _typeToDescription[SyntaxType::ST_BLOCK] = "Block";
     // _typeToDescription[SyntaxType::ST_BLOCK_ITEM] = "BlockItem";
 

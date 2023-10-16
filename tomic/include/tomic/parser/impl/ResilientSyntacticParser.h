@@ -99,6 +99,7 @@ private:
     SyntaxNodePtr _ParseFuncFParams();
     SyntaxNodePtr _ParseFuncFParam();
     SyntaxNodePtr _ParseFuncAParams();
+    SyntaxNodePtr _ParseFuncAParam();
 
     SyntaxNodePtr _ParseBlock();
     SyntaxNodePtr _ParseBlockItem();

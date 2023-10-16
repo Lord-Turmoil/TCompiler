@@ -23,6 +23,11 @@
 #include <tomic/parser/impl/DefaultSyntacticParser.h>
 #include <tomic/parser/impl/ResilientSyntacticParser.h>
 
+#include <tomic/parser/ISemanticAnalyzer.h>
+#include <tomic/parser/ISemanticParser.h>
+#include <tomic/parser/impl/DefaultSemanticParser.h>
+#include <tomic/parser/impl/DefaultSemanticAnalyzer.h>
+
 #include <tomic/parser/ast/SyntaxType.h>
 #include <tomic/parser/ast/mapper/ISyntaxMapper.h>
 #include <tomic/parser/ast/mapper/CompleteSyntaxMapper.h>

@@ -45,6 +45,7 @@ void CompleteSyntaxMapper::_Init()
     _typeToDescription[SyntaxType::ST_FUNC_FPARAMS] = "FuncFParams";
     _typeToDescription[SyntaxType::ST_FUNC_FPARAM] = "FuncFParam";
     _typeToDescription[SyntaxType::ST_FUNC_APARAMS] = "FuncAParams";
+    _typeToDescription[SyntaxType::ST_FUNC_APARAM] = "FuncAParam";
     _typeToDescription[SyntaxType::ST_BLOCK] = "Block";
     _typeToDescription[SyntaxType::ST_BLOCK_ITEM] = "BlockItem";
 

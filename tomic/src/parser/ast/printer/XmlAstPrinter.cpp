@@ -148,6 +148,9 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
     }
     _writer->Write("\'");
 
+    _writer->WriteFormat(" line=\'%d\'", node->Token()->lineNo);
+    _writer->WriteFormat(" char=\'%d\'", node->Token()->charNo);
+
     for (auto attr : node->Attributes())
     {
         _writer->WriteFormat(" %s=\'%s\'", attr.first.c_str(), attr.second.c_str());

@@ -8,8 +8,8 @@
 #define _TOMIC_SEMANTIC_UTIL_H_
 
 #include <tomic/Shared.h>
-#include <tomic/parser/ast/AstForward.h>
 #include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/parser/ast/SyntaxNode.h>
 #include <vector>
 #include <string>
 
@@ -25,6 +25,14 @@ namespace SemanticUtil
 
 // Count the number of direct child nodes of a specific type.
 int CountDirectChildNode(const SyntaxNodePtr node, SyntaxType type);
+int CountDirectTerminalNode(const SyntaxNodePtr node, TokenType type);
+
+SyntaxNodePtr GetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index = 1);
+bool GetDirectChildNodes(const SyntaxNodePtr node, SyntaxType type, std::vector<SyntaxNodePtr>& list);
+
+SyntaxNodePtr GetChildNode(const SyntaxNodePtr node, SyntaxType type, int index = 1);
+
+bool HasParent(const SyntaxNodePtr node, SyntaxType type);
 
 /*
  * ==================== Attributes ====================
@@ -60,6 +68,8 @@ bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, boo
 // 1,2,3;4,5,6;7,8,9
 std::string SerializeArray(const std::vector<std::vector<int>>& array);
 std::vector<std::vector<int>> DeserializeArray(const char* str);
+
+}
 
 TOMIC_END
 

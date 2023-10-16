@@ -27,6 +27,179 @@ int CountDirectChildNode(const SyntaxNodePtr node, SyntaxType type)
     return count;
 }
 
+int CountDirectTerminalNode(const SyntaxNodePtr node, TokenType type)
+{
+    int count = 0;
+    for (auto child = node->FirstChild(); child; child = child->NextSibling())
+    {
+        if (child->IsTerminal() && child->Token()->type == type)
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
+// Get direct child.
+static SyntaxNodePtr _FrontGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
+static SyntaxNodePtr _RearGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
+SyntaxNodePtr GetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
+{
+    TOMIC_ASSERT(index != 0);
+
+    if (node == nullptr)
+    {
+        return nullptr;
+    }
+    
+    if (index > 0)
+    {
+        return _FrontGetDirectChildNode(node, type, index);
+    }
+    else
+    {
+        return _RearGetDirectChildNode(node, type, -index);
+    }
+}
+
+static SyntaxNodePtr _FrontGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
+{
+    int i = 0;
+    for (auto child = node->FirstChild(); child; child = child->NextSibling())
+    {
+        if (child->Type() == type)
+        {
+            i++;
+            if (i == index)
+            {
+                return child;
+            }
+        }
+    }
+    return nullptr;
+}
+
+static SyntaxNodePtr _RearGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
+{
+    int i = 0;
+    for (auto child = node->LastChild(); child; child = child->PrevSibling())
+    {
+        if (child->Type() == type)
+        {
+            i++;
+            if (i == index)
+            {
+                return child;
+            }
+        }
+    }
+    return nullptr;
+}
+
+bool GetDirectChildNodes(const SyntaxNodePtr node, SyntaxType type, std::vector<SyntaxNodePtr>& list)
+{
+    bool found = false;
+    for (auto child = node->FirstChild(); child; child = child->NextSibling())
+    {
+        if (child->Type() == type)
+        {
+            list.push_back(child);
+            found = true;
+        }
+    }
+
+    return found;
+}
+
+// Get child node recursively. No re-entering allowed.
+static int _currentCount;
+static SyntaxNodePtr _FrontGetChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
+static SyntaxNodePtr _RearGetChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
+SyntaxNodePtr GetChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
+{
+    TOMIC_ASSERT(index != 0);
+
+    if (node == nullptr)
+    {
+        return nullptr;
+    }
+
+    _currentCount = 0;
+
+    if (index > 0)
+    {
+        return _FrontGetChildNode(node, type, index);
+    }
+    else
+    {
+        return _RearGetChildNode(node, type, -index);
+    }
+}
+
+
+static SyntaxNodePtr _FrontGetChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
+{
+    if (node->Type() == type)
+    {
+        _currentCount++;
+        if (_currentCount == index)
+        {
+            return node;
+        }
+        return nullptr;
+    }
+
+    for (auto child = node->FirstChild(); child; child = child->NextSibling())
+    {
+        auto result = _FrontGetChildNode(child, type, index);
+        if (result)
+        {
+            return result;
+        }
+    }
+
+    return nullptr;
+}
+
+static SyntaxNodePtr _RearGetChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
+{
+    if (node->Type() == type)
+    {
+        _currentCount++;
+        if (_currentCount == index)
+        {
+            return node;
+        }
+        return nullptr;
+    }
+
+    for (auto child = node->LastChild(); child; child = child->PrevSibling())
+    {
+        auto result = _RearGetChildNode(child, type, index);
+        if (result)
+        {
+            return result;
+        }
+    }
+
+    return nullptr;
+}
+
+bool HasParent(const SyntaxNodePtr node, SyntaxType type)
+{
+    SyntaxNodePtr parent = node->Parent();
+    while (parent)
+    {
+        if (parent->Type() == type)
+        {
+            return true;
+        }
+        parent = parent->Parent();
+    }
+
+    return false;
+}
+
 bool HasAttribute(const SyntaxNodePtr node, const char* name)
 {
     if (node->HasAttribute(name))

@@ -10,6 +10,7 @@
 #include <tomic/Shared.h>
 #include <tomic/parser/table/SymbolTableForward.h>
 #include <string>
+#include <utility>
 
 TOMIC_BEGIN
 
@@ -17,6 +18,7 @@ enum class SymbolTableEntryType
 {
     ET_UNKNOWN,
     ET_VARIABLE,
+    ET_CONSTANT,
     ET_FUNCTION,
 
     ET_COUNT
@@ -24,10 +26,12 @@ enum class SymbolTableEntryType
 
 enum class ValueType
 {
+    VT_ANY,
     VT_VOID,
     VT_INT,
     VT_CHAR,
     VT_BOOL,
+    VT_ARRAY,
 
     VT_COUNT
 };
@@ -37,8 +41,11 @@ class SymbolTableEntry
 public:
     virtual ~SymbolTableEntry() = default;
 
-    SymbolTableEntryType Type() const { return _type; }
+    SymbolTableEntryType EntryType() const { return _type; }
     const char* Name() const { return _name.c_str(); }
+
+    // Use with caution! Do it only when name collision occurs.
+    void AlterName(std::string name) { _name = std::move(name); }
 
 protected:
     // So it cannot be instantiated directly.
@@ -58,14 +65,13 @@ const int MAX_ARRAY_DIMENSION = 2;
 struct VariableEntryProperty
 {
     ValueType type;
-    bool isConst;
 
-    // a[10][100] -> size = { 100, 1 }
+    // a[10][100] -> size = { 10, 100 }
     int dimension;
     int size[MAX_ARRAY_DIMENSION];
 
     VariableEntryProperty()
-            : type(ValueType::VT_INT), isConst(false), dimension(0), size{ 0 } {}
+            : type(ValueType::VT_INT), dimension(0), size{ 0 } {}
 };
 
 class VariableEntry final : public SymbolTableEntry
@@ -75,7 +81,7 @@ public:
     ~VariableEntry() override = default;
 
 public:
-    bool IsConst() const { return _props.isConst; }
+    ValueType Type() const { return _props.type; }
 
     int Dimension() const { return _props.dimension; }
 
@@ -105,22 +111,24 @@ public:
     VariableEntryBuilder(const std::string& name) : _name(name) {}
     ~VariableEntryBuilder() = default;
 
-    VariableEntryBuilder* IsConst(bool isConst)
+    VariableEntryBuilder* Type(ValueType type)
     {
-        _props.isConst = isConst;
+        _props.type = type;
         return this;
     }
 
-    VariableEntryBuilder* Dimension(int dimension)
+    VariableEntryBuilder* Size(int n)
     {
-        _props.dimension = dimension;
+        _props.dimension = 1;
+        _props.size[0] = n;
         return this;
     }
 
-    VariableEntryBuilder* ArraySize(int dimension, int size)
+    VariableEntryBuilder* Size(int n, int m)
     {
-        TOMIC_ASSERT(dimension < MAX_ARRAY_DIMENSION);
-        _props.size[dimension] = size;
+        _props.dimension = 2;
+        _props.size[0] = n;
+        _props.size[1] = m;
         return this;
     }
 
@@ -136,6 +144,135 @@ private:
     VariableEntryProperty _props;
 };
 
+/*
+ * ==================== Symbol Table Constant Entry ====================
+ */
+
+struct ConstantEntryProperty
+{
+    ValueType type;
+
+    int dimension;
+    int size[MAX_ARRAY_DIMENSION];
+    int value;
+
+    std::vector<std::vector<int>> values;
+
+    ConstantEntryProperty()
+            : type(ValueType::VT_INT), dimension(0), size{ 0 } {}
+};
+
+class ConstantEntry final : public SymbolTableEntry
+{
+    friend class ConstantEntryBuilder;
+public:
+    ~ConstantEntry() override = default;
+
+    ValueType Type() const { return _props.type; }
+
+    int ArraySize(int dimension) const
+    {
+        TOMIC_ASSERT(dimension < MAX_ARRAY_DIMENSION);
+        return _props.size[dimension];
+    }
+
+    int Value() const
+    {
+        return _props.value;
+    }
+
+    int Value(int index) const
+    {
+        return _props.values[0][index];
+    }
+
+    int Value(int index1, int index2) const
+    {
+        return _props.values[index1][index2];
+    }
+
+private:
+    ConstantEntry(const std::string& name)
+            : SymbolTableEntry(name, SymbolTableEntryType::ET_CONSTANT) {}
+
+    static std::shared_ptr<ConstantEntry> New(const std::string& name)
+    {
+        return std::shared_ptr<ConstantEntry>(new ConstantEntry(name));
+    }
+
+    ConstantEntryProperty _props;
+};
+
+using ConstantEntryPtr = std::shared_ptr<ConstantEntry>;
+
+class ConstantEntryBuilder
+{
+public:
+    ConstantEntryBuilder(const std::string& name) : _name(name) {}
+    ~ConstantEntryBuilder() = default;
+
+    ConstantEntryBuilder* Type(ValueType type)
+    {
+        _props.type = type;
+        return this;
+    }
+
+    ConstantEntryBuilder* Size(int n)
+    {
+        _props.dimension = 1;
+        _props.size[0] = 1;
+        _props.values.resize(1, std::vector<int>(n, 0));
+        return this;
+    }
+
+    // a[n][m]
+    ConstantEntryBuilder* Size(int n, int m)
+    {
+        _props.dimension = 2;
+        _props.size[0] = m;
+        _props.size[1] = 1;
+        _props.values.resize(n, std::vector<int>(m, 0));
+        return this;
+    }
+
+    ConstantEntryBuilder* Value(int value)
+    {
+        _props.value = value;
+        return this;
+    }
+
+    ConstantEntryBuilder* Value(int index, int value)
+    {
+        _props.values[0][index] = value;
+        return this;
+    }
+
+    ConstantEntryBuilder* Value(int index1, int index2, int value)
+    {
+        _props.values[index1][index2] = value;
+        return this;
+    }
+
+    ConstantEntryBuilder* Values(const std::vector<std::vector<int>>& values)
+    {
+        // May disrupt array size!
+        _props.values = values;
+        return this;
+    }
+
+    ConstantEntryPtr Build()
+    {
+        auto entry = ConstantEntry::New(_name);
+        // A copy is occurred here.
+        entry->_props = _props;
+        return entry;
+    }
+
+private:
+    std::string _name;
+    ConstantEntryProperty _props;
+};
+
 
 /*
  * ==================== Symbol Table Function Entry ====================
@@ -144,20 +281,21 @@ private:
 struct FunctionParamProperty
 {
     ValueType type;
+    std::string name;   // for original name
     int dimension;
     int size[MAX_ARRAY_DIMENSION];
 
-    FunctionParamProperty(ValueType type, int dimension, int size1, int size2)
-            : type(type), dimension(dimension), size{ size1, size2 }
+    FunctionParamProperty(ValueType _type, std::string _name, int _dimension, int _size1, int _size2)
+            : type(_type), name(_name), dimension(_dimension), size{ _size1, _size2 }
     {
-        TOMIC_ASSERT(dimension >= 0);
-        TOMIC_ASSERT(dimension <= MAX_ARRAY_DIMENSION);
+        TOMIC_ASSERT(_dimension >= 0);
+        TOMIC_ASSERT(_dimension <= MAX_ARRAY_DIMENSION);
     }
 };
 
 struct FunctionEntryProperty
 {
-    int isVoid;
+    ValueType type;
     std::vector<FunctionParamProperty> params;
 
     int ArgsCount() const { return params.size(); }
@@ -169,8 +307,10 @@ class FunctionEntry final : public SymbolTableEntry
 public:
     ~FunctionEntry() override = default;
 
-    bool IsVoid() const { return _props.isVoid; }
+    ValueType Type() const { return _props.type; }
+
     int ArgsCount() const { return _props.ArgsCount(); }
+
     FunctionParamProperty Param(int index) const
     {
         TOMIC_ASSERT(index < ArgsCount());
@@ -198,15 +338,15 @@ public:
 
     ~FunctionEntryBuilder() = default;
 
-    FunctionEntryBuilder* IsVoid(bool isVoid)
+    FunctionEntryBuilder* Type(ValueType type)
     {
-        _props.isVoid = isVoid;
+        _props.type = type;
         return this;
     }
 
-    FunctionEntryBuilder* AddParam(ValueType type, int dimension, int size)
+    FunctionEntryBuilder* AddParam(ValueType type, std::string name, int dimension, int size)
     {
-        _props.params.emplace_back(type, dimension, size, 1);
+        _props.params.emplace_back(type, name, dimension, size, 1);
         return this;
     }
 

@@ -48,6 +48,7 @@ public:
     SyntaxNodePtr RemoveChild(SyntaxNodePtr child);
 
     bool HasChildren() const { return _firstChild; }
+    bool HasManyChildren() const { return _firstChild && _firstChild != _lastChild; }
 
     // Get the root of the tree, can be a sub-tree.
     SyntaxNodePtr Root() const;
@@ -68,9 +69,13 @@ public:
     bool HasAttribute(const char* name) const;
 
     // Get the attribute value, or defaultValue if not found.
-    const char* Attribute(const char* name, const char* value = nullptr) const;
+    const char* Attribute(const char* name, const char* defaultValue = nullptr) const;
     int IntAttribute(const char* name, int defaultValue = 0) const;
     bool BoolAttribute(const char* name, bool defaultValue = false) const;
+
+    bool QueryAttribute(const char* name, const char** value, const char* defaultValue = nullptr) const;
+    bool QueryIntAttribute(const char* name, int* value, int defaultValue = 0) const;
+    bool QueryBoolAttribute(const char* name, bool* value, bool defaultValue = false) const;
 
     // Set the attribute value.
     SyntaxNodePtr SetAttribute(const char* name, const char* value);

@@ -10,3 +10,25 @@ For Decl, we can have several utility functions:
 
 And, we may need some utility function that could generate unique name
 for duplicated name.
+____________________________________________________________
+
+2023/10/15 TS:
+
+For the type of expression, we can get it at ExitExp, then let its parent
+decide whether the type is correct or not.
+
+However, internal type mismatch, i.e. ARRAY + INT will be reported within
+Exp, and the type of it will be "repaired" as INT.
+
+For array, its type will directly be received by LVal, then pulled up to
+Exp. (Actually, we can let it be in LVal, and later get it via Synthesized
+Attribute.) When we get type of LVal, we can ignore whether the variable
+is declared or not, and treat it all as INT. However, it indeed needs to be
+checked, only generate other errors.
+
+In Exp, every time there is a join, we need to check whether the type is
+correct or not. And pull the type up to here. If type mismatch happens,
+we need to report error, and repair the type as INT.
+
+Well, a step further, we pull the type in each exp node! So that we can
+directly get it, without the worries that the exp has an invalid type.

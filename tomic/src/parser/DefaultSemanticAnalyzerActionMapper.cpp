@@ -3,3 +3,124 @@
  *
  *   For BUAA 2023 Compiler Technology
  */
+
+#include <tomic/parser/impl/DefaultSemanticAnalyzer.h>
+
+TOMIC_BEGIN
+
+DefaultSemanticAnalyzerActionMapper::DefaultSemanticAnalyzerActionMapper()
+{
+    _Init();
+}
+
+EnterAction DefaultSemanticAnalyzerActionMapper::GetEnterAction(tomic::SyntaxType type) const
+{
+    auto it = _enterActions.find(type);
+    if (it != _enterActions.end())
+    {
+        return it->second;
+    }
+    return nullptr;
+}
+
+ExitAction DefaultSemanticAnalyzerActionMapper::GetExitAction(tomic::SyntaxType type) const
+{
+    auto it = _exitActions.find(type);
+    if (it != _exitActions.end())
+    {
+        return it->second;
+    }
+    return nullptr;
+}
+
+void DefaultSemanticAnalyzerActionMapper::_Init()
+{
+    _enterActions[SyntaxType::ST_COMP_UNIT] = &DefaultSemanticAnalyzer::_EnterCompUnit;
+    _exitActions[SyntaxType::ST_COMP_UNIT] = &DefaultSemanticAnalyzer::_ExitCompUnit;
+
+    _enterActions[SyntaxType::ST_DECL] = &DefaultSemanticAnalyzer::_EnterDecl;
+    _exitActions[SyntaxType::ST_DECL] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_BTYPE] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_BTYPE] = &DefaultSemanticAnalyzer::_ExitBType;
+
+    _enterActions[SyntaxType::ST_CONST_DECL] = &DefaultSemanticAnalyzer::_EnterConstDecl;
+    _exitActions[SyntaxType::ST_CONST_DECL] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_CONST_DEF] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_CONST_DEF] = &DefaultSemanticAnalyzer::_ExitConstDef;
+
+    _enterActions[SyntaxType::ST_CONST_INIT_VAL] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_CONST_INIT_VAL] = &DefaultSemanticAnalyzer::_ExitConstInitVal;
+
+    _enterActions[SyntaxType::ST_VAR_DECL] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_VAR_DECL] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_VAR_DEF] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_VAR_DEF] = &DefaultSemanticAnalyzer::_ExitVarDef;
+
+    _enterActions[SyntaxType::ST_INIT_VAL] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_INIT_VAL] = &DefaultSemanticAnalyzer::_ExitInitVal;
+
+    _enterActions[SyntaxType::ST_FUNC_DEF] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_DEF] = &DefaultSemanticAnalyzer::_ExitFuncDef;
+
+    _enterActions[SyntaxType::ST_FUNC_TYPE] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_TYPE] = &DefaultSemanticAnalyzer::_ExitFuncType;
+
+    _enterActions[SyntaxType::ST_FUNC_FPARAMS] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_FPARAMS] = &DefaultSemanticAnalyzer::_ExitFuncFParams;
+
+    _enterActions[SyntaxType::ST_FUNC_FPARAM] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_FPARAM] = &DefaultSemanticAnalyzer::_ExitFuncFParam;
+
+    _enterActions[SyntaxType::ST_FUNC_APARAMS] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_APARAMS] = &DefaultSemanticAnalyzer::_ExitFuncAParams;
+
+    _enterActions[SyntaxType::ST_FUNC_APARAM] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_APARAM] = &DefaultSemanticAnalyzer::_ExitFuncAParam;
+
+    _enterActions[SyntaxType::ST_BLOCK] = &DefaultSemanticAnalyzer::_EnterBlock;
+    _exitActions[SyntaxType::ST_BLOCK] = &DefaultSemanticAnalyzer::_ExitBlock;
+
+    _enterActions[SyntaxType::ST_BLOCK_ITEM] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_BLOCK_ITEM] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_MAIN_FUNC_DEF] = &DefaultSemanticAnalyzer::_EnterMainFuncDef;
+    _exitActions[SyntaxType::ST_MAIN_FUNC_DEF] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_STMT] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_ASSIGNMENT_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_ASSIGNMENT_STMT] = &DefaultSemanticAnalyzer::_ExitAssignmentStmt;
+
+    _enterActions[SyntaxType::ST_LVAL] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_LVAL] = &DefaultSemanticAnalyzer::_ExitLVal;
+
+    _enterActions[SyntaxType::ST_COND] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_COND] = &DefaultSemanticAnalyzer::_ExitCond;
+
+    _enterActions[SyntaxType::ST_IF_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_IF_STMT] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_FOR_STMT] = &DefaultSemanticAnalyzer::_EnterForStmt;
+    _exitActions[SyntaxType::ST_FOR_STMT] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_FOR_INIT_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FOR_INIT_STMT] = &DefaultSemanticAnalyzer::_ExitForInnerStmt;
+
+    _enterActions[SyntaxType::ST_FOR_STEP_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FOR_STEP_STMT] = &DefaultSemanticAnalyzer::_ExitForInnerStmt;
+
+    _enterActions[SyntaxType::ST_EXP_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_EXP_STMT] = &DefaultSemanticAnalyzer::_DefaultExit;
+
+    _enterActions[SyntaxType::ST_BREAK_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_BREAK_STMT] = &DefaultSemanticAnalyzer::_ExitBreakStmt;
+
+    _enterActions[SyntaxType::ST_BREAK_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_CONTINUE_STMT] = &DefaultSemanticAnalyzer::_ExitBreakStmt;
+}
+
+TOMIC_END

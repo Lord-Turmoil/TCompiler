@@ -1012,6 +1012,36 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncAParams()
     auto checkpoint = _lexicalParser->SetCheckPoint();
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_FUNC_APARAMS);
 
+    auto param = _ParseFuncAParam();
+    if (!param)
+    {
+        _LogFailedToParse(SyntaxType::ST_FUNC_APARAM);
+        _PostParseError(checkpoint, root);
+        return nullptr;
+    }
+    root->InsertEndChild(param);
+
+    while (_Match(TokenType::TK_COMMA, _Lookahead()))
+    {
+        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+        param = _ParseFuncAParam();
+        if (!param)
+        {
+            _LogFailedToParse(SyntaxType::ST_FUNC_APARAM);
+            _PostParseError(checkpoint, root);
+            return nullptr;
+        }
+        root->InsertEndChild(param);
+    }
+
+    return root;
+}
+
+SyntaxNodePtr ResilientSyntacticParser::_ParseFuncAParam()
+{
+    auto checkpoint = _lexicalParser->SetCheckPoint();
+    auto root = _tree->NewNonTerminalNode(SyntaxType::ST_FUNC_APARAM);
+
     auto exp = _ParseExp();
     if (!exp)
     {
@@ -1020,19 +1050,6 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncAParams()
         return nullptr;
     }
     root->InsertEndChild(exp);
-
-    while (_Match(TokenType::TK_COMMA, _Lookahead()))
-    {
-        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
-        exp = _ParseExp();
-        if (!exp)
-        {
-            _LogFailedToParse(SyntaxType::ST_EXP);
-            _PostParseError(checkpoint, root);
-            return nullptr;
-        }
-        root->InsertEndChild(exp);
-    }
 
     return root;
 }

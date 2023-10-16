@@ -12,10 +12,10 @@ TOMIC_BEGIN
 
 SymbolTableBlockPtr SymbolTableBlock::NewChild()
 {
-    return _table->NewBlock(shared_from_this());
+    return _table->NewBlock(this);
 }
 
-SymbolTableBlock* SymbolTableBlock::AddEntry(SymbolTableEntryPtr entry)
+SymbolTableBlockPtr SymbolTableBlock::AddEntry(SymbolTableEntryPtr entry)
 {
     TOMIC_ASSERT(entry);
 
@@ -42,7 +42,7 @@ SymbolTableEntryPtr SymbolTableBlock::FindEntry(const std::string& name) const
 
 SymbolTableEntryPtr SymbolTableBlock::FindLocalEntry(const std::string& name) const
 {
-    for (auto entry: _entries)
+    for (auto entry : _entries)
     {
         if (entry->Name() == name)
         {

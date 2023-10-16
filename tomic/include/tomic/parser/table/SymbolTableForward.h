@@ -15,7 +15,8 @@ class SymbolTable;
 using SymbolTablePtr = std::shared_ptr<SymbolTable>;
 
 class SymbolTableBlock;
-using SymbolTableBlockPtr = std::shared_ptr<SymbolTableBlock>;
+using SymbolTableBlockPtr = SymbolTableBlock*;
+using SymbolTableBlockSmartPtr = std::shared_ptr<SymbolTableBlock>;
 
 class SymbolTableEntry;
 using SymbolTableEntryPtr = std::shared_ptr<SymbolTableEntry>;

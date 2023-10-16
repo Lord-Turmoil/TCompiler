@@ -33,7 +33,7 @@ public:
     SymbolTableBlockPtr GetBlock(int id) const;
 
 private:
-    std::unordered_map<int, SymbolTableBlockPtr> _blocks;
+    std::unordered_map<int, SymbolTableBlockSmartPtr> _blocks;
     int _nextId;
 };
 

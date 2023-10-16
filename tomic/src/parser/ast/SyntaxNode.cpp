@@ -175,14 +175,14 @@ bool SyntaxNode::HasAttribute(const char* name) const
     return _attributes.find(name) != _attributes.end();
 }
 
-const char* SyntaxNode::Attribute(const char* name, const char* value) const
+const char* SyntaxNode::Attribute(const char* name, const char* defaultValue) const
 {
     auto it = _attributes.find(name);
     if (it != _attributes.end())
     {
         return it->second.c_str();
     }
-    return value;
+    return defaultValue;
 }
 
 int SyntaxNode::IntAttribute(const char* name, int defaultValue) const
@@ -211,6 +211,73 @@ bool SyntaxNode::BoolAttribute(const char* name, bool defaultValue) const
         }
     }
     return defaultValue;
+}
+
+bool SyntaxNode::QueryAttribute(const char* name, const char** value, const char* defaultValue) const
+{
+    auto it = _attributes.find(name);
+    if (it != _attributes.end())
+    {
+        if (value)
+        {
+            *value = it->second.c_str();
+        }
+        return true;
+    }
+
+    if (value)
+    {
+        *value = defaultValue;
+    }
+    return false;
+}
+
+bool SyntaxNode::QueryIntAttribute(const char* name, int* value, int defaultValue) const
+{
+    const char* attr;
+
+    if (QueryAttribute(name, &attr, nullptr))
+    {
+        if (value)
+        {
+            if (!StringUtil::ToInt(attr, value))
+            {
+                *value = defaultValue;
+            }
+        }
+        return true;
+    }
+
+    if (value)
+    {
+        *value = defaultValue;
+    }
+
+    return false;
+}
+
+bool SyntaxNode::QueryBoolAttribute(const char* name, bool* value, bool defaultValue) const
+{
+    const char* attr;
+
+    if (QueryAttribute(name, &attr, nullptr))
+    {
+        if (value)
+        {
+            if (!StringUtil::ToBool(attr, value))
+            {
+                *value = defaultValue;
+            }
+        }
+        return true;
+    }
+
+    if (value)
+    {
+        *value = defaultValue;
+    }
+
+    return false;
 }
 
 SyntaxNodePtr SyntaxNode::SetAttribute(const char* name, const char* value)
