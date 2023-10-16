@@ -143,7 +143,7 @@ void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char*
     int lineNo = token ? token->lineNo : 1;
     int charNo = token ? token->charNo : 1;
 
-    _logger->Log(level, "(%d:%d) %s", lineNo, charNo, _logBuffer);
+    _logger->LogFormat(level, "(%d:%d) %s", lineNo, charNo, _logBuffer);
 }
 
 void DefaultSyntacticParser::_Log(LogLevel level, const char* format, ...)
@@ -231,7 +231,7 @@ SyntaxTreePtr DefaultSyntacticParser::Parse()
     if (!compUnit)
     {
         // TODO: Error handling.
-        _logger->Log(LogLevel::FATAL, "Failed to parse the source code.");
+        _logger->LogFormat(LogLevel::FATAL, "Failed to parse the source code.");
         return nullptr;
     }
 
@@ -515,7 +515,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
         // Check if it is an empty list.
         if (_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
         {
-            _logger->Log(LogLevel::WARNING, "Empty initialization list in <ConstInitVal>");
+            _logger->LogFormat(LogLevel::WARNING, "Empty initialization list in <ConstInitVal>");
             // Skip '}'
             root->InsertEndChild(_tree->NewTerminalNode(_Next()));
             return root;
@@ -699,7 +699,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
         // Check if it is an empty list.
         if (_Match(TokenType::TK_RIGHT_BRACE, _Lookahead()))
         {
-            _logger->Log(LogLevel::WARNING, "Empty initialization list in <InitVal>");
+            _logger->LogFormat(LogLevel::WARNING, "Empty initialization list in <InitVal>");
             // Skip '}'
             root->InsertEndChild(_tree->NewTerminalNode(_Next()));
             return root;

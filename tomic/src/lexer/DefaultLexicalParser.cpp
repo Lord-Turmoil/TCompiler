@@ -81,10 +81,10 @@ void DefaultLexicalParser::Rollback(int checkpoint)
 void DefaultLexicalParser::_LogUnexpectedToken(TokenPtr token)
 {
     TOMIC_ASSERT(token);
-    _logger->Log(LogLevel::ERROR, "(%d:%d) Unexpected token %s",
-                 token->lineNo,
-                 token->charNo,
-                 token->lexeme.c_str());
+    _logger->LogFormat(LogLevel::ERROR, "(%d:%d) Unexpected token %s",
+                       token->lineNo,
+                       token->charNo,
+                       token->lexeme.c_str());
 }
 
 void DefaultLexicalParser::_RaiseUnexpectedTokenError(TokenPtr token)

@@ -14,10 +14,10 @@
 
 TOMIC_BEGIN
 
-DefaultSemanticAnalyzer::DefaultSemanticAnalyzer(IErrorLoggerPtr logger)
-        : _logger(logger), _currentBlock(nullptr)
+DefaultSemanticAnalyzer::DefaultSemanticAnalyzer(IErrorLoggerPtr errorLogger, ILoggerPtr logger)
+        : _errorLogger(errorLogger), _logger(logger), _currentBlock(nullptr)
 {
-    TOMIC_ASSERT(_logger);
+    TOMIC_ASSERT(_errorLogger);
 }
 
 SymbolTablePtr DefaultSemanticAnalyzer::Analyze(SyntaxTreePtr tree)
@@ -42,17 +42,21 @@ static DefaultSemanticAnalyzerActionMapper mapper;
 
 bool DefaultSemanticAnalyzer::VisitEnter(SyntaxNodePtr node)
 {
+    _nodeStack.push(node);
+
     if (_AnalyzePreamble(node))
     {
+
         auto action = mapper.GetEnterAction(node->Type());
         if (action)
         {
             return (this->*action)(node);
         }
+
         return _DefaultEnter(node);
     }
 
-    return true;
+    return false;
 }
 
 bool DefaultSemanticAnalyzer::VisitExit(SyntaxNodePtr node)
@@ -63,6 +67,8 @@ bool DefaultSemanticAnalyzer::VisitExit(SyntaxNodePtr node)
     {
         return (this->*action)(node);
     }
+
+    _nodeStack.pop();
 
     return _DefaultExit(node);
 }

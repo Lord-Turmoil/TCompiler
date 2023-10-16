@@ -13,9 +13,11 @@
 #include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/ast/SyntaxType.h>
 #include <tomic/logger/error/IErrorLogger.h>
+#include <tomic/logger/debug/ILogger.h>
 #include <tomic/parser/table/SymbolTable.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
 #include <vector>
+#include <stack>
 
 TOMIC_BEGIN
 
@@ -24,7 +26,7 @@ class DefaultSemanticAnalyzer : public ISemanticAnalyzer, private AstVisitor
     friend class DefaultSemanticAnalyzerActionMapper;
 
 public:
-    DefaultSemanticAnalyzer(IErrorLoggerPtr logger);
+    DefaultSemanticAnalyzer(IErrorLoggerPtr errorLogger, ILoggerPtr logger);
     ~DefaultSemanticAnalyzer() override = default;
 
     SymbolTablePtr Analyze(SyntaxTreePtr tree) override;
@@ -38,10 +40,14 @@ private:
     bool _AnalyzePreamble(SyntaxNodePtr node);
 
 private:
-    IErrorLoggerPtr _logger;
+    IErrorLoggerPtr _errorLogger;
+    ILoggerPtr _logger;
 
     SymbolTablePtr _table;
     SymbolTableBlockPtr _currentBlock;
+
+    // This is used to get the line info.
+    std::stack<SyntaxNodePtr> _nodeStack;
 
 private:
     SymbolTableBlockPtr _GetOrCreateBlock(SyntaxNodePtr node);
@@ -49,6 +55,8 @@ private:
 
     int _ValidateConstSubscription(SyntaxNodePtr constExp);
     void _ValidateSubscription(SyntaxNodePtr exp);
+
+private:
 
 private:
     /*

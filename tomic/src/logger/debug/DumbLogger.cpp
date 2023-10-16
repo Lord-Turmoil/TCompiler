@@ -17,7 +17,7 @@ DumbLoggerPtr DumbLogger::New()
     return std::make_shared<DumbLogger>();
 }
 
-void DumbLogger::Log(LogLevel level, const char* format, ...)
+void DumbLogger::LogFormat(LogLevel level, const char* format, ...)
 {
     _count[(int)level]++;
 }

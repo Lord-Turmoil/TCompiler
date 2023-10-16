@@ -58,7 +58,7 @@ void RegisterComponents()
     container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, IErrorLogger, ILogger>();
 
     // Semantic
-    container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger>();
+    container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger, ILogger>();
     container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
 
     // Ast printer
@@ -143,12 +143,12 @@ static void SyntacticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr 
     auto tree = syntacticParser->Parse();
     if (!tree)
     {
-        logger->Log(LogLevel::FATAL, "Syntactic parse failed.");
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed.");
         return;
     }
     if (logger->Count(LogLevel::ERROR) > 0)
     {
-        logger->Log(LogLevel::FATAL, "Syntactic parse completed with errors.");
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse completed with errors.");
     }
 
     container->Resolve<IAstPrinter>()->Print(tree, dstWriter);
@@ -165,7 +165,7 @@ static void SemanticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr d
     auto tree = syntacticParser->Parse();
     if (!tree)
     {
-        logger->Log(LogLevel::FATAL, "Syntactic parse failed.");
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed.");
     }
 
     auto parser = container->Resolve<ISemanticParser>();

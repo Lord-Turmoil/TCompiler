@@ -17,7 +17,7 @@ DefaultLoggerPtr DefaultLogger::New()
     return std::make_shared<DefaultLogger>();
 }
 
-void DefaultLogger::Log(LogLevel level, const char* format, ...)
+void DefaultLogger::LogFormat(LogLevel level, const char* format, ...)
 {
     _count[(int)level]++;
 

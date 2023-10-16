@@ -23,7 +23,7 @@ public:
 
     static DefaultLoggerPtr New();
 
-    void Log(LogLevel level, const char* format, ...) override;
+    void LogFormat(LogLevel level, const char* format, ...) override;
     int Count(LogLevel level) override;
 
     DefaultLogger* SetLogLevel(LogLevel level) override
