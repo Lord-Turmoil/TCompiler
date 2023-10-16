@@ -13,6 +13,7 @@
 #include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/ast/SyntaxType.h>
 #include <tomic/logger/error/IErrorLogger.h>
+#include <tomic/logger/error/ErrorType.h>
 #include <tomic/logger/debug/ILogger.h>
 #include <tomic/parser/table/SymbolTable.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
@@ -57,6 +58,8 @@ private:
     void _ValidateSubscription(SyntaxNodePtr exp);
 
 private:
+    void _Log(LogLevel level, const char* format, ...);
+    void _LogError(ErrorType type, const char* format, ...);
 
 private:
     /*

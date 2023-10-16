@@ -18,6 +18,7 @@ DefaultSemanticAnalyzer::DefaultSemanticAnalyzer(IErrorLoggerPtr errorLogger, IL
         : _errorLogger(errorLogger), _logger(logger), _currentBlock(nullptr)
 {
     TOMIC_ASSERT(_errorLogger);
+    TOMIC_ASSERT(_logger);
 }
 
 SymbolTablePtr DefaultSemanticAnalyzer::Analyze(SyntaxTreePtr tree)
@@ -168,6 +169,47 @@ void DefaultSemanticAnalyzer::_ValidateSubscription(SyntaxNodePtr exp)
     {
         // TODO: Error handing - invalid subscription type.
     }
+}
+
+
+/*
+ * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * Logging
+ * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ */
+
+void DefaultSemanticAnalyzer::_Log(LogLevel level, const char* format, ...)
+{
+    static char buffer[1024];
+
+    auto node = _nodeStack.top();
+    auto terminator = SemanticUtil::GetChildNode(node, SyntaxType::ST_TERMINATOR);
+    int line = terminator->Token()->lineNo;
+    int column = terminator->Token()->charNo;
+
+    va_list args;
+    va_start(args, format);
+    vsprintf(buffer, format, args);
+    va_end(args);
+
+    _logger->LogFormat(level, "(%d:%d) %s", line, column, buffer);
+}
+
+void DefaultSemanticAnalyzer::_LogError(ErrorType type, const char* format, ...)
+{
+    static char buffer[1024];
+
+    auto node = _nodeStack.top();
+    auto terminator = SemanticUtil::GetChildNode(node, SyntaxType::ST_TERMINATOR);
+    int line = terminator->Token()->lineNo;
+    int column = terminator->Token()->charNo;
+
+    va_list args;
+    va_start(args, format);
+    vsprintf(buffer, format, args);
+    va_end(args);
+
+    _errorLogger->LogFormat(line, column, type, buffer);
 }
 
 
