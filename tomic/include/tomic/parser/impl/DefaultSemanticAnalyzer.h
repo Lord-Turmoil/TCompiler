@@ -51,6 +51,11 @@ private:
     void _ValidateSubscription(SyntaxNodePtr exp);
 
 private:
+    /*
+     * I don't want to write this much functions, I just leave them
+     * be, in case I need to do something special in the future.
+     */
+
     bool _DefaultEnter(SyntaxNodePtr node) { return true; }
     bool _DefaultExit(SyntaxNodePtr node) { return true; }
 

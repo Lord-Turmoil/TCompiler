@@ -158,6 +158,17 @@ void DefaultSemanticAnalyzerActionMapper::_Init()
     _enterActions[SyntaxType::ST_NUMBER] = &DefaultSemanticAnalyzer::_DefaultEnter;
     _exitActions[SyntaxType::ST_NUMBER] = &DefaultSemanticAnalyzer::_ExitNumber;
 
+    _enterActions[SyntaxType::ST_OR_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_OR_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
+
+    _enterActions[SyntaxType::ST_AND_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_AND_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
+
+    _enterActions[SyntaxType::ST_EQ_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_EQ_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
+
+    _enterActions[SyntaxType::ST_REL_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_REL_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
 }
 
 TOMIC_END
