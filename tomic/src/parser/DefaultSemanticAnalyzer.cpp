@@ -521,19 +521,21 @@ bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
     // Add function to symbol table.
     auto ident = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR);
     const char* name = ident->Token()->lexeme.c_str();
-    auto params = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_FUNC_FPARAMS);
-    std::vector<SyntaxNodePtr> paramList;
-    SemanticUtil::GetDirectChildNodes(params, SyntaxType::ST_FUNC_FPARAM, paramList);
-
     FunctionEntryBuilder builder(name);
     builder.Type(type);
-    for (auto& param : paramList)
+    auto params = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_FUNC_FPARAMS);
+    if (params)
     {
-        ValueType paramType = static_cast<ValueType>(param->IntAttribute("type"));
-        int paramDim = param->IntAttribute("dim");
-        const char* paramName = param->Attribute("name");
-        int paramSize = param->IntAttribute("size"); // it may not exist, but is OK
-        builder.AddParam(paramType, paramName, paramDim, paramSize);
+        std::vector<SyntaxNodePtr> paramList;
+        SemanticUtil::GetDirectChildNodes(params, SyntaxType::ST_FUNC_FPARAM, paramList);
+        for (auto& param : paramList)
+        {
+            ValueType paramType = static_cast<ValueType>(param->IntAttribute("type"));
+            int paramDim = param->IntAttribute("dim");
+            const char* paramName = param->Attribute("name");
+            int paramSize = param->IntAttribute("size"); // it may not exist, but is OK
+            builder.AddParam(paramType, paramName, paramDim, paramSize);
+        }
     }
 
     _AddToSymbolTable(builder.Build());
@@ -644,11 +646,14 @@ bool DefaultSemanticAnalyzer::_EnterBlock(SyntaxNodePtr node)
     if (node->Parent()->Type() == SyntaxType::ST_FUNC_DEF)
     {
         auto funcFParams = SemanticUtil::GetDirectChildNode(node->Parent(), SyntaxType::ST_FUNC_FPARAMS);
-        std::vector<VariableEntryPtr> params;
-        SymbolTableUtil::BuildParamVariableEntries(funcFParams, params);
-        for (auto& param : params)
+        if (funcFParams)
         {
-            _AddToSymbolTable(param);
+            std::vector<VariableEntryPtr> params;
+            SymbolTableUtil::BuildParamVariableEntries(funcFParams, params);
+            for (auto& param : params)
+            {
+                _AddToSymbolTable(param);
+            }
         }
     }
 
@@ -1192,51 +1197,54 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
 
     // Check argument type.
     int upper = std::min(argc, entry->ArgsCount());
-    std::vector<SyntaxNodePtr> args;
-    auto params = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_FUNC_APARAMS);
-    SemanticUtil::GetDirectChildNodes(params, SyntaxType::ST_FUNC_APARAM, args);
-    for (int i = 0; i < upper; i++)
+    if (upper > 0)
     {
-        auto param = entry->Param(i);
-        ValueType argType = static_cast<ValueType>(args[i]->IntAttribute("type"));
-        if (argType != param.type)
+        std::vector<SyntaxNodePtr> args;
+        auto params = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_FUNC_APARAMS);
+        SemanticUtil::GetDirectChildNodes(params, SyntaxType::ST_FUNC_APARAM, args);
+        for (int i = 0; i < upper; i++)
         {
-            _Log(LogLevel::ERROR,
-                 "Argument type mismatch: %d != %d",
-                 static_cast<int>(argType),
-                 static_cast<int>(param.type));
-            _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
-                      "Argument type mismatch: %d != %d",
-                      static_cast<int>(argType),
-                      static_cast<int>(param.type));
-            continue;
-        }
-        if (argType == ValueType::VT_ARRAY)
-        {
-            if (args[i]->IntAttribute("dim") != param.dimension)
+            auto param = entry->Param(i);
+            ValueType argType = static_cast<ValueType>(args[i]->IntAttribute("type"));
+            if (argType != param.type)
             {
                 _Log(LogLevel::ERROR,
-                     "Argument dimension mismatch: %d != %d",
-                     args[i]->IntAttribute("dim"),
-                     param.dimension);
+                     "Argument type mismatch: %d != %d",
+                     static_cast<int>(argType),
+                     static_cast<int>(param.type));
                 _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
-                          "Argument dimension mismatch: %d != %d",
-                          args[i]->IntAttribute("dim"),
-                          param.dimension);
+                          "Argument type mismatch: %d != %d",
+                          static_cast<int>(argType),
+                          static_cast<int>(param.type));
                 continue;
             }
-            if (param.dimension == 2)
+            if (argType == ValueType::VT_ARRAY)
             {
-                if (args[i]->IntAttribute("size") != param.size[1])
+                if (args[i]->IntAttribute("dim") != param.dimension)
                 {
                     _Log(LogLevel::ERROR,
-                         "Argument size mismatch: %d != %d",
-                         args[i]->IntAttribute("size"),
-                         param.size[1]);
+                         "Argument dimension mismatch: %d != %d",
+                         args[i]->IntAttribute("dim"),
+                         param.dimension);
                     _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
-                              "Argument size mismatch: %d != %d",
-                              args[i]->IntAttribute("size"),
-                              param.size[1]);
+                              "Argument dimension mismatch: %d != %d",
+                              args[i]->IntAttribute("dim"),
+                              param.dimension);
+                    continue;
+                }
+                if (param.dimension == 2)
+                {
+                    if (args[i]->IntAttribute("size") != param.size[1])
+                    {
+                        _Log(LogLevel::ERROR,
+                             "Argument size mismatch: %d != %d",
+                             args[i]->IntAttribute("size"),
+                             param.size[1]);
+                        _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
+                                  "Argument size mismatch: %d != %d",
+                                  args[i]->IntAttribute("size"),
+                                  param.size[1]);
+                    }
                 }
             }
         }

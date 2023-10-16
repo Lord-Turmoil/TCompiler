@@ -25,6 +25,11 @@ std::string GetUniqueName()
 
 void BuildParamVariableEntries(SyntaxNodePtr node, std::vector<VariableEntryPtr>& list)
 {
+    if (node == nullptr)
+    {
+        return;
+    }
+
     std::vector<SyntaxNodePtr> params;
     SemanticUtil::GetDirectChildNodes(node, SyntaxType::ST_FUNC_FPARAM, params);
 

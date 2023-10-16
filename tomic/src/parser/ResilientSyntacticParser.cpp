@@ -854,13 +854,15 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncDef()
     if (!_Match(TokenType::TK_RIGHT_PARENTHESIS, _Lookahead()))
     {
         SyntaxNodePtr funcFParams = _ParseFuncFParams();
-        if (!funcFParams)
+        if (funcFParams)
         {
-            _LogFailedToParse(SyntaxType::ST_FUNC_FPARAMS);
-            _PostParseError(checkpoint, root);
-            return nullptr;
+            root->InsertEndChild(funcFParams);
         }
-        root->InsertEndChild(funcFParams);
+        else
+        {
+            // We accept this case, but log a warning.
+            _LogFailedToParse(SyntaxType::ST_FUNC_FPARAMS);
+        }
     }
 
     // ')'
