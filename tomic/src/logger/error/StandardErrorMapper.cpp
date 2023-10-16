@@ -25,14 +25,14 @@ StandardErrorMapper::StandardErrorMapper()
 
     _descriptions[static_cast<int>(ErrorType::ERR_ASSIGN_TO_CONST)] = "h";
 
-    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_SEMICOLON)] = "h";
-    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_PARENTHESIS)] = "i";
-    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_BRACKET)] = "j";
+    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_SEMICOLON)] = "i";
+    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_PARENTHESIS)] = "j";
+    _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_BRACKET)] = "k";
     _descriptions[static_cast<int>(ErrorType::ERR_MISSING_RIGHT_BRACE)] = "z";
 
-    _descriptions[static_cast<int>(ErrorType::ERR_PRINTF_EXTRA_ARGUMENTS)] = "k";
+    _descriptions[static_cast<int>(ErrorType::ERR_PRINTF_EXTRA_ARGUMENTS)] = "l";
 
-    _descriptions[static_cast<int>(ErrorType::ERR_ILLEGAL_BREAK)] = "l";
+    _descriptions[static_cast<int>(ErrorType::ERR_ILLEGAL_BREAK)] = "m";
     _descriptions[static_cast<int>(ErrorType::ERR_ILLEGAL_CONTINUE)] = "m";
 }
 

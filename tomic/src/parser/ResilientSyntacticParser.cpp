@@ -1906,13 +1906,15 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseOutStmt()
     root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     // FormatString
-    if (!_Match(TokenType::TK_FORMAT, _Lookahead()))
+    if (_Match(TokenType::TK_FORMAT, _Lookahead()))
+    {
+        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+
+    }
+    else
     {
         _LogExpect(TokenType::TK_FORMAT);
-        _PostParseError(checkpoint, root);
-        return nullptr;
     }
-    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
 
     // ',' Exp
     while (_Match(TokenType::TK_COMMA, _Lookahead()))

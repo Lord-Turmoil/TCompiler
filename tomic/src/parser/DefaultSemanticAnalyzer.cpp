@@ -132,7 +132,8 @@ void DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntryPtr entry)
 
     if (_currentBlock->FindLocalEntry(entry->Name()))
     {
-        // TODO: Error handing - redefinition
+        _Log(LogLevel::ERROR, "Redefinition of %s", entry->Name());
+        _LogError(ErrorType::ERR_REDEFINED_SYMBOL, "Redefinition of %s", entry->Name());
         entry->AlterName(SymbolTableUtil::GetUniqueName());
     }
 
@@ -143,19 +144,22 @@ int DefaultSemanticAnalyzer::_ValidateConstSubscription(SyntaxNodePtr constExp)
 {
     if (!constExp->BoolAttribute("det"))
     {
-        // TODO: Error handing - undetermined expression as subscription.
+        _Log(LogLevel::ERROR, "Undetermined expression as subscription.");
+        _LogError(ErrorType::ERR_UNKNOWN, "Undetermined expression as subscription.");
     }
 
     ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(constExp, "type"));
     if (type != ValueType::VT_INT)
     {
-        // TODO: Error handing - invalid subscription type.
+        _Log(LogLevel::ERROR, "Invalid subscription type: %d.", type);
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid subscription type: %d", type);
     }
 
     int size = constExp->IntAttribute("value");
     if (size < 0)
     {
-        // TODO: Error handing - invalid init value.
+        _Log(LogLevel::ERROR, "Invalid subscription size: %d", size);
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid subscription size: %d", size);
         size = 0;
     }
 
@@ -167,7 +171,8 @@ void DefaultSemanticAnalyzer::_ValidateSubscription(SyntaxNodePtr exp)
     ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type"));
     if (type != ValueType::VT_INT)
     {
-        // TODO: Error handing - invalid subscription type.
+        _Log(LogLevel::ERROR, "Invalid subscription type: %d", type);
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid subscription type: %d", type);
     }
 }
 
@@ -289,14 +294,11 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
     }
     else
     {
-        // TODO: Error handing.
+        _Log(LogLevel::ERROR, "Invalid dimension: %d", dim);
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid dimension: %d", dim);
     }
 
-    if (!constInitVal->BoolAttribute("det"))
-    {
-        // TODO: Error handing - const expression not determined
-    }
-    else
+    if (constInitVal->BoolAttribute("det"))
     {
         if (dim == 0)
         {
@@ -310,7 +312,8 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
 
     if (dim != constInitVal->IntAttribute("dim"))
     {
-        // TODO: Error handing - dimension mismatch
+        _Log(LogLevel::ERROR, "Dimension mismatch: %d != %d", dim, constInitVal->IntAttribute("dim"));
+        _LogError(ErrorType::ERR_UNKNOWN, "Dimension mismatch: %d != %d", dim, constInitVal->IntAttribute("dim"));
     }
 
     _AddToSymbolTable(builder.Build());
@@ -342,15 +345,16 @@ bool DefaultSemanticAnalyzer::_ExitConstInitVal(SyntaxNodePtr node)
     {
         if (child->IntAttribute("dim") != childDim)
         {
-            // TODO: Error handing - dimension mismatch
+            _Log(LogLevel::ERROR, "Dimension mismatch: %d != %d", child->IntAttribute("dim"), childDim);
+            _LogError(ErrorType::ERR_UNKNOWN, "Dimension mismatch: %d != %d", child->IntAttribute("dim"), childDim);
         }
         if (child->IntAttribute("size") != childSize)
         {
-            // TODO: Error handing - size mismatch
+            _Log(LogLevel::ERROR, "Size mismatch: %d != %d", child->IntAttribute("size"), childSize);
+            _LogError(ErrorType::ERR_UNKNOWN, "Size mismatch: %d != %d", child->IntAttribute("size"), childSize);
         }
         if (!child->BoolAttribute("det"))
         {
-            // TODO: Error handing - undetermined expression
             det = false;
         }
     }
@@ -379,6 +383,12 @@ bool DefaultSemanticAnalyzer::_ExitConstInitVal(SyntaxNodePtr node)
         }
         node->SetAttribute("values", SemanticUtil::SerializeArray(values).c_str());
     }
+    else
+    {
+        node->SetBoolAttribute("det", false);
+        _Log(LogLevel::ERROR, "Undetermined value in const initial value.");
+        _LogError(ErrorType::ERR_UNKNOWN, "Undetermined value in const initial value.");
+    }
 
     return true;
 }
@@ -390,13 +400,10 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
 
     if (global)
     {
-        if (!initVal)
+        if (initVal && !initVal->BoolAttribute("det"))
         {
-            // TODO: Error - missing initial value
-        }
-        else if (!initVal->BoolAttribute("det"))
-        {
-            // TODO: Error - global var should be initialized with const
+            _Log(LogLevel::ERROR, "Global variable should be initialized with const value.");
+            _LogError(ErrorType::ERR_UNKNOWN, "Global variable should be initialized with const value.");
         }
     }
 
@@ -405,7 +412,8 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
     {
         if (dim != initVal->IntAttribute("dim"))
         {
-            // TODO: Error handling - dimension mismatch
+            _Log(LogLevel::ERROR, "Dimension mismatch: %d != %d", dim, initVal->IntAttribute("dim"));
+            _LogError(ErrorType::ERR_UNKNOWN, "Dimension mismatch: %d != %d", dim, initVal->IntAttribute("dim"));
         }
     }
 
@@ -437,10 +445,10 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
     }
     else
     {
-        // TODO: Error handing.
+        _Log(LogLevel::ERROR, "Invalid dimension: %d", dim);
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid dimension: %d", dim);
     }
 
-    // TODO: Add to symbol table.
     _AddToSymbolTable(entry);
 
     return true;
@@ -472,11 +480,13 @@ bool DefaultSemanticAnalyzer::_ExitInitVal(SyntaxNodePtr node)
             }
             if (child->IntAttribute("dim") != dim)
             {
-                // TODO: Error handing - dimension mismatch
+                _Log(LogLevel::ERROR, "Dimension mismatch: %d != %d", child->IntAttribute("dim"), dim);
+                _LogError(ErrorType::ERR_UNKNOWN, "Dimension mismatch: %d != %d", child->IntAttribute("dim"), dim);
             }
             if (child->IntAttribute("size") != childSize)
             {
-                // TODO: Error handing - size mismatch
+                _Log(LogLevel::ERROR, "Size mismatch: %d != %d", child->IntAttribute("size"), childSize);
+                _LogError(ErrorType::ERR_UNKNOWN, "Size mismatch: %d != %d", child->IntAttribute("size"), childSize);
             }
             if (!child->BoolAttribute("det"))
             {
@@ -503,12 +513,13 @@ bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
         auto lastStmt = SemanticUtil::GetChildNode(node, SyntaxType::ST_BLOCK_ITEM, -1);
         if (!lastStmt || !SemanticUtil::GetChildNode(lastStmt, SyntaxType::ST_RETURN_STMT))
         {
-            // TODO: Error handing - missing return statement.
+            _Log(LogLevel::ERROR, "Missing return statement.");
+            _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return statement.");
         }
     }
 
     // Add function to symbol table.
-    auto ident = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR, 2);
+    auto ident = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR);
     const char* name = ident->Token()->lexeme.c_str();
     auto params = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_FUNC_FPARAMS);
     std::vector<SyntaxNodePtr> paramList;
@@ -524,6 +535,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
         int paramSize = param->IntAttribute("size"); // it may not exist, but is OK
         builder.AddParam(paramType, paramName, paramDim, paramSize);
     }
+
     _AddToSymbolTable(builder.Build());
 
     return true;
@@ -568,19 +580,25 @@ bool DefaultSemanticAnalyzer::_ExitFuncFParam(SyntaxNodePtr node)
     node->SetAttribute("name", ident->Token()->lexeme.c_str());
     int dim = SemanticUtil::CountDirectTerminalNode(node, TokenType::TK_LEFT_BRACKET);
     node->SetIntAttribute("dim", dim);
+    if (dim > 0)
+    {
+        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ARRAY));
+    }
+    else
+    {
+        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    }
+
     if (dim == 2)
     {
         auto constExp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP);
-        if (!constExp->BoolAttribute("det"))
-        {
-            // TODO: Error handing - undetermined expression as subscription.
-        }
-        else
+        if (constExp->BoolAttribute("det"))
         {
             int size = constExp->IntAttribute("value");
             if (size < 0)
             {
-                // TODO: Error handing - invalid size.
+                _Log(LogLevel::ERROR, "Invalid size: %d", size);
+                _LogError(ErrorType::ERR_UNKNOWN, "Invalid size: %d", size);
             }
             else
             {
@@ -625,8 +643,9 @@ bool DefaultSemanticAnalyzer::_EnterBlock(SyntaxNodePtr node)
     // Add function parameter if necessary
     if (node->Parent()->Type() == SyntaxType::ST_FUNC_DEF)
     {
+        auto funcFParams = SemanticUtil::GetDirectChildNode(node->Parent(), SyntaxType::ST_FUNC_FPARAMS);
         std::vector<VariableEntryPtr> params;
-        SymbolTableUtil::BuildParamVariableEntries(node, params);
+        SymbolTableUtil::BuildParamVariableEntries(funcFParams, params);
         for (auto& param : params)
         {
             _AddToSymbolTable(param);
@@ -651,12 +670,26 @@ bool DefaultSemanticAnalyzer::_EnterMainFuncDef(tomic::SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitAssignmentStmt(tomic::SyntaxNodePtr node)
 {
-    auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type"));
-
+    // Check LVal
+    auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
+    ValueType type = static_cast<ValueType>(lval->IntAttribute("type"));
     if (type != ValueType::VT_INT)
     {
-        // TODO: Error handling - Type mismatch
+        _Log(LogLevel::ERROR, "Invalid lvalue of type %d", static_cast<int>(type));
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid lvalue of type %d", static_cast<int>(type));
+        return true;
+    }
+    if (lval->BoolAttribute("const"))
+    {
+        _Log(LogLevel::ERROR, "Cannot assign to const");
+        _LogError(ErrorType::ERR_ASSIGN_TO_CONST, "Cannot assign to const");
+    }
+
+    auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
+    if (type != static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type")))
+    {
+        _Log(LogLevel::ERROR, "Type mismatch");
+        _LogError(ErrorType::ERR_UNKNOWN, "Type mismatch");
     }
 
     return true;
@@ -673,7 +706,8 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
 
     if (!rawEntry)
     {
-        // TODO: Error handing - undefined variable.
+        _Log(LogLevel::ERROR, "Undefined variable: %s", name);
+        _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined variable: %s", name);
         return true;
     }
 
@@ -704,7 +738,8 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     }
     else
     {
-        // TODO: Error handing - invalid lvalue.
+        _Log(LogLevel::ERROR, "Invalid LVal");
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid LVal");
     }
 
     // Now we get the correct LVal
@@ -712,8 +747,9 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
 
     if (actualDim > expectedDim)
     {
-        // TODO: Error handling - dimension mismatch.
         actualDim = expectedDim;
+        _Log(LogLevel::ERROR, "Invalid dimension %d for %d", actualDim, expectedDim);
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid dimension %d for %d", actualDim, expectedDim);
     }
 
     /*
@@ -748,7 +784,8 @@ bool DefaultSemanticAnalyzer::_ExitCond(tomic::SyntaxNodePtr node)
     ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
     if (type != ValueType::VT_INT)
     {
-        // TODO: Error handing - invalid condition.
+        _Log(LogLevel::ERROR, "Wrong type for condition");
+        _LogError(ErrorType::ERR_UNKNOWN, "Wrong type for condition");
     }
 
     return true;
@@ -762,12 +799,27 @@ bool DefaultSemanticAnalyzer::_EnterForStmt(SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitForInnerStmt(tomic::SyntaxNodePtr node)
 {
-    auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type"));
-
+    // Check LVal
+    auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
+    ValueType type = static_cast<ValueType>(lval->IntAttribute("type"));
     if (type != ValueType::VT_INT)
     {
-        // TODO: Error handling - Type mismatch
+        _Log(LogLevel::ERROR, "Invalid lvalue of type %d", static_cast<int>(type));
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid lvalue of type %d", static_cast<int>(type));
+        return true;
+    }
+    if (lval->BoolAttribute("const"))
+    {
+        _Log(LogLevel::ERROR, "Cannot assign to const");
+        _LogError(ErrorType::ERR_ASSIGN_TO_CONST, "Cannot assign to const");
+    }
+
+    // Check Exp.
+    auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
+    if (type != static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type")))
+    {
+        _Log(LogLevel::ERROR, "Type mismatch");
+        _LogError(ErrorType::ERR_UNKNOWN, "Type mismatch");
     }
 
     return true;
@@ -777,7 +829,8 @@ bool DefaultSemanticAnalyzer::_ExitBreakStmt(tomic::SyntaxNodePtr node)
 {
     if (!SemanticUtil::GetInheritedBoolAttribute(node, "loop"))
     {
-        // TODO: Error handing - break outside loop.
+        _Log(LogLevel::ERROR, "Break outside loop.");
+        _LogError(ErrorType::ERR_ILLEGAL_BREAK, "Break outside loop.");
     }
 
     return true;
@@ -787,7 +840,8 @@ bool DefaultSemanticAnalyzer::_ExitContinueStmt(tomic::SyntaxNodePtr node)
 {
     if (!SemanticUtil::GetInheritedBoolAttribute(node, "loop"))
     {
-        // TODO: Error handing - continue outside loop.
+        _Log(LogLevel::ERROR, "Continue outside loop.");
+        _LogError(ErrorType::ERR_ILLEGAL_CONTINUE, "Continue outside loop.");
     }
 
     return true;
@@ -801,7 +855,8 @@ bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
     {
         if (SemanticUtil::CountDirectChildNode(node, SyntaxType::ST_EXP) > 0)
         {
-            // TODO: Error handing - return value in void function.
+            _Log(LogLevel::ERROR, "Return value in void function.");
+            _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return value in void function.");
         }
     }
     else
@@ -809,14 +864,16 @@ bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
         auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
         if (exp == nullptr)
         {
-            // TODO: Error handing - missing return value.
+            _Log(LogLevel::ERROR, "Missing return value.");
+            _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return value.");
         }
         else
         {
-            ValueType type = static_cast<ValueType>(node->IntAttribute("type"));
+            ValueType type = static_cast<ValueType>(exp->IntAttribute("type"));
             if (type != funcType)
             {
-                // TODO: Error handing - return type mismatch.
+                _Log(LogLevel::ERROR, "Return type mismatch.");
+                _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return type mismatch.");
             }
         }
     }
@@ -830,7 +887,8 @@ bool DefaultSemanticAnalyzer::_ExitInStmt(tomic::SyntaxNodePtr node)
     ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(lval, "type"));
     if (type != ValueType::VT_INT)
     {
-        // TODO: Error handing - invalid lvalue.
+        _Log(LogLevel::ERROR, "Invalid lvalue of type %d", static_cast<int>(type));
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid lvalue of type %d", static_cast<int>(type));
     }
 
     return true;
@@ -848,14 +906,18 @@ bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
 
     if (argc != formatArgc)
     {
-        // TODO: Error handing - argument count mismatch.
+        _Log(LogLevel::ERROR, "Argument count mismatch: %d != %d", argc, formatArgc);
+        _LogError(ErrorType::ERR_ARGUMENT_COUNT_MISMATCH, "Argument count mismatch: %d != %d", argc, formatArgc);
     }
     for (auto& arg : args)
     {
         ValueType type = static_cast<ValueType>(arg->IntAttribute("type"));
         if (type != ValueType::VT_INT)
         {
-            // TODO: Error handing - invalid argument type.
+            _Log(LogLevel::ERROR, "Invalid argument type in OutStmt: %d", static_cast<int>(type));
+            _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
+                      "Invalid argument type in OutStmt: %d",
+                      static_cast<int>(type));
         }
     }
 
@@ -877,13 +939,19 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
 
         if (leftType != rightType)
         {
-            // TODO: Error handing - type mismatch.
+            _Log(LogLevel::ERROR, "Arithmetic type mismatch: %d != %d",
+                 static_cast<int>(leftType),
+                 static_cast<int>(rightType));
+            _LogError(ErrorType::ERR_UNKNOWN, "Arithmetic type mismatch: %d != %d",
+                      static_cast<int>(leftType),
+                      static_cast<int>(rightType));
         }
         else
         {
             if (leftType == ValueType::VT_ARRAY)
             {
-                // TODO: Error handing - array cannot be operated.
+                _Log(LogLevel::ERROR, "Array cannot be operated.");
+                _LogError(ErrorType::ERR_UNKNOWN, "Array cannot be operated.");
             }
             else
             {
@@ -892,12 +960,12 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
                 {
                     node->SetBoolAttribute("det", true);
 
-                    // TODO: Perform compile-time calculation
                     int leftValue = left->IntAttribute("value");
                     int rightValue = right->IntAttribute("value");
                     auto opNode = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR);
                     const char* op = opNode->Token()->lexeme.c_str();
                     int value = SemanticUtil::EvaluateBinary(op, leftValue, rightValue);
+
                     node->SetIntAttribute("value", value);
                 }
             }
@@ -969,7 +1037,8 @@ bool DefaultSemanticAnalyzer::_ExitConstExp(tomic::SyntaxNodePtr node)
 
     if (!node->BoolAttribute("det"))
     {
-        // TODO: Error handing - undetermined const expression.
+        _Log(LogLevel::ERROR, "Undetermined const expression.");
+        _LogError(ErrorType::ERR_UNKNOWN, "Undetermined const expression.");
     }
 
     return true;
@@ -986,7 +1055,8 @@ bool DefaultSemanticAnalyzer::_ExitUnaryExp(tomic::SyntaxNodePtr node)
         ValueType type = static_cast<ValueType>(exp->IntAttribute("type"));
         if (type != ValueType::VT_INT)
         {
-            // TODO: Error handing - invalid operand type.
+            _Log(LogLevel::ERROR, "Invalid operand type: %d", static_cast<int>(type));
+            _LogError(ErrorType::ERR_UNKNOWN, "Invalid operand type: %d", static_cast<int>(type));
         }
         else if (exp->BoolAttribute("det"))
         {
@@ -1074,7 +1144,12 @@ bool DefaultSemanticAnalyzer::_ExitPrimaryExp(tomic::SyntaxNodePtr node)
         ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
         if (type != ValueType::VT_INT)
         {
-            // TODO: Error handing - invalid expression.
+            node->SetIntAttribute("type", static_cast<int>(type));
+            node->SetIntAttribute("dim", child->IntAttribute("dim"));
+            if (node->IntAttribute("dim") == 2)
+            {
+                node->SetIntAttribute("size", child->IntAttribute("size"));
+            }
         }
         else if (child->BoolAttribute("det"))
         {
@@ -1092,13 +1167,15 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
     auto rawEntry = _currentBlock->FindEntry(name);
     if (!rawEntry)
     {
-        // TODO: Error handing - undefined function.
+        _Log(LogLevel::ERROR, "Undefined function: %s", name);
+        _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined function: %s", name);
         return true;
     }
 
     if (rawEntry->EntryType() != SymbolTableEntryType::ET_FUNCTION)
     {
-        // TODO: Error handing - not a function.
+        _Log(LogLevel::ERROR, "Not a function: %s", name);
+        _LogError(ErrorType::ERR_UNKNOWN, "Not a function: %s", name);
         return true;
     }
 
@@ -1108,34 +1185,58 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
     int argc = SemanticUtil::GetSynthesizedIntAttribute(node, "argc");
     if (argc != entry->ArgsCount())
     {
-        // TODO: Error handing - argument count mismatch.
+        _Log(LogLevel::ERROR, "Argument count mismatch: %d != %d", argc, entry->ArgsCount());
+        _LogError(ErrorType::ERR_ARGUMENT_COUNT_MISMATCH, "Argument count mismatch: %d != %d", argc,
+                  entry->ArgsCount());
     }
 
     // Check argument type.
     int upper = std::min(argc, entry->ArgsCount());
     std::vector<SyntaxNodePtr> args;
-    SemanticUtil::GetDirectChildNodes(node, SyntaxType::ST_FUNC_APARAM, args);
+    auto params = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_FUNC_APARAMS);
+    SemanticUtil::GetDirectChildNodes(params, SyntaxType::ST_FUNC_APARAM, args);
     for (int i = 0; i < upper; i++)
     {
         auto param = entry->Param(i);
         ValueType argType = static_cast<ValueType>(args[i]->IntAttribute("type"));
         if (argType != param.type)
         {
-            // TODO: Error handing - argument type mismatch.
+            _Log(LogLevel::ERROR,
+                 "Argument type mismatch: %d != %d",
+                 static_cast<int>(argType),
+                 static_cast<int>(param.type));
+            _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
+                      "Argument type mismatch: %d != %d",
+                      static_cast<int>(argType),
+                      static_cast<int>(param.type));
             continue;
         }
         if (argType == ValueType::VT_ARRAY)
         {
             if (args[i]->IntAttribute("dim") != param.dimension)
             {
-                // TODO: Error handing - argument dimension mismatch.
+                _Log(LogLevel::ERROR,
+                     "Argument dimension mismatch: %d != %d",
+                     args[i]->IntAttribute("dim"),
+                     param.dimension);
+                _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
+                          "Argument dimension mismatch: %d != %d",
+                          args[i]->IntAttribute("dim"),
+                          param.dimension);
                 continue;
             }
             if (param.dimension == 2)
             {
                 if (args[i]->IntAttribute("size") != param.size[1])
                 {
-                    // TODO: Error handing - argument size mismatch.
+                    _Log(LogLevel::ERROR,
+                         "Argument size mismatch: %d != %d",
+                         args[i]->IntAttribute("size"),
+                         param.size[1]);
+                    _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
+                              "Argument size mismatch: %d != %d",
+                              args[i]->IntAttribute("size"),
+                              param.size[1]);
                 }
             }
         }

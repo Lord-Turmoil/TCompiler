@@ -32,3 +32,7 @@ we need to report error, and repair the type as INT.
 
 Well, a step further, we pull the type in each exp node! So that we can
 directly get it, without the worries that the exp has an invalid type.
+
+2023/10/16 TS:
+
+Make syntactic parser recover from errors.

@@ -55,6 +55,10 @@ void StandardErrorLogger::Dumps(twio::IWriterPtr writer)
 
     for (auto entry = _entries.begin(); entry != last; entry++)
     {
+        if (entry->_type == ErrorType::ERR_UNKNOWN)
+        {
+            continue;
+        }
         writer->WriteFormat("%d %s\n", entry->_line, _mapper->Description(entry->_type));
     }
 }

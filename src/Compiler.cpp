@@ -165,7 +165,8 @@ static void SemanticParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr d
     auto tree = syntacticParser->Parse();
     if (!tree)
     {
-        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed.");
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed, compile aborted");
+        return;
     }
 
     auto parser = container->Resolve<ISemanticParser>();
