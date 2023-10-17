@@ -900,10 +900,16 @@ bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
 
     // Check return value in void function.
     ValueType funcType = static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
-    if (funcType == ValueType::VT_VOID && ((type != ValueType::VT_VOID) || exp))
+    // if (funcType == ValueType::VT_VOID && ((type != ValueType::VT_VOID) || exp))
+    if (funcType == ValueType::VT_VOID && (type != ValueType::VT_VOID))
     {
         _Log(LogLevel::ERROR, "Return value in void function.");
         _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return value in void function.");
+    }
+    else if (funcType == ValueType::VT_INT && type != ValueType::VT_INT)
+    {
+        _Log(LogLevel::ERROR, "Return type mismatch.");
+        _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return type mismatch.");
     }
 
     return true;
