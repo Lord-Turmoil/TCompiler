@@ -23,15 +23,16 @@ std::string GetUniqueName()
     return std::string("#") + std::to_string(counter++);
 }
 
-void BuildParamVariableEntries(SyntaxNodePtr node, std::vector<VariableEntryPtr>& list)
+void BuildParamVariableEntries(SyntaxNodePtr funcParams,
+                               std::vector<std::pair<SyntaxNodePtr, VariableEntryPtr>>& list)
 {
-    if (node == nullptr)
+    if (funcParams == nullptr)
     {
         return;
     }
 
     std::vector<SyntaxNodePtr> params;
-    SemanticUtil::GetDirectChildNodes(node, SyntaxType::ST_FUNC_FPARAM, params);
+    SemanticUtil::GetDirectChildNodes(funcParams, SyntaxType::ST_FUNC_FPARAM, params);
 
     for (auto& param : params)
     {
@@ -50,7 +51,7 @@ void BuildParamVariableEntries(SyntaxNodePtr node, std::vector<VariableEntryPtr>
             builder.Size(0, param->IntAttribute("size"));
         }
 
-        list.push_back(builder.Build());
+        list.emplace_back(param, builder.Build());
     }
 }
 

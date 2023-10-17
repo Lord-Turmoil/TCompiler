@@ -11,11 +11,13 @@
 #include <tomic/utils/StringUtil.h>
 #include <tomic/utils/SymbolTableUtil.h>
 #include <algorithm> // for std::min
+#include <utility>
 
 TOMIC_BEGIN
 
 DefaultSemanticAnalyzer::DefaultSemanticAnalyzer(IErrorLoggerPtr errorLogger, ILoggerPtr logger)
-        : _errorLogger(errorLogger), _logger(logger), _currentBlock(nullptr)
+        : _errorLogger(errorLogger), _logger(logger),
+          _currentBlock(nullptr), _errorCandidate(nullptr)
 {
     TOMIC_ASSERT(_errorLogger);
     TOMIC_ASSERT(_logger);
@@ -47,14 +49,8 @@ bool DefaultSemanticAnalyzer::VisitEnter(SyntaxNodePtr node)
 
     if (_AnalyzePreamble(node))
     {
-
         auto action = mapper.GetEnterAction(node->Type());
-        if (action)
-        {
-            return (this->*action)(node);
-        }
-
-        return _DefaultEnter(node);
+        return (this->*action)(node);
     }
 
     return false;
@@ -64,14 +60,10 @@ bool DefaultSemanticAnalyzer::VisitExit(SyntaxNodePtr node)
 {
     auto action = mapper.GetExitAction(node->Type());
 
-    if (action)
-    {
-        return (this->*action)(node);
-    }
-
+    bool ret = (this->*action)(node);
     _nodeStack.pop();
 
-    return _DefaultExit(node);
+    return ret;
 }
 
 // Not sure if Visit is needed here.
@@ -187,7 +179,7 @@ void DefaultSemanticAnalyzer::_Log(LogLevel level, const char* format, ...)
 {
     static char buffer[1024];
 
-    auto node = _nodeStack.top();
+    auto node = _errorCandidate ? _errorCandidate : _nodeStack.top();
     auto terminator = SemanticUtil::GetChildNode(node, SyntaxType::ST_TERMINATOR);
     int line = terminator->Token()->lineNo;
     int column = terminator->Token()->charNo;
@@ -204,7 +196,7 @@ void DefaultSemanticAnalyzer::_LogError(ErrorType type, const char* format, ...)
 {
     static char buffer[1024];
 
-    auto node = _nodeStack.top();
+    auto node = _errorCandidate ? _errorCandidate : _nodeStack.top();
     auto terminator = SemanticUtil::GetChildNode(node, SyntaxType::ST_TERMINATOR);
     int line = terminator->Token()->lineNo;
     int column = terminator->Token()->charNo;
@@ -510,12 +502,35 @@ bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
     ValueType type = static_cast<ValueType>(node->IntAttribute("type"));
     if (type == ValueType::VT_INT)
     {
+        // Set error candidate to '}'.
+        _errorCandidate = node->LastChild()->LastChild();
+
         auto lastStmt = SemanticUtil::GetChildNode(node, SyntaxType::ST_BLOCK_ITEM, -1);
-        if (!lastStmt || !SemanticUtil::GetChildNode(lastStmt, SyntaxType::ST_RETURN_STMT))
+        if (!lastStmt)
         {
             _Log(LogLevel::ERROR, "Missing return statement.");
             _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return statement.");
         }
+        else
+        {
+            auto returnStmt = SemanticUtil::GetChildNode(lastStmt, SyntaxType::ST_RETURN_STMT);
+            if (!returnStmt)
+            {
+                _Log(LogLevel::ERROR, "Missing return statement.");
+                _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return statement.");
+            }
+            else
+            {
+                ValueType returnType = static_cast<ValueType>(returnStmt->IntAttribute("type"));
+                if (returnType != type && returnType != ValueType::VT_ANY)
+                {
+                    _Log(LogLevel::ERROR, "Return type mismatch");
+                    _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return type mismatch");
+                }
+            }
+        }
+
+        _errorCandidate = nullptr;
     }
 
     // Add function to symbol table.
@@ -648,11 +663,13 @@ bool DefaultSemanticAnalyzer::_EnterBlock(SyntaxNodePtr node)
         auto funcFParams = SemanticUtil::GetDirectChildNode(node->Parent(), SyntaxType::ST_FUNC_FPARAMS);
         if (funcFParams)
         {
-            std::vector<VariableEntryPtr> params;
+            std::vector<std::pair<SyntaxNodePtr, VariableEntryPtr>> params;
             SymbolTableUtil::BuildParamVariableEntries(funcFParams, params);
             for (auto& param : params)
             {
-                _AddToSymbolTable(param);
+                _errorCandidate = param.first;
+                _AddToSymbolTable(param.second);
+                _errorCandidate = nullptr;
             }
         }
     }
@@ -670,6 +687,23 @@ bool DefaultSemanticAnalyzer::_ExitBlock(tomic::SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_EnterMainFuncDef(tomic::SyntaxNodePtr node)
 {
     node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitMainFuncDef(tomic::SyntaxNodePtr node)
+{
+    // Set error candidate to '}'.
+    _errorCandidate = node->LastChild()->LastChild();
+
+    auto lastStmt = SemanticUtil::GetChildNode(node, SyntaxType::ST_BLOCK_ITEM, -1);
+    if (!lastStmt || !SemanticUtil::GetChildNode(lastStmt, SyntaxType::ST_RETURN_STMT))
+    {
+        _Log(LogLevel::ERROR, "Missing return statement.");
+        _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return statement.");
+    }
+
+    _errorCandidate = nullptr;
+
     return true;
 }
 
@@ -713,6 +747,7 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     {
         _Log(LogLevel::ERROR, "Undefined variable: %s", name);
         _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined variable: %s", name);
+        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ANY));
         return true;
     }
 
@@ -743,8 +778,11 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     }
     else
     {
-        _Log(LogLevel::ERROR, "Invalid LVal");
-        _LogError(ErrorType::ERR_UNKNOWN, "Invalid LVal");
+        // Not a variable, so undefined symbol should be reported.
+        _Log(LogLevel::ERROR, "Undefined variable: %s", name);
+        _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined variable: %s", name);
+        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ANY));
+        return true;
     }
 
     // Now we get the correct LVal
@@ -854,33 +892,24 @@ bool DefaultSemanticAnalyzer::_ExitContinueStmt(tomic::SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
 {
-    ValueType funcType = static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
-
-    if (funcType == ValueType::VT_VOID)
+    auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
+    ValueType type;
+    if (exp)
     {
-        if (SemanticUtil::CountDirectChildNode(node, SyntaxType::ST_EXP) > 0)
-        {
-            _Log(LogLevel::ERROR, "Return value in void function.");
-            _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return value in void function.");
-        }
+        type = static_cast<ValueType>(exp->IntAttribute("type"));
     }
     else
     {
-        auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
-        if (exp == nullptr)
-        {
-            _Log(LogLevel::ERROR, "Missing return value.");
-            _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return value.");
-        }
-        else
-        {
-            ValueType type = static_cast<ValueType>(exp->IntAttribute("type"));
-            if (type != funcType)
-            {
-                _Log(LogLevel::ERROR, "Return type mismatch.");
-                _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return type mismatch.");
-            }
-        }
+        type = ValueType::VT_VOID;
+    }
+    node->SetIntAttribute("type", static_cast<int>(type));
+
+    // Check return value in void function.
+    ValueType funcType = static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
+    if (funcType == ValueType::VT_VOID && type != ValueType::VT_VOID)
+    {
+        _Log(LogLevel::ERROR, "Return value in void function.");
+        _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return value in void function.");
     }
 
     return true;
@@ -895,6 +924,11 @@ bool DefaultSemanticAnalyzer::_ExitInStmt(tomic::SyntaxNodePtr node)
         _Log(LogLevel::ERROR, "Invalid lvalue of type %d", static_cast<int>(type));
         _LogError(ErrorType::ERR_UNKNOWN, "Invalid lvalue of type %d", static_cast<int>(type));
     }
+    if (lval->BoolAttribute("const"))
+    {
+        _Log(LogLevel::ERROR, "Cannot assign to const");
+        _LogError(ErrorType::ERR_ASSIGN_TO_CONST, "Cannot assign to const");
+    }
 
     return true;
 }
@@ -902,6 +936,12 @@ bool DefaultSemanticAnalyzer::_ExitInStmt(tomic::SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
 {
     auto formatStr = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR, 3);
+    if (formatStr->Token()->type != TokenType::TK_FORMAT)
+    {
+        _Log(LogLevel::ERROR, "Invalid format string");
+        _LogError(ErrorType::ERR_UNKNOWN, "Invalid format string");
+        return true;
+    }
     const char* format = formatStr->Token()->lexeme.c_str();
 
     int formatArgc = SemanticUtil::GetFormatStringArgCount(format);
@@ -911,8 +951,8 @@ bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
 
     if (argc != formatArgc)
     {
-        _Log(LogLevel::ERROR, "Argument count mismatch: %d != %d", argc, formatArgc);
-        _LogError(ErrorType::ERR_ARGUMENT_COUNT_MISMATCH, "Argument count mismatch: %d != %d", argc, formatArgc);
+        _Log(LogLevel::ERROR, "printf count mismatch: %d != %d", argc, formatArgc);
+        _LogError(ErrorType::ERR_PRINTF_EXTRA_ARGUMENTS, "printf argument count mismatch: %d != %d", argc, formatArgc);
     }
     for (auto& arg : args)
     {
@@ -1170,21 +1210,17 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
 {
     const char* name = node->FirstChild()->Token()->lexeme.c_str();
     auto rawEntry = _currentBlock->FindEntry(name);
-    if (!rawEntry)
+    if (!rawEntry || (rawEntry->EntryType() != SymbolTableEntryType::ET_FUNCTION))
     {
         _Log(LogLevel::ERROR, "Undefined function: %s", name);
         _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined function: %s", name);
-        return true;
-    }
-
-    if (rawEntry->EntryType() != SymbolTableEntryType::ET_FUNCTION)
-    {
-        _Log(LogLevel::ERROR, "Not a function: %s", name);
-        _LogError(ErrorType::ERR_UNKNOWN, "Not a function: %s", name);
+        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ANY));
         return true;
     }
 
     auto entry = std::static_pointer_cast<FunctionEntry>(rawEntry);
+
+    node->SetIntAttribute("type", static_cast<int>(entry->Type()));
 
     // Check argc.
     int argc = SemanticUtil::GetSynthesizedIntAttribute(node, "argc");
@@ -1206,7 +1242,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
         {
             auto param = entry->Param(i);
             ValueType argType = static_cast<ValueType>(args[i]->IntAttribute("type"));
-            if (argType != param.type)
+            if ((argType != param.type) && (argType != ValueType::VT_ANY))
             {
                 _Log(LogLevel::ERROR,
                      "Argument type mismatch: %d != %d",
@@ -1244,7 +1280,13 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
                                   "Argument size mismatch: %d != %d",
                                   args[i]->IntAttribute("size"),
                                   param.size[1]);
+                        continue;
                     }
+                }
+                if (SemanticUtil::GetSynthesizedBoolAttribute(args[i], "const"))
+                {
+                    _Log(LogLevel::ERROR, "Cannot pass const array as argument.");
+                    _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH, "Cannot pass const array as argument.");
                 }
             }
         }

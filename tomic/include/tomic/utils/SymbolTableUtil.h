@@ -12,6 +12,7 @@
 #include <tomic/parser/table/SymbolTableEntry.h>
 #include <tomic/parser/ast/SyntaxNode.h>
 #include <string>
+#include <utility>
 
 TOMIC_BEGIN
 
@@ -22,7 +23,8 @@ namespace SymbolTableUtil
 std::string GetUniqueName();
 
 // This node should be a FuncFParams.
-void BuildParamVariableEntries(SyntaxNodePtr funcFParams, std::vector<VariableEntryPtr>& list);
+void BuildParamVariableEntries(SyntaxNodePtr funcParams,
+                               std::vector<std::pair<SyntaxNodePtr, VariableEntryPtr>>& list);
 
 }
 

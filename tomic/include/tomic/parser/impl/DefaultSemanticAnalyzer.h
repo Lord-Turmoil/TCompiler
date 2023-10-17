@@ -49,6 +49,8 @@ private:
 
     // This is used to get the line info.
     std::stack<SyntaxNodePtr> _nodeStack;
+    SyntaxNodePtr _errorCandidate;
+
 
 private:
     SymbolTableBlockPtr _GetOrCreateBlock(SyntaxNodePtr node);
@@ -119,7 +121,7 @@ private:
 
     ////////// MainFuncDef
     bool _EnterMainFuncDef(SyntaxNodePtr node);
-    bool _ExitMainFuncDef(SyntaxNodePtr node) { return true; }
+    bool _ExitMainFuncDef(SyntaxNodePtr node);
 
     ////////// Stmt
     bool _EnterStmt(SyntaxNodePtr node) { return true; }
@@ -175,14 +177,14 @@ private:
     bool _EnterNumber(SyntaxNodePtr node) { return true; }
     bool _ExitNumber(SyntaxNodePtr node);
 
-    bool _EnterOrExp(SyntaxNodePtr node);
-    bool _ExitOrExp(SyntaxNodePtr node);
-    bool _EnterAndExp(SyntaxNodePtr node);
-    bool _ExitAndExp(SyntaxNodePtr node);
-    bool _EnterEqExp(SyntaxNodePtr node);
-    bool _ExitEqExp(SyntaxNodePtr node);
-    bool _EnterRelExp(SyntaxNodePtr node);
-    bool _ExitRelExp(SyntaxNodePtr node);
+    bool _EnterOrExp(SyntaxNodePtr node) { return true; }
+    bool _ExitOrExp(SyntaxNodePtr node) { return true; }
+    bool _EnterAndExp(SyntaxNodePtr node) { return true; }
+    bool _ExitAndExp(SyntaxNodePtr node) { return true; }
+    bool _EnterEqExp(SyntaxNodePtr node) { return true; }
+    bool _ExitEqExp(SyntaxNodePtr node) { return true; }
+    bool _EnterRelExp(SyntaxNodePtr node) { return true; }
+    bool _ExitRelExp(SyntaxNodePtr node) { return true; }
 };
 
 using EnterAction = bool (DefaultSemanticAnalyzer::*)(SyntaxNodePtr);
@@ -203,6 +205,9 @@ private:
 
     std::map<SyntaxType, EnterAction> _enterActions;
     std::map<SyntaxType, ExitAction> _exitActions;
+
+    EnterAction _defaultEnter;
+    ExitAction _defaultExit;
 };
 
 TOMIC_END

@@ -1794,13 +1794,15 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseReturnStmt()
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
         SyntaxNodePtr exp = _ParseExp();
-        if (!exp)
+        if (exp)
         {
-            _LogFailedToParse(SyntaxType::ST_EXP);
-            _PostParseError(checkpoint, root);
-            return nullptr;
+            root->InsertEndChild(exp);
         }
-        root->InsertEndChild(exp);
+        else
+        {
+            // We accept this case, and continue parse ';'.
+            _LogFailedToParse(SyntaxType::ST_EXP);
+        }
     }
 
     // ';'
@@ -1951,7 +1953,10 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseOutStmt()
         _LogExpectAfter(TokenType::TK_SEMICOLON);
         _RecoverFromMissingToken(root, TokenType::TK_SEMICOLON);
     }
-    root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+    else
+    {
+        root->InsertEndChild(_tree->NewTerminalNode(_Next()));
+    }
 
     return root;
 }

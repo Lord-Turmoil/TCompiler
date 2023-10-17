@@ -10,27 +10,29 @@ TOMIC_BEGIN
 
 DefaultSemanticAnalyzerActionMapper::DefaultSemanticAnalyzerActionMapper()
 {
+    _defaultEnter = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _defaultExit = &DefaultSemanticAnalyzer::_DefaultExit;
     _Init();
 }
 
-EnterAction DefaultSemanticAnalyzerActionMapper::GetEnterAction(tomic::SyntaxType type) const
+EnterAction DefaultSemanticAnalyzerActionMapper::GetEnterAction(SyntaxType type) const
 {
     auto it = _enterActions.find(type);
     if (it != _enterActions.end())
     {
         return it->second;
     }
-    return nullptr;
+    return _defaultEnter;
 }
 
-ExitAction DefaultSemanticAnalyzerActionMapper::GetExitAction(tomic::SyntaxType type) const
+ExitAction DefaultSemanticAnalyzerActionMapper::GetExitAction(SyntaxType type) const
 {
     auto it = _exitActions.find(type);
     if (it != _exitActions.end())
     {
         return it->second;
     }
-    return nullptr;
+    return _defaultExit;
 }
 
 void DefaultSemanticAnalyzerActionMapper::_Init()
@@ -87,7 +89,7 @@ void DefaultSemanticAnalyzerActionMapper::_Init()
     _exitActions[SyntaxType::ST_BLOCK_ITEM] = &DefaultSemanticAnalyzer::_DefaultExit;
 
     _enterActions[SyntaxType::ST_MAIN_FUNC_DEF] = &DefaultSemanticAnalyzer::_EnterMainFuncDef;
-    _exitActions[SyntaxType::ST_MAIN_FUNC_DEF] = &DefaultSemanticAnalyzer::_DefaultExit;
+    _exitActions[SyntaxType::ST_MAIN_FUNC_DEF] = &DefaultSemanticAnalyzer::_ExitMainFuncDef;
 
     _enterActions[SyntaxType::ST_STMT] = &DefaultSemanticAnalyzer::_DefaultEnter;
     _exitActions[SyntaxType::ST_STMT] = &DefaultSemanticAnalyzer::_DefaultExit;

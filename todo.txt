@@ -36,3 +36,7 @@ directly get it, without the worries that the exp has an invalid type.
 2023/10/16 TS:
 
 Make syntactic parser recover from errors.
+
+2023/10/17 TS:
+
+BUG: getint() didn't report missing ) and ;
