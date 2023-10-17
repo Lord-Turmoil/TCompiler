@@ -822,6 +822,34 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncDef()
     auto checkpoint = _lexicalParser->SetCheckPoint();
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_FUNC_DEF);
 
+    // FuncDecl
+    SyntaxNodePtr funcDecl = _ParseFuncDecl();
+    if (!funcDecl)
+    {
+        _LogFailedToParse(SyntaxType::ST_FUNC_DECL);
+        _PostParseError(checkpoint, root);
+        return nullptr;
+    }
+    root->InsertEndChild(funcDecl);
+
+    // Block
+    SyntaxNodePtr block = _ParseBlock();
+    if (!block)
+    {
+        _LogFailedToParse(SyntaxType::ST_BLOCK);
+        _PostParseError(checkpoint, root);
+        return nullptr;
+    }
+    root->InsertEndChild(block);
+
+    return root;
+}
+
+SyntaxNodePtr ResilientSyntacticParser::_ParseFuncDecl()
+{
+    auto checkpoint = _lexicalParser->SetCheckPoint();
+    auto root = _tree->NewNonTerminalNode(SyntaxType::ST_FUNC_DECL);
+
     // FuncType
     SyntaxNodePtr funcType = _ParseFuncType();
     if (!funcType)
@@ -875,16 +903,6 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncDef()
     {
         root->InsertEndChild(_tree->NewTerminalNode(_Next()));
     }
-
-    // Block
-    SyntaxNodePtr block = _ParseBlock();
-    if (!block)
-    {
-        _LogFailedToParse(SyntaxType::ST_BLOCK);
-        _PostParseError(checkpoint, root);
-        return nullptr;
-    }
-    root->InsertEndChild(block);
 
     return root;
 }

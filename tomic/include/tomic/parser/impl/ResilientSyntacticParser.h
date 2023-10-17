@@ -95,6 +95,7 @@ private:
 
     ////////// FuncDef
     SyntaxNodePtr _ParseFuncDef();
+    SyntaxNodePtr _ParseFuncDecl();
     SyntaxNodePtr _ParseFuncType();
     SyntaxNodePtr _ParseFuncFParams();
     SyntaxNodePtr _ParseFuncFParam();

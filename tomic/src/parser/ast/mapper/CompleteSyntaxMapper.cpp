@@ -41,6 +41,7 @@ void CompleteSyntaxMapper::_Init()
     _typeToDescription[SyntaxType::ST_INIT_VAL] = "InitVal";
 
     _typeToDescription[SyntaxType::ST_FUNC_DEF] = "FuncDef";
+    _typeToDescription[SyntaxType::ST_FUNC_DECL] = "FuncDecl";
     _typeToDescription[SyntaxType::ST_FUNC_TYPE] = "FuncType";
     _typeToDescription[SyntaxType::ST_FUNC_FPARAMS] = "FuncFParams";
     _typeToDescription[SyntaxType::ST_FUNC_FPARAM] = "FuncFParam";

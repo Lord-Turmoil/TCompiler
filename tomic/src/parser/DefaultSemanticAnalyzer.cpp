@@ -499,39 +499,32 @@ bool DefaultSemanticAnalyzer::_ExitInitVal(SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
 {
     // Check return value of non-void function.
-    ValueType type = static_cast<ValueType>(node->IntAttribute("type"));
+    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
     if (type == ValueType::VT_INT)
     {
         // Set error candidate to '}'.
         _errorCandidate = node->LastChild()->LastChild();
 
         auto lastStmt = SemanticUtil::GetChildNode(node, SyntaxType::ST_BLOCK_ITEM, -1);
-        if (!lastStmt)
+        if (!lastStmt || !SemanticUtil::GetChildNode(lastStmt, SyntaxType::ST_RETURN_STMT))
         {
             _Log(LogLevel::ERROR, "Missing return statement.");
             _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return statement.");
         }
-        else
-        {
-            auto returnStmt = SemanticUtil::GetChildNode(lastStmt, SyntaxType::ST_RETURN_STMT);
-            if (!returnStmt)
-            {
-                _Log(LogLevel::ERROR, "Missing return statement.");
-                _LogError(ErrorType::ERR_MISSING_RETURN_STATEMENT, "Missing return statement.");
-            }
-            else
-            {
-                ValueType returnType = static_cast<ValueType>(returnStmt->IntAttribute("type"));
-                if (returnType != type && returnType != ValueType::VT_ANY)
-                {
-                    _Log(LogLevel::ERROR, "Return type mismatch");
-                    _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return type mismatch");
-                }
-            }
-        }
 
         _errorCandidate = nullptr;
     }
+
+    return true;
+}
+
+bool DefaultSemanticAnalyzer::_ExitFuncDecl(tomic::SyntaxNodePtr node)
+{
+    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
+
+    node->SetIntAttribute("type", static_cast<int>(type));
+    // Pull this attribute up. This parent must be a FuncDef.
+    node->Parent()->SetIntAttribute("type", static_cast<int>(type));
 
     // Add function to symbol table.
     auto ident = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR);
@@ -660,7 +653,8 @@ bool DefaultSemanticAnalyzer::_EnterBlock(SyntaxNodePtr node)
     // Add function parameter if necessary
     if (node->Parent()->Type() == SyntaxType::ST_FUNC_DEF)
     {
-        auto funcFParams = SemanticUtil::GetDirectChildNode(node->Parent(), SyntaxType::ST_FUNC_FPARAMS);
+        // Then it must have a previous sibling of FuncDecl.
+        auto funcFParams = SemanticUtil::GetDirectChildNode(node->PrevSibling(), SyntaxType::ST_FUNC_FPARAMS);
         if (funcFParams)
         {
             std::vector<std::pair<SyntaxNodePtr, VariableEntryPtr>> params;

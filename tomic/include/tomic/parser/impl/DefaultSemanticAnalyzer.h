@@ -102,6 +102,8 @@ private:
     ////////// FuncDef
     bool _EnterFuncDef(SyntaxNodePtr node) { return true; }
     bool _ExitFuncDef(SyntaxNodePtr node);
+    bool _EnterFuncDecl(SyntaxNodePtr node) { return true; }
+    bool _ExitFuncDecl(SyntaxNodePtr node);
     bool _EnterFuncType(SyntaxNodePtr node) { return true; }
     bool _ExitFuncType(SyntaxNodePtr node);
     bool _EnterFuncFParams(SyntaxNodePtr node) { return true; }

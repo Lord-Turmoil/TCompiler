@@ -67,6 +67,9 @@ void DefaultSemanticAnalyzerActionMapper::_Init()
     _enterActions[SyntaxType::ST_FUNC_DEF] = &DefaultSemanticAnalyzer::_DefaultEnter;
     _exitActions[SyntaxType::ST_FUNC_DEF] = &DefaultSemanticAnalyzer::_ExitFuncDef;
 
+    _enterActions[SyntaxType::ST_FUNC_DECL] = &DefaultSemanticAnalyzer::_DefaultEnter;
+    _exitActions[SyntaxType::ST_FUNC_DECL] = &DefaultSemanticAnalyzer::_ExitFuncDecl;
+
     _enterActions[SyntaxType::ST_FUNC_TYPE] = &DefaultSemanticAnalyzer::_DefaultEnter;
     _exitActions[SyntaxType::ST_FUNC_TYPE] = &DefaultSemanticAnalyzer::_ExitFuncType;
 
