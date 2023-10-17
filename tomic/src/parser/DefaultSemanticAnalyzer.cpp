@@ -802,7 +802,7 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     node->SetIntAttribute("dim", finalDim);
     if (finalDim == 0)
     {
-        node->SetIntAttribute("type", static_cast<int>(type));
+        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
     }
     else
     {
@@ -900,7 +900,7 @@ bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
 
     // Check return value in void function.
     ValueType funcType = static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
-    if (funcType == ValueType::VT_VOID && type != ValueType::VT_VOID)
+    if (funcType == ValueType::VT_VOID && ((type != ValueType::VT_VOID) || exp))
     {
         _Log(LogLevel::ERROR, "Return value in void function.");
         _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return value in void function.");

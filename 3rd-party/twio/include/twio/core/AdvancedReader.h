@@ -22,7 +22,10 @@ public:
 
     static std::shared_ptr<AdvancedReader> New(const IInputStreamPtr& stream);
 
+    bool HasNext() override;
+
     size_t Read(char* buffer, size_t size) override;
+    const char* ReadLine(char* buffer) override;
     int Read() override;
 
     int Rewind() override;

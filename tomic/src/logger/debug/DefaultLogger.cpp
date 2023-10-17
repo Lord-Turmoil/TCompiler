@@ -35,7 +35,7 @@ void DefaultLogger::LogVFormat(LogLevel level, const char* format, va_list args)
     }
 
     _writer->WriteFormat("[%s] ", LogLevelToString(level));
-    _writer->WriteFormat(format, args);
+    _writer->WriteVFormat(format, args);
 
     _writer->Write("\n");
 }

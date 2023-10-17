@@ -21,6 +21,12 @@ std::shared_ptr<Reader> Reader::New(const IInputStreamPtr& stream)
 Reader::~Reader() = default;
 
 
+bool Reader::HasNext()
+{
+    return _HasNext() || _stream->HasNext();
+}
+
+
 size_t Reader::Read(char* buffer, size_t size)
 {
     TWIO_ASSERT(buffer != nullptr);
@@ -44,6 +50,27 @@ size_t Reader::Read(char* buffer, size_t size)
     _Push(buffer, streamRead);
 
     return bufferRead + streamRead;
+}
+
+
+const char* Reader::ReadLine(char* buffer)
+{
+    TWIO_ASSERT(buffer != nullptr);
+
+    char* p = buffer;
+    int ch = Read();
+    if (ch == EOF)
+    {
+        return nullptr;
+    }
+    while (ch != EOF && ch != '\n')
+    {
+        *(p++) = ch;
+        ch = Read();
+    }
+    *p = '\0';
+
+    return buffer;
 }
 
 

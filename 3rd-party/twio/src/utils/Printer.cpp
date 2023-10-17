@@ -1,7 +1,6 @@
 // Copyright (C) 2018 - 2023 Tony's Studio. All rights reserved.
 
 #include <twio/utils/Printer.h>
-#include <cstdio>   // EOF
 
 TWIO_BEGIN
 
@@ -42,10 +41,9 @@ void Printer::Print()
 {
     TWIO_ASSERT(IsReady());
 
-    int ch;
-    while ((ch = _reader->Read()) != EOF)
+    while (_reader->HasNext())
     {
-        _writer->Write(ch);
+        _writer->Write(_reader->Read());
     }
 }
 

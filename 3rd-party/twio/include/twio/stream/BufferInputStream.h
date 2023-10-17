@@ -47,6 +47,8 @@ public:
     // Check if the buffer is ready for reading.
     bool IsReady() const override;
 
+    bool HasNext() const override;
+
     size_t Read(char* buffer, size_t size) override;
     size_t Read(char* buffer) override;
     int Read() override;

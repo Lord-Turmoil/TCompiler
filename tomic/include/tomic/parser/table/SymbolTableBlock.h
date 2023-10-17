@@ -11,6 +11,7 @@
 #include <tomic/parser/table/SymbolTableForward.h>
 #include <vector>
 #include <memory>
+#include <string>
 
 TOMIC_BEGIN
 

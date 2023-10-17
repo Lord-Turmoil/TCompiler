@@ -15,7 +15,11 @@ class IReader
 public:
     virtual ~IReader() = 0;
 
+    virtual bool HasNext() = 0;
+
     virtual size_t Read(char* buffer, size_t size) = 0;
+    // Readline will discard the '\n' character.
+    virtual const char* ReadLine(char* buffer) = 0;
     virtual int Read() = 0;
 
     virtual int Rewind() = 0;

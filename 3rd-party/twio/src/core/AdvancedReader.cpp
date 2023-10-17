@@ -20,6 +20,12 @@ std::shared_ptr<AdvancedReader> AdvancedReader::New(const IInputStreamPtr& strea
 }
 
 
+bool AdvancedReader::HasNext()
+{
+    return _HasNext() || _stream->HasNext();
+}
+
+
 size_t AdvancedReader::Read(char* buffer, size_t size)
 {
     TWIO_ASSERT(buffer != nullptr);
@@ -51,6 +57,28 @@ size_t AdvancedReader::Read(char* buffer, size_t size)
     }
 
     return bufferRead + streamRead;
+}
+
+
+const char* AdvancedReader::ReadLine(char* buffer)
+{
+    TWIO_ASSERT(buffer != nullptr);
+
+    int ch = Read();
+    if (ch == EOF)
+    {
+        return nullptr;
+    }
+
+    char* p = buffer;
+    while (ch != EOF && ch != '\n')
+    {
+        *(p++) = ch;
+        ch = Read();
+    }
+
+    *p = '\0';
+    return buffer;
 }
 
 

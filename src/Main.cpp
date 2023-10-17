@@ -35,6 +35,13 @@ void Configure();
  */
 int main(int argc, char* argv[])
 {
+#ifdef INTERNAL
+    printf("ToMiCompiler v1.0\n");
+    printf("For BUAA 2023 Compiler Technology\n");
+    printf("Copyright (C) Tony's Studio 2018 - 2023\n");
+    printf("________________________________________\n");
+#endif
+
 #ifndef INTERNAL
     if (argc != 1)
     {

@@ -107,7 +107,7 @@ void Compile()
 
     if (tree == nullptr)
     {
-        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed, compile aborted");
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed, compilation aborted");
         return;
     }
 

@@ -40,21 +40,18 @@ size_t Writer::Write(char ch)
 
 size_t Writer::WriteFormat(const char* format, ...)
 {
-    va_list argv;
-
-    va_start(argv, format);
-    auto result = _stream->Write(format, argv);
-    va_end(argv);
+    va_list args;
+    va_start(args, format);
+    size_t result = WriteVFormat(format, args);
+    va_end(args);
 
     return result;
 }
 
-
-size_t Writer::WriteFormat(const char* format, va_list argv)
+size_t Writer::WriteVFormat(const char* format, va_list args)
 {
-    return _stream->Write(format, argv);
+    return _stream->Write(format, args);
 }
-
 
 IOutputStreamPtr Writer::Stream() const
 {

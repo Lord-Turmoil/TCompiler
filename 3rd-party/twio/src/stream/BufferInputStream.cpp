@@ -99,6 +99,12 @@ bool BufferInputStream::IsReady() const
 }
 
 
+bool BufferInputStream::HasNext() const
+{
+    return IsReady() && (_next < _size);
+}
+
+
 size_t BufferInputStream::Read(char* buffer, size_t size)
 {
     TWIO_ASSERT(IsReady());

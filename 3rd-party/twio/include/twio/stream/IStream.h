@@ -28,6 +28,8 @@ class IInputStream : public IStream
 public:
     ~IInputStream() override = default;
 
+    virtual bool HasNext() const = 0;
+
     // Read up to 'size' characters from the stream.
     virtual size_t Read(char* buffer, size_t size) = 0;
 
