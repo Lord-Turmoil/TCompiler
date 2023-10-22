@@ -29,7 +29,7 @@ private:
     bool VisitEnter(SyntaxNodePtr node) override;
     bool VisitExit(SyntaxNodePtr node) override;
     bool Visit(SyntaxNodePtr node) override;
-    
+
     void _VisitNonTerminal(SyntaxNodePtr node);
     void _VisitTerminal(SyntaxNodePtr node);
     void _VisitEpsilon(SyntaxNodePtr node);

@@ -55,7 +55,7 @@ bool RightRecursiveAstTransformer::VisitExit(SyntaxNodePtr node)
     }
 
     // Then we transform all its children.
-    for (auto child: children)
+    for (auto child : children)
     {
         if (_NeedTransform(child))
         {
@@ -79,7 +79,7 @@ bool RightRecursiveAstTransformer::Visit(SyntaxNodePtr node)
 
 bool RightRecursiveAstTransformer::_IsRightRecursive(SyntaxNodePtr node)
 {
-    for (auto type: _rightRecursiveTypes)
+    for (auto type : _rightRecursiveTypes)
     {
         if (node->Type() == type)
         {

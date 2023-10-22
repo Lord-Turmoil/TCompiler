@@ -86,7 +86,7 @@ bool DefaultSyntacticParser::_Match(TokenType type, TokenPtr token)
 
 bool DefaultSyntacticParser::_MatchAny(const std::vector<TokenType>& types, TokenPtr token)
 {
-    for (auto type: types)
+    for (auto type : types)
     {
         if (_Match(type, token))
         {
@@ -193,7 +193,7 @@ void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected, 
 {
     std::stringstream stream;
 
-    for (auto type: expected)
+    for (auto type : expected)
     {
         auto descr = _tokenMapper->Lexeme(type);
         if (!descr)
