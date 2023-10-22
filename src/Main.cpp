@@ -12,7 +12,7 @@ using namespace tomic;
 
 static const char* input = "testfile.txt";
 static const char* output = "output.txt";
-static const char* error = "error.txt";
+static const char* error = "null";
 static const char* ext = ".txt";
 static bool silent = false;
 static bool enableCompleteAst = false;

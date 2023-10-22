@@ -112,7 +112,7 @@ void Compile()
     }
 
     // Semantic parse only.
-    SemanticParse(tree);
+    // SemanticParse(tree);
 
     if (!config->Silent())
     {
