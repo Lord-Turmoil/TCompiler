@@ -117,7 +117,7 @@ SymbolTableBlockPtr DefaultSemanticAnalyzer::_GetOrCreateBlock(SyntaxNodePtr nod
     return block;
 }
 
-void DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntryPtr entry)
+bool DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntryPtr entry)
 {
     TOMIC_ASSERT(entry);
     TOMIC_ASSERT(_currentBlock);
@@ -127,9 +127,12 @@ void DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntryPtr entry)
         _Log(LogLevel::ERROR, "Redefinition of %s", entry->Name());
         _LogError(ErrorType::ERR_REDEFINED_SYMBOL, "Redefinition of %s", entry->Name());
         entry->AlterName(SymbolTableUtil::GetUniqueName());
+        return false;
     }
 
     _currentBlock->AddEntry(entry);
+
+    return true;
 }
 
 int DefaultSemanticAnalyzer::_ValidateConstSubscription(SyntaxNodePtr constExp)
@@ -498,6 +501,12 @@ bool DefaultSemanticAnalyzer::_ExitInitVal(SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
 {
+    // If failed to declare, skip it.
+    if (node->BoolAttribute("bad"))
+    {
+        return true;
+    }
+
     // Check return value of non-void function.
     ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
     if (type == ValueType::VT_INT)
@@ -546,7 +555,12 @@ bool DefaultSemanticAnalyzer::_ExitFuncDecl(tomic::SyntaxNodePtr node)
         }
     }
 
-    _AddToSymbolTable(builder.Build());
+    // If function failed to add to symbol table, we mark it as corrupted,
+    // so that we can skip it.
+    if (!_AddToSymbolTable(builder.Build()))
+    {
+        node->Parent()->SetBoolAttribute("bad", true);
+    }
 
     return true;
 }
@@ -653,6 +667,12 @@ bool DefaultSemanticAnalyzer::_EnterBlock(SyntaxNodePtr node)
     // Add function parameter if necessary
     if (node->Parent()->Type() == SyntaxType::ST_FUNC_DEF)
     {
+        if (node->Parent()->BoolAttribute("bad"))
+        {
+            // The parent function declaration fails.
+            return false;
+        }
+
         // Then it must have a previous sibling of FuncDecl.
         auto funcFParams = SemanticUtil::GetDirectChildNode(node->PrevSibling(), SyntaxType::ST_FUNC_FPARAMS);
         if (funcFParams)

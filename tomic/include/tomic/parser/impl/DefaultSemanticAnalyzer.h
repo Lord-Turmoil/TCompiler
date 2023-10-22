@@ -54,7 +54,7 @@ private:
 
 private:
     SymbolTableBlockPtr _GetOrCreateBlock(SyntaxNodePtr node);
-    void _AddToSymbolTable(SymbolTableEntryPtr entry);
+    bool _AddToSymbolTable(SymbolTableEntryPtr entry);
 
     int _ValidateConstSubscription(SyntaxNodePtr constExp);
     void _ValidateSubscription(SyntaxNodePtr exp);
