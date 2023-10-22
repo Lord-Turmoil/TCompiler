@@ -76,7 +76,7 @@ TokenPtr DefaultLexicalAnalyzer::_Next()
 
     // Find a task to analyse the character.
     TokenPtr token;
-    for (auto& task: _tasks)
+    for (auto& task : _tasks)
     {
         if (task->BeginsWith(lookahead))
         {

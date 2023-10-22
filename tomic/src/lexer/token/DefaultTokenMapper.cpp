@@ -108,7 +108,7 @@ void DefaultTokenMapper::_InitLexemeToType()
 
 void DefaultTokenMapper::_InitTypeToLexeme()
 {
-    for (auto& pair: _lexemeToType)
+    for (auto& pair : _lexemeToType)
     {
         _typeToLexeme[pair.second] = pair.first;
     }

@@ -9,7 +9,7 @@
 
 TOMIC_BEGIN
 
-DefaultPreprocessor::DefaultPreprocessor() : _state({StateType::ANY, 0})
+DefaultPreprocessor::DefaultPreprocessor() : _state({ StateType::ANY, 0 })
 {
 }
 
