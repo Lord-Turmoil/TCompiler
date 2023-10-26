@@ -17,6 +17,55 @@ TOMIC_BEGIN
 
 static char _logBuffer[1024];
 
+/*
+ * ==================== First Set ====================
+ */
+
+static std::vector<TokenType> _declFirstSet = {
+        TokenType::TK_INT
+};
+
+static std::vector<TokenType> _funcDefFirstSet = {
+        TokenType::TK_INT,
+        TokenType::TK_VOID
+};
+
+static std::vector<TokenType> _addExpAuxFirstSet = {
+        TokenType::TK_PLUS,
+        TokenType::TK_MINUS
+};
+
+static std::vector<TokenType> _mulExpAuxFirstSet = {
+        TokenType::TK_MULTIPLY,
+        TokenType::TK_DIVIDE,
+        TokenType::TK_MOD
+};
+
+static std::vector<TokenType> _andExpAuxFirstSet = {
+        TokenType::TK_AND
+};
+
+static std::vector<TokenType> _orExpAuxFirstSet = {
+        TokenType::TK_OR
+};
+
+static std::vector<TokenType> _eqExpAuxFirstSet = {
+        TokenType::TK_EQUAL,
+        TokenType::TK_NOT_EQUAL
+};
+
+static std::vector<TokenType> _relExpAuxFirstSet = {
+        TokenType::TK_LESS,
+        TokenType::TK_LESS_EQUAL,
+        TokenType::TK_GREATER,
+        TokenType::TK_GREATER_EQUAL
+};
+
+
+/*
+ * ==================== Basic Functions ====================
+ */
+
 DefaultSyntacticParser::DefaultSyntacticParser(
         ILexicalParserPtr lexicalParser,
         ISyntaxMapperPtr syntaxMapper,
@@ -295,18 +344,13 @@ bool DefaultSyntacticParser::_MatchDecl()
 
     // int ident, ...
     // As long as the third one is not '(', it must be a declaration.
-    if (_Match(TokenType::TK_INT, _Lookahead()) && _Match(TokenType::TK_IDENTIFIER, _Lookahead(2)))
+    if (_MatchAny(_declFirstSet, _Lookahead()) && _Match(TokenType::TK_IDENTIFIER, _Lookahead(2)))
     {
         return !_Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
     }
 
     return false;
 }
-
-static std::vector<TokenType> _funcDefFirstSet = {
-        TokenType::TK_INT,
-        TokenType::TK_VOID
-};
 
 bool DefaultSyntacticParser::_MatchFuncDef()
 {
@@ -362,13 +406,13 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBType()
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_BTYPE);
 
     SyntaxNodePtr child;
-    if (_Match(TokenType::TK_INT, _Lookahead()))
+    if (_MatchAny(_declFirstSet, _Lookahead()))
     {
         child = _tree->NewTerminalNode(_Next());
     }
     else
     {
-        _LogExpect(TokenType::TK_INT);
+        _LogExpect(_declFirstSet);
         _PostParseError(checkpoint, root);
         return nullptr;
     }
@@ -1042,7 +1086,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBlockItem()
         }
         root->InsertEndChild(constDecl);
     }
-    else if (_Match(TokenType::TK_INT, lookahead))
+    else if (_MatchAny(_declFirstSet, lookahead))
     {
         auto varDecl = _ParseVarDecl();
         if (!varDecl)
@@ -1911,11 +1955,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAddExp()
     return root;
 }
 
-static std::vector<TokenType> _addExpAuxFirstSet = {
-        TokenType::TK_PLUS,
-        TokenType::TK_MINUS
-};
-
 SyntaxNodePtr DefaultSyntacticParser::_ParseAddExpAux()
 {
     if (!_MatchAny(_addExpAuxFirstSet, _Lookahead()))
@@ -1986,12 +2025,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMulExp()
 
     return root;
 }
-
-static std::vector<TokenType> _mulExpAuxFirstSet = {
-        TokenType::TK_MULTIPLY,
-        TokenType::TK_DIVIDE,
-        TokenType::TK_MOD
-};
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseMulExpAux()
 {
@@ -2270,10 +2303,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOrExp()
     return root;
 }
 
-static std::vector<TokenType> _orExpAuxFirstSet = {
-        TokenType::TK_OR
-};
-
 SyntaxNodePtr DefaultSyntacticParser::_ParseOrExpAux()
 {
     if (!_MatchAny(_orExpAuxFirstSet, _Lookahead()))
@@ -2344,10 +2373,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAndExp()
 
     return root;
 }
-
-static std::vector<TokenType> _andExpAuxFirstSet = {
-        TokenType::TK_AND
-};
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseAndExpAux()
 {
@@ -2420,11 +2445,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseEqExp()
     return root;
 }
 
-static std::vector<TokenType> _eqExpAuxFirstSet = {
-        TokenType::TK_EQUAL,
-        TokenType::TK_NOT_EQUAL
-};
-
 SyntaxNodePtr DefaultSyntacticParser::_ParseEqExpAux()
 {
     if (!_MatchAny(_eqExpAuxFirstSet, _Lookahead()))
@@ -2495,13 +2515,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseRelExp()
 
     return root;
 }
-
-static std::vector<TokenType> _relExpAuxFirstSet = {
-        TokenType::TK_LESS,
-        TokenType::TK_LESS_EQUAL,
-        TokenType::TK_GREATER,
-        TokenType::TK_GREATER_EQUAL
-};
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseRelExpAux()
 {
