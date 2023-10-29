@@ -40,6 +40,63 @@ bool Equals(const char* str1, const char* str2)
     return strcmp(str1, str2) == 0;
 }
 
+bool IsNullOrEmpty(const char* str)
+{
+    return !str || !*str;
+}
+
+bool BeginsWith(const char* str, const char* prefix)
+{
+    if (IsNullOrEmpty(prefix))
+    {
+        return true;
+    }
+    if (IsNullOrEmpty(str))
+    {
+        return false;
+    }
+
+    const char* original_str = str;
+    while (*prefix && *str)
+    {
+        if (*prefix != *str)
+        {
+            return false;
+        }
+        prefix++;
+        str++;
+    }
+
+    return !*prefix;
+}
+
+bool EndsWith(const char* str, const char* suffix)
+{
+    if (IsNullOrEmpty(suffix))
+    {
+        return true;
+    }
+    if (IsNullOrEmpty(str))
+    {
+        return false;
+    }
+
+    const char* str_end = str + strlen(str);
+    const char* suffix_end = suffix + strlen(suffix);
+
+    while (str_end >= str && suffix_end >= suffix)
+    {
+        if (*str_end != *suffix_end)
+        {
+            return false;
+        }
+        str_end--;
+        suffix_end--;
+    }
+
+    return suffix_end < suffix;
+}
+
 bool ToInt(const char* str, int* value)
 {
     if (str == nullptr)

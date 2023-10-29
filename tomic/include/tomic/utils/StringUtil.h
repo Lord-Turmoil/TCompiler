@@ -18,6 +18,10 @@ namespace StringUtil
 bool Contains(const char* str, int ch);
 bool Equals(const char* str1, const char* str2);
 
+bool IsNullOrEmpty(const char* str);
+bool BeginsWith(const char* str, const char* prefix);
+bool EndsWith(const char* str, const char* suffix);
+
 bool ToInt(const char* str, int* value);
 bool ToBool(const char* str, bool* value);
 

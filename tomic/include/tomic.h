@@ -38,6 +38,10 @@
 #include <tomic/parser/ast/printer/JsonAstPrinter.h>
 #include <tomic/parser/ast/printer/StandardAstPrinter.h>
 
+// ir
+#include <tomic/ir/IIRGenerator.h>
+// #include <tomic/ir/impl/DefaultIRGenerator.h>
+
 // logger
 #include <tomic/logger/debug/ILogger.h>
 #include <tomic/logger/debug/impl/DefaultLogger.h>

@@ -13,47 +13,28 @@
 
 TOMIC_BEGIN
 
-class IConfig
-{
-public:
-    virtual ~IConfig() = default;
-
-    virtual const char* Input() const = 0;
-    virtual const char* Output() const = 0;
-    virtual const char* Error() const = 0;
-    virtual const char* Ext() const = 0;
-    virtual bool Silent() const = 0;
-    virtual bool EnableCompleteAst() const = 0;
-    virtual bool EnableLog() const = 0;
-    virtual bool EnableVerboseError() const = 0;
-};
-
-using IConfigPtr = std::shared_ptr<IConfig>;
-
-class Config : public IConfig
+class Config
 {
 public:
     Config() :
             _input("input.txt"),
-            _output("output.txt"),
-            _error("error.txt"),
-            _outputExt(".txt"),
-            _silent(true),
+            _astOutput("output.txt"),
+            _irOutput("ir.txt"),
+            _errorOutput("error.txt"),
+            _logOutput("null"),
             _enableCompleteAst(false),
-            _enableLog(false),
             _enableVerboseError(false) {}
-    ~Config() override = default;
+    ~Config() = default;
 
     static std::shared_ptr<Config> New() { return std::make_shared<Config>(); }
 
-    const char* Input() const override { return _input.c_str(); }
-    const char* Output() const override { return _output.c_str(); }
-    const char* Error() const override { return _error.c_str(); }
-    const char* Ext() const override { return _outputExt.c_str(); }
-    bool Silent() const override { return _silent; }
-    bool EnableCompleteAst() const override { return _enableCompleteAst; }
-    bool EnableLog() const override { return _enableLog; }
-    bool EnableVerboseError() const override { return _enableVerboseError; }
+    const char* Input() const { return _input.c_str(); }
+    const char* AstOutput() const { return _astOutput.c_str(); }
+    const char* IrOutput() const { return _irOutput.c_str(); }
+    const char* ErrorOutput() const { return _errorOutput.c_str(); }
+    const char* LogOutput() const { return _logOutput.c_str(); }
+    bool EnableCompleteAst() const { return _enableCompleteAst; }
+    bool EnableVerboseError() const { return _enableVerboseError; }
 
 public:
     Config* SetInput(const char* input)
@@ -61,34 +42,29 @@ public:
         _input = input;
         return this;
     }
-    Config* SetOutput(const char* output)
+    Config* SetAstOutput(const char* astOutput)
     {
-        _output = output;
+        _astOutput = astOutput;
         return this;
     }
-    Config* SetError(const char* error)
+    Config* SetIrOutput(const char* irOutput)
     {
-        _error = error;
+        _irOutput = irOutput;
         return this;
     }
-    Config* SetExt(const char* ext)
+    Config* SetErrorOutput(const char* errorOutput)
     {
-        _outputExt = ext;
+        _errorOutput = errorOutput;
         return this;
     }
-    Config* SetSilent(bool silent)
+    Config* SetLogOutput(const char* logOutput)
     {
-        _silent = silent;
+        _logOutput = logOutput;
         return this;
     }
     Config* SetEnableCompleteAst(bool enable)
     {
         _enableCompleteAst = enable;
-        return this;
-    }
-    Config* SetEnableLog(bool enable)
-    {
-        _enableLog = enable;
         return this;
     }
     Config* SetEnableVerboseError(bool enable)
@@ -99,12 +75,11 @@ public:
 
 private:
     std::string _input;
-    std::string _output;
-    std::string _error;
-    std::string _outputExt;
-    bool _silent;
+    std::string _astOutput;
+    std::string _irOutput;
+    std::string _errorOutput;
+    std::string _logOutput;
     bool _enableCompleteAst;
-    bool _enableLog;
     bool _enableVerboseError;
 };
 

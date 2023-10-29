@@ -9,15 +9,17 @@
 
 using namespace tomic;
 
+static twio::IWriterPtr BuildWriter(const char* filename);
+
 void RegisterComponents()
 {
     auto container = mioc::SingletonContainer::GetContainer();
-    auto config = container->Resolve<IConfig>();
+    auto config = container->Resolve<Config>();
 
     // Logger
-    if (config->EnableLog())
+    auto loggerWriter = BuildWriter(config->LogOutput());
+    if (loggerWriter)
     {
-        auto loggerWriter = twio::Writer::New(twio::FileOutputStream::New(stdout, false));
         auto logger = DefaultLogger::New();
         logger->SetWriter(loggerWriter)->SetLogLevel(LogLevel::DEBUG);
         container->AddSingleton<ILogger>(logger);
@@ -61,11 +63,12 @@ void RegisterComponents()
     container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
 
     // Ast printer
-    if (tomic::StringUtil::Equals(config->Ext(), ".xml"))
+    const char* astFilename = config->AstOutput();
+    if (tomic::StringUtil::EndsWith(astFilename, ".xml"))
     {
         container->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
     }
-    else if (tomic::StringUtil::Equals(config->Ext(), ".json"))
+    else if (tomic::StringUtil::EndsWith(astFilename, ".json"))
     {
         container->AddTransient<IAstPrinter, JsonAstPrinter, ISyntaxMapper, ITokenMapper>();
     }
@@ -84,15 +87,19 @@ static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter);
 static void LexicalParse(twio::IAdvancedReaderPtr srcReader, twio::IWriterPtr dstWriter);
 static SyntaxTreePtr SyntacticParse(twio::IAdvancedReaderPtr srcReader);
 static SymbolTablePtr SemanticParse(SyntaxTreePtr tree);
+static void GenerateIR(mioc::ServiceContainerPtr container, SyntaxTreePtr tree, SymbolTablePtr table);
+
+static void OutputSyntaxTree(mioc::ServiceContainerPtr container, SyntaxTreePtr tree);
+static int LogError(mioc::ServiceContainerPtr container);
 
 void Compile()
 {
     auto container = mioc::SingletonContainer::GetContainer();
-    auto config = container->Resolve<IConfig>();
-    auto srcReader = twio::AdvancedReader::New(twio::FileInputStream::New(config->Input()));
+    auto config = container->Resolve<Config>();
 
     // Preprocess.
-    auto writer = twio::Writer::New(twio::BufferOutputStream::New());
+    auto srcReader = twio::AdvancedReader::New(twio::FileInputStream::New(config->Input()));
+    auto writer = BuildWriter(nullptr);
     Preprocess(srcReader, writer);
 
     auto reader = twio::AdvancedReader::New(twio::BufferInputStream::New(writer->Stream()->Yield()));
@@ -104,7 +111,6 @@ void Compile()
 
     // Syntactic parse only.
     auto tree = SyntacticParse(reader);
-
     if (tree == nullptr)
     {
         logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed, compilation aborted");
@@ -112,34 +118,21 @@ void Compile()
     }
 
     // Semantic parse only.
-    SemanticParse(tree);
+    auto table = SemanticParse(tree);
 
-    if (!config->Silent())
-    {
-        auto dstWriter = twio::Writer::New(twio::FileOutputStream::New(config->Output()));
-        auto printer = container->Resolve<IAstPrinter>();
-        printer->Print(tree, dstWriter);
-    }
+    // Output syntax tree.
+    OutputSyntaxTree(container, tree);
 
-    auto errorLogger = mioc::SingletonContainer::GetContainer()->Resolve<IErrorLogger>();
-    twio::WriterPtr errorWriter;
-    if (tomic::StringUtil::Equals(config->Error(), "stderr"))
+    // Log errors.
+    int errorCount = LogError(container);
+    if (errorCount > 0)
     {
-        errorWriter = twio::Writer::New(twio::FileOutputStream::New(stderr, false));
-    }
-    else if (tomic::StringUtil::Equals(config->Error(), "null"))
-    {
-        errorWriter = nullptr;
-    }
-    else
-    {
-        errorWriter = twio::Writer::New(twio::FileOutputStream::New(config->Error()));
+        logger->LogFormat(LogLevel::FATAL, "Compilation completed with %d errors", errorCount);
+        return;
     }
 
-    if (errorWriter)
-    {
-        errorLogger->Dumps(errorWriter);
-    }
+    // Generate IR.
+    GenerateIR(container, tree, table);
 }
 
 static void Preprocess(twio::IReaderPtr srcReader, twio::IWriterPtr dstWriter)
@@ -198,4 +191,65 @@ static SymbolTablePtr SemanticParse(SyntaxTreePtr tree)
 
     auto parser = container->Resolve<ISemanticParser>();
     return parser->Parse(tree);
+}
+
+static void GenerateIR(mioc::ServiceContainerPtr container, SyntaxTreePtr tree, SymbolTablePtr table)
+{
+    auto config = container->Resolve<Config>();
+
+    // Generate IR.
+    auto writer = BuildWriter(config->IrOutput());
+    writer->Write("IR Not Implemented\n");
+}
+
+static void OutputSyntaxTree(mioc::ServiceContainerPtr container, SyntaxTreePtr tree)
+{
+    auto config = container->Resolve<Config>();
+
+    // Output syntax tree.
+    auto dstWriter = BuildWriter(config->AstOutput());
+    if (dstWriter)
+    {
+        auto printer = container->Resolve<IAstPrinter>();
+        printer->Print(tree, dstWriter);
+    }
+}
+
+static int LogError(mioc::ServiceContainerPtr container)
+{
+    auto config = container->Resolve<Config>();
+
+    auto errorLogger = mioc::SingletonContainer::GetContainer()->Resolve<IErrorLogger>();
+    auto errorWriter = BuildWriter(config->ErrorOutput());
+    if (errorWriter)
+    {
+        errorLogger->Dumps(errorWriter);
+    }
+
+    return errorLogger->Count();
+}
+
+static twio::IWriterPtr BuildWriter(const char* filename)
+{
+    if (!filename)
+    {
+        return twio::Writer::New(twio::BufferOutputStream::New());
+    }
+
+    if (tomic::StringUtil::Equals(filename, "null"))
+    {
+        return nullptr;
+    }
+
+    if (tomic::StringUtil::Equals(filename, "stdout"))
+    {
+        return twio::Writer::New(twio::FileOutputStream::New(stdout, false));
+    }
+
+    if (tomic::StringUtil::Equals(filename, "stderr"))
+    {
+        return twio::Writer::New(twio::FileOutputStream::New(stderr, false));
+    }
+
+    return twio::Writer::New(twio::FileOutputStream::New(filename));
 }
