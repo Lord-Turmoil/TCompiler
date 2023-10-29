@@ -1715,13 +1715,18 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseExpStmt()
     if (!_Match(TokenType::TK_SEMICOLON, _Lookahead()))
     {
         SyntaxNodePtr exp = _ParseExp();
-        if (!exp)
+        if (exp)
         {
-            _LogFailedToParse(SyntaxType::ST_EXP);
-            _PostParseError(checkpoint, root);
-            return nullptr;
+            root->InsertEndChild(exp);
         }
-        root->InsertEndChild(exp);
+        // We accept this case, and continue parse ';'.
+        // if (!exp)
+        // {
+        //     _LogFailedToParse(SyntaxType::ST_EXP);
+        //     _PostParseError(checkpoint, root);
+        //     return nullptr;
+        // }
+        // root->InsertEndChild(exp);
     }
 
     // ';'
