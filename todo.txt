@@ -40,3 +40,21 @@ Make syntactic parser recover from errors.
 2023/10/17 TS:
 
 BUG: getint() didn't report missing ) and ;
+
+-----
+
+2023/10/31 TS:
+
+Task for intermediate representation generation:
+
+Step 1.
+    1. For simple variable and constant declaration.
+    2. For expression.
+    3. For assignment.
+
+Step 2.
+    4. For function definition.
+    5. For function call.
+
+Step 3.
+    6. Introduce array.
