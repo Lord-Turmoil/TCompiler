@@ -39,7 +39,7 @@
 #include <tomic/parser/ast/printer/StandardAstPrinter.h>
 
 // ir
-#include <tomic/ir/IIRGenerator.h>
+#include <tomic/ir/LlvmGenerator.h>
 // #include <tomic/ir/impl/DefaultIRGenerator.h>
 
 // logger
