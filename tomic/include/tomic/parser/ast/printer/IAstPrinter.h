@@ -15,6 +15,7 @@
 #define _TOMIC_AST_PRINTER_H_
 
 #include <tomic/Shared.h>
+#include <memory>
 
 TOMIC_BEGIN
 
@@ -26,6 +27,8 @@ public:
 
     virtual void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) = 0;
 };
+
+using IAstPrinterPtr = std::shared_ptr<IAstPrinter>;
 
 TOMIC_END
 

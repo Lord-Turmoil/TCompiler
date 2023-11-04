@@ -41,7 +41,7 @@
 TOMIC_BEGIN
 
 static twio::IWriterPtr BuildWriter(const char* filename);
-static void OutputSyntaxTree(mioc::ServiceContainerPtr container, SyntaxTreePtr tree);
+static void OutputSyntaxTree(const char* filename, IAstPrinterPtr printer, SyntaxTreePtr tree);
 
 class ToMiCompilerImpl
 {
@@ -222,6 +222,8 @@ void ToMiCompilerImpl::Compile()
         _LogError();
         return;
     }
+
+    _LogError();
 }
 
 bool ToMiCompilerImpl::Preprocess(twio::IWriterPtr* outWriter)
@@ -274,21 +276,21 @@ bool ToMiCompilerImpl::SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTre
     auto ast = _container->Resolve<ISyntacticParser>()->SetReader(reader)->Parse();
     if (!ast)
     {
-        logger->LogFormat(LogLevel::FATAL, "SyntacticParse parse failed, compilation aborted");
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse failed, compilation aborted");
         return false;
     }
     // ===============
 
     if (logger->Count(LogLevel::ERROR) > 0)
     {
-        logger->LogFormat(LogLevel::FATAL, "SyntacticParse parse completed with errors.");
+        logger->LogFormat(LogLevel::FATAL, "Syntactic parse completed with errors.");
     }
 
     if (_config->Target == Config::TargetType::Syntactic)
     {
         if (_config->EmitAst)
         {
-            OutputSyntaxTree(_container, ast);
+            OutputSyntaxTree(_config->AstOutput.c_str(), _container->Resolve<IAstPrinter>(), ast);
         }
     }
 
@@ -307,7 +309,7 @@ bool ToMiCompilerImpl::SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable
         return false;
     }
     auto logger = _container->Resolve<ILogger>();
-    logger->LogFormat(LogLevel::DEBUG, "SemanticParse analyzing \"%s\"...", _config->Input.c_str());
+    logger->LogFormat(LogLevel::DEBUG, "Performing semantic analyzing \"%s\"...", _config->Input.c_str());
 
     // ===============
     auto table = _container->Resolve<ISemanticParser>()->Parse(ast);
@@ -315,7 +317,7 @@ bool ToMiCompilerImpl::SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable
 
     if (_config->EmitAst)
     {
-        OutputSyntaxTree(_container, ast);
+        OutputSyntaxTree(_config->AstOutput.c_str(), _container->Resolve<IAstPrinter>(), ast);
     }
 
     if (outTable)
@@ -374,15 +376,13 @@ static twio::IWriterPtr BuildWriter(const char* filename)
     return twio::Writer::New(twio::FileOutputStream::New(filename));
 }
 
-static void OutputSyntaxTree(mioc::ServiceContainerPtr container, SyntaxTreePtr tree)
+static void OutputSyntaxTree(const char* filename, IAstPrinterPtr printer, SyntaxTreePtr tree)
 {
-    auto config = container->Resolve<Config>();
-
+    TOMIC_ASSERT(printer && "Missing AST Printer");
     // Output syntax tree.
-    auto writer = BuildWriter(config->AstOutput.c_str());
+    auto writer = BuildWriter(filename);
     if (writer)
     {
-        auto printer = container->Resolve<IAstPrinter>();
         printer->Print(tree, writer);
     }
 }

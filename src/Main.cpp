@@ -9,18 +9,25 @@
 
 using namespace tomic;
 
+static bool showHelp = false;
+static void ShowHelp();
 static bool ParseArgs(int argc, char* argv[], ConfigPtr config);
-static void HandleLongOpt(const char* opt, const char* arg, ConfigPtr config);
+static bool HandleLongOpt(const char* opt, const char* arg, ConfigPtr config);
 
 /*
- * Usage: ToMiCompiler [input] [-a filename] [-i filename] [-e filename] [-l filename] [-c] [-v]
- *  input: input file path
- *  -a: output file path for syntax tree
- *  -i: output file path for intermediate code
- *  -e: error file path
- *  -l: log file path
- *  -c: Enable complete syntax tree (for debug)
- *  -v: Use verbose error (for debug)
+ * Usage: ToMiCompiler <input> [-o output]
+ *           --target=syntactic
+ *           --enable-logger[=filename]
+ *           --enable-error[=filename] --verbose-error
+ *           --emit-ast[=filename] --complete-ast
+ *
+ *   --target, -t:         specify the target type
+ *   --enable-logger, -l:  enable logger
+ *   --enable-error, -e:   enable error
+ *   --verbose-error, -v:  verbose error
+ *   --emit-ast, -a:       emit ast
+ *   --complete-ast, -c:   complete ast
+ *   --help, -h:           show help
  */
 int main(int argc, char* argv[])
 {
@@ -45,11 +52,40 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    if (showHelp)
+    {
+        ShowHelp();
+        return 0;
+    }
+
+#ifndef INTERNAL
+    // Override default config...
+#endif
+
     ToMiCompiler().Configure(config)->Compile();
 
     return 0;
 }
 
+static void ShowHelp()
+{
+    static const char HELP[] = R"(
+Usage: ToMiCompiler <input> [-o output]
+          --target=(syntactic | semantic | ir | asm)
+          --enable-logger[=filename]
+          --enable-error[=filename] --verbose-error
+          --emit-ast[=filename] --complete-ast
+
+  --target, -t:         specify the target type
+  --enable-logger, -l:  enable logger
+  --enable-error, -e:   enable error
+  --verbose-error, -v:  verbose error
+  --emit-ast, -a:       emit ast
+  --complete-ast, -c:   complete ast
+  --help, -h:           show help
+    )";
+    printf("%s\n", HELP);
+}
 
 static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
 {
@@ -70,8 +106,32 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
         case 'o':
             config->Output = optarg;
             break;
+        case 't':
+            HandleLongOpt("target", optarg, config);
+            break;
+        case 'l':
+            HandleLongOpt("enable-logger", optarg, config);
+            break;
+        case 'e':
+            HandleLongOpt("enable-error", optarg, config);
+            break;
+        case 'v':
+            HandleLongOpt("verbose-error", optarg, config);
+            break;
+        case 'a':
+            HandleLongOpt("emit-ast", optarg, config);
+            break;
+        case 'c':
+            HandleLongOpt("complete-ast", optarg, config);
+            break;
+        case 'h':
+            HandleLongOpt("help", optarg, config);
+            break;
         case '@':
-            HandleLongOpt(longopt, optarg, config);
+            if (!HandleLongOpt(longopt, optarg, config))
+            {
+                err = true;
+            }
             break;
         case '!':
             arg_cnt++;
@@ -103,11 +163,44 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
     return true;
 }
 
-static void HandleLongOpt(const char* opt, const char* arg, ConfigPtr config)
+static bool HandleLongOpt(const char* opt, const char* arg, ConfigPtr config)
 {
     using namespace tomic::StringUtil;
 
-    if (Equals(opt, "enable-logger"))
+    if (Equals(opt, "target"))
+    {
+        if (IsNullOrEmpty(arg))
+        {
+            fprintf(stderr, "Target type cannot be empty\n");
+            return false;
+        }
+        if (Equals(arg, "preprocess"))
+        {
+            config->Target = Config::TargetType::Preprocess;
+        }
+        else if (Equals(arg, "syntactic"))
+        {
+            config->Target = Config::TargetType::Syntactic;
+        }
+        else if (Equals(arg, "semantic"))
+        {
+            config->Target = Config::TargetType::Semantic;
+        }
+        else if (Equals(arg, "ir"))
+        {
+            config->Target = Config::TargetType::IR;
+        }
+        else if (Equals(arg, "asm"))
+        {
+            config->Target = Config::TargetType::ASM;
+        }
+        else
+        {
+            fprintf(stderr, "Unknown target \"%s\"\n", arg);
+            return false;
+        }
+    }
+    else if (Equals(opt, "enable-logger"))
     {
         config->EnableLog = true;
         config->LogOutput = IsNullOrEmpty(arg) ? "stdout" : arg;
@@ -130,8 +223,15 @@ static void HandleLongOpt(const char* opt, const char* arg, ConfigPtr config)
         config->EmitAst = true;
         config->AstOutput = IsNullOrEmpty(arg) ? "ast.xml" : arg;
     }
+    else if (Equals(opt, "help"))
+    {
+        showHelp = true;
+    }
     else
     {
         fprintf(stderr, "Unknown parameter \"--%s\"\n", opt);
+        return false;
     }
+
+    return true;
 }

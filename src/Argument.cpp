@@ -85,9 +85,10 @@ int getopt(int argc, char* argv[], const char* pattern)
             longopt = _long_opt_buffer;
             while (*long_opt && (*long_opt != '='))
             {
-                *longopt++ = *long_opt;
+                *longopt++ = *long_opt++;
             }
             *longopt = '\0';
+            longopt = _long_opt_buffer;
             if (*long_opt)
             {
                 optarg = const_cast<char*>(long_opt + 1);
