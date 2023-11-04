@@ -11,12 +11,12 @@ add_executable(${CMAKE_PROJECT_NAME} ${SRC_LIST})
 
 
 # IoC dependency
-add_subdirectory(3rd-party/mioc)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mioc)
+#add_subdirectory(tomic/3rd-party/mioc)
+#target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mioc)
 
 # Twio Dependency
-add_subdirectory(3rd-party/twio)
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE twio)
+#add_subdirectory(tomic/3rd-party/twio)
+#target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE twio)
 
 # ToMiCompiler Core
 add_subdirectory(tomic)
