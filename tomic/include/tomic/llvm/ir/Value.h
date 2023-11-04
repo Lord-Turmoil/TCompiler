@@ -15,6 +15,7 @@
 
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/IrForward.h>
+#include <tomic/llvm/ir/ValueType.h>
 #include <tomic/llvm/ir/Use.h>
 #include <vector>
 #include <memory>
@@ -23,6 +24,20 @@ TOMIC_LLVM_BEGIN
 
 class Value
 {
+public:
+    Value(TypePtr type, ValueType valueType) : _type(type), _valueType(valueType) {}
+    virtual ~Value() = default;
+
+    // Get the type of this value.
+    TypePtr GetType() const { return _type; }
+    ValueType GetValueType() const { return _valueType; }
+
+    // Cast this type to a specific type.
+    // You should use this function only when you are sure that this type is
+    // actually the type you want to cast to.
+    template<typename _Ty>
+    _Ty* Cast() { return static_cast<_Ty*>(this); }
+
 private:
     using _use_iterator_raw = std::vector<UsePtr>::iterator;
 
@@ -103,9 +118,12 @@ public:
     user_iterator UserBegin() { return user_iterator(_useList.begin()); }
     user_iterator UserEnd() { return user_iterator(_useList.end()); }
 
-private:
+protected:
     TypePtr _type;
     std::vector<UsePtr> _useList;
+
+private:
+    ValueType _valueType;
 };
 
 

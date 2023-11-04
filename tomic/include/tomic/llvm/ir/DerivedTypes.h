@@ -15,6 +15,7 @@
 
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/Type.h>
+#include <memory>
 
 TOMIC_LLVM_BEGIN
 
@@ -24,7 +25,7 @@ TOMIC_LLVM_BEGIN
 
 class IntegerType : public Type
 {
-    friend class LLVMContext;
+    friend class LlvmContext;
 public:
     IntegerType(const IntegerType&) = delete;
     IntegerType& operator=(const IntegerType&) = delete;
@@ -42,18 +43,21 @@ private:
 
 using IntegerTypePtr = IntegerType*;
 
+/*
+ * Forgive me, for using such an implementation with low efficiency. :(
+ */
+class FunctionType;
+using FunctionTypePtr = FunctionType*;
+using FunctionTypeSmartPtr = std::shared_ptr<FunctionType>;
+
 class FunctionType : public Type
 {
-    friend class LLVMContext;
+    friend class LlvmContext;
 public:
-    FunctionType(const FunctionType&) = delete;
-    FunctionType& operator=(const FunctionType&) = delete;
-
-    static FunctionType* Get(Type* returnType, const std::vector<Type*>& paramTypes, bool isVarArg);
-    static FunctionType* Get(Type* returnType, bool isVarArg);
+    static FunctionTypePtr Get(TypePtr returnType, const std::vector<Type*>& paramTypes);
+    static FunctionTypePtr Get(TypePtr returnType);
 
     Type* ReturnType() const { return _returnType; }
-    bool IsVarArg() const { return _isVarArg; }
 
     using param_iterator = std::vector<Type*>::iterator;
     using const_param_iterator = std::vector<Type*>::const_iterator;
@@ -65,34 +69,39 @@ public:
 
     int ParamCount() const { return _containedTypes.size() - 1; }
 
-protected:
-    FunctionType(Type* returnType, std::vector<Type*> paramTypes, bool isVarArg);
+    bool Equals(TypePtr returnType, const std::vector<Type*>& paramTypes) const;
+    bool Equals(TypePtr returnType) const;
+
+private:
+    FunctionType(TypePtr returnType, const std::vector<Type*>& paramTypes);
+    FunctionType(TypePtr returnType);
 
 private:
     Type* _returnType;
-    bool _isVarArg;
 };
 
-using FunctionTypePtr = FunctionType*;
+class ArrayType;
+using ArrayTypePtr = ArrayType*;
+using ArrayTypeSmartPtr = std::shared_ptr<ArrayType>;
 
 class ArrayType : public Type
 {
-    friend class LLVMContext;
+    friend class LlvmContext;
 public:
-    ArrayType(const ArrayType&) = delete;
-    ArrayType& operator=(const ArrayType&) = delete;
+    ArrayType() : _elementType(nullptr), _elementCount(0) {}
 
-    static ArrayType* Get(Type* elementType, int elementCount);
+    static ArrayTypePtr Get(TypePtr elementType, int elementCount);
 
     Type* ElementType() const { return _elementType; }
     int ElementCount() const { return _elementCount; }
+
+protected:
+    ArrayType(TypePtr elementType, int elementCount);
 
 private:
     Type* _elementType;
     int _elementCount;
 };
-
-using ArrayTypePtr = ArrayType*;
 
 TOMIC_LLVM_END
 

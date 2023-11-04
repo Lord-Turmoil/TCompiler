@@ -21,7 +21,11 @@ TOMIC_LLVM_BEGIN
 
 class Type
 {
+    friend class LlvmContext;
 public:
+    Type() : _typeId(VoidTyID) {}
+    virtual ~Type() = default;
+
     enum TypeID
     {
         // Primitive types
