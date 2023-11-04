@@ -13,7 +13,7 @@
 #ifndef _TOMIC_LLVM_TYPE_H_
 #define _TOMIC_LLVM_TYPE_H_
 
-#include <tomic/ir/llvm/Llvm.h>
+#include "Llvm.h"
 #include <vector>
 
 TOMIC_LLVM_BEGIN

@@ -7,7 +7,7 @@
 #ifndef _TOMIC_LLVM_H_
 #define _TOMIC_LLVM_H_
 
-#include <tomic/Shared.h>
+#include "tomic/Shared.h"
 
 #define LLVM_BEGIN namespace llvm {
 #define LLVM_END   }

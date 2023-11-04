@@ -7,9 +7,9 @@
 #ifndef _TOMIC_LLVM_LLVM_CONTEXT_H_
 #define _TOMIC_LLVM_LLVM_CONTEXT_H_
 
-#include <tomic/ir/llvm/Llvm.h>
-#include <tomic/ir/llvm/Type.h>
-#include <tomic/ir/llvm/DerivedTypes.h>
+#include "Llvm.h"
+#include "Type.h"
+#include "DerivedTypes.h"
 
 #include <unordered_map>
 #include <utility>
