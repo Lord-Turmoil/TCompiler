@@ -13,13 +13,10 @@
 #ifndef _TOMIC_LLVM_TYPE_H_
 #define _TOMIC_LLVM_TYPE_H_
 
-#include <tomic/Shared.h>
+#include <tomic/ir/llvm/Llvm.h>
 #include <vector>
 
-TOMIC_BEGIN
-
-namespace llvm
-{
+TOMIC_LLVM_BEGIN
 
 class Type
 {
@@ -70,8 +67,6 @@ private:
     TypeID _typeId;
 };
 
-}
-
-TOMIC_END
+TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_TYPE_H_
