@@ -48,17 +48,23 @@ void resetopt()
     optmsg = nullptr;
 }
 
-static int _parseopt(const char* arg);
+// parse short option. e.g. l from -l
+static int _parse_opt(const char* arg);
+
+// parse long option. e.g. enable-log from --enable-log
+// Such option do not support arguments, so optarg will
+// be the option itself, and optopt will be '@'.
+static const char* _parse_long_opt(const char* arg);
 
 // parse arg in opt. e.g. pthread from -lpthread
-// Must checked by _parseopt first.
-static char* _parsearg(char* arg);
+// Must be checked by _parseopt first.
+static char* _parse_arg(char* arg);
 
-static void _initopt();
+static void _init_opt();
 
 int getopt(int argc, char* argv[], const char* pattern)
 {
-    _initopt();
+    _init_opt();
 
     if (optind >= argc)
     {
@@ -66,11 +72,21 @@ int getopt(int argc, char* argv[], const char* pattern)
         return 0;
     }
 
-    int opt = _parseopt(argv[optind]);
+    int opt = _parse_opt(argv[optind]);
     if (!opt) // not an option
     {
-        opt = optopt = '!';
-        optarg = argv[optind];
+        // check if it is a long option
+        auto long_opt = _parse_long_opt(argv[optind]);
+        if (long_opt)
+        {
+            opt = optopt = '@';
+            optarg = const_cast<char*>(long_opt);
+        }
+        else // not an option
+        {
+            opt = optopt = '!';
+            optarg = argv[optind];
+        }
     }
     else // is an option
     {
@@ -86,10 +102,10 @@ int getopt(int argc, char* argv[], const char* pattern)
         {
             if (pos[1] == ':') // has argument
             {
-                optarg = _parsearg(argv[optind]);
+                optarg = _parse_arg(argv[optind]);
                 if (!optarg) // argument not compact
                 {
-                    if (((optind < argc - 1) && _parseopt(argv[optind + 1])) ||
+                    if (((optind < argc - 1) && _parse_opt(argv[optind + 1])) ||
                         (optind == argc - 1))
                     {
                         opterr = ERRNO_MISSING_ARGUMENT;
@@ -110,18 +126,28 @@ int getopt(int argc, char* argv[], const char* pattern)
     return opt;
 }
 
-static int _parseopt(const char* arg)
+static int _parse_opt(const char* arg)
 {
-    if (arg[0] == '-' && arg[1] != '\0')
+    if (arg[0] == '-' && arg[1] != '-' && arg[1] != '\0')
     {
         return arg[1];
     }
     return 0;
 }
 
+static const char* _parse_long_opt(const char* arg)
+{
+    if (arg[0] == '-' && arg[1] == '-' && arg[2] != '\0')
+    {
+        return &arg[2];
+    }
+
+    return nullptr;
+}
+
 // parse arg in opt. e.g. pthread from -lpthread
 // Must checked by _parseopt first.
-static char* _parsearg(char* arg)
+static char* _parse_arg(char* arg)
 {
     if (arg[2] != '\0')
     {
@@ -130,7 +156,7 @@ static char* _parsearg(char* arg)
     return nullptr;
 }
 
-static void _initopt()
+static void _init_opt()
 {
     optarg = nullptr;
     optmsg = nullptr;
