@@ -5,7 +5,7 @@
  */
 
 #include <tomic/Shared.h>
-#include <tomic/Compiler.h>
+#include <tomic/ToMiCompiler.h>
 #include <tomic/Config.h>
 #include <tomic/lexer/IPreprocessor.h>
 #include <tomic/logger/debug/impl/DefaultLogger.h>
@@ -43,7 +43,7 @@ TOMIC_BEGIN
 static twio::IWriterPtr BuildWriter(const char* filename);
 static void OutputSyntaxTree(mioc::ServiceContainerPtr container, SyntaxTreePtr tree);
 
-class ToMiCompiler::ToMiCompilerImpl
+class ToMiCompilerImpl
 {
     friend class ToMiCompiler;
 public:
@@ -194,7 +194,7 @@ void ToMiCompiler::Compile()
 /*
  * ================================ Implementation ================================
  */
-void ToMiCompiler::ToMiCompilerImpl::Compile()
+void ToMiCompilerImpl::Compile()
 {
     auto logger = _container->Resolve<ILogger>();
 
@@ -223,7 +223,7 @@ void ToMiCompiler::ToMiCompilerImpl::Compile()
     }
 }
 
-bool ToMiCompiler::ToMiCompilerImpl::Preprocess(twio::IWriterPtr* outWriter)
+bool ToMiCompilerImpl::Preprocess(twio::IWriterPtr* outWriter)
 {
     if (_config->Target < Config::TargetType::Preprocess)
     {
@@ -260,7 +260,7 @@ bool ToMiCompiler::ToMiCompilerImpl::Preprocess(twio::IWriterPtr* outWriter)
     return true;
 }
 
-bool ToMiCompiler::ToMiCompilerImpl::SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTreePtr* outAst)
+bool ToMiCompilerImpl::SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTreePtr* outAst)
 {
     if (_config->Target < Config::TargetType::Syntactic)
     {
@@ -299,7 +299,7 @@ bool ToMiCompiler::ToMiCompilerImpl::SyntacticParse(twio::IAdvancedReaderPtr rea
     return true;
 }
 
-bool ToMiCompiler::ToMiCompilerImpl::SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable)
+bool ToMiCompilerImpl::SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable)
 {
     if (_config->Target < Config::TargetType::Semantic)
     {
@@ -325,7 +325,7 @@ bool ToMiCompiler::ToMiCompilerImpl::SemanticParse(SyntaxTreePtr ast, SymbolTabl
     return true;
 }
 
-void ToMiCompiler::ToMiCompilerImpl::_LogError()
+void ToMiCompilerImpl::_LogError()
 {
     if (!_config->EnableError)
     {
@@ -385,6 +385,5 @@ static void OutputSyntaxTree(mioc::ServiceContainerPtr container, SyntaxTreePtr 
         printer->Print(tree, writer);
     }
 }
-
 
 TOMIC_END

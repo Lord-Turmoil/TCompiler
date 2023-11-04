@@ -17,6 +17,8 @@ TOMIC_BEGIN
  * This is the main class of ToMiCompiler.
  * Uses IoC to control compilation process.
  */
+class ToMiCompilerImpl;
+
 class ToMiCompiler
 {
 public:
@@ -35,7 +37,6 @@ public:
     void Compile();
 
 private:
-    class ToMiCompilerImpl;
     ToMiCompilerImpl* _impl;
 };
 
