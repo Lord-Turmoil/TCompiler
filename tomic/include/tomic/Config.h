@@ -28,18 +28,7 @@ public:
         COUNT
     };
 
-    Config() :
-            Target(Config::TargetType::Initial),
-            Input("testfile.txt"),
-            Output("output.txt"),
-            EnableCompleteAst(false),
-            EmitAst(false),
-            AstOutput(),
-            EnableLog(false),
-            LogOutput(),
-            EnableError(false),
-            EnableVerboseError(false),
-            ErrorOutput() {}
+    Config();
     ~Config() = default;
 
     static std::shared_ptr<Config> New() { return std::make_shared<Config>(); }

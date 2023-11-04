@@ -208,7 +208,8 @@ void ToMiCompilerImpl::Compile()
 
     // Syntax parse
     SyntaxTreePtr ast;
-    if (!SyntacticParse(twio::AdvancedReader::New(twio::BufferInputStream::New(output->Stream()->Yield())), &ast))
+    auto syntaxReader = twio::AdvancedReader::New(twio::BufferInputStream::New(output->Stream()->Yield()));
+    if (!SyntacticParse(syntaxReader, &ast))
     {
         _LogError();
         return;
