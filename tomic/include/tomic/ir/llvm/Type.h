@@ -30,7 +30,6 @@ public:
         // Derived types
         IntegerTyID,
         FunctionTyID,
-        PointerTyID,
         ArrayTyID
     };
 
@@ -41,7 +40,6 @@ public:
 
     bool IsIntegerTy() const { return _typeId == IntegerTyID; }
     bool IsFunctionTy() const { return _typeId == FunctionTyID; }
-    bool IsPointerTy() const { return _typeId == PointerTyID; }
     bool IsArrayTy() const { return _typeId == ArrayTyID; }
 
 public:
@@ -66,6 +64,8 @@ protected:
 private:
     TypeID _typeId;
 };
+
+using TypePtr = Type*;
 
 TOMIC_LLVM_END
 
