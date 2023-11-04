@@ -60,6 +60,10 @@ int main(int argc, char* argv[])
 
 #ifndef INTERNAL
     // Override default config...
+    config->Target = Config::TargetType::Semantic;
+    config->Input = "testfile.txt";
+    config->EnableError = true;
+    config->ErrorOutput = "error.txt";
 #endif
 
     ToMiCompiler().Configure(config)->Compile();
