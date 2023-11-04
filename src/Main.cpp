@@ -92,7 +92,7 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
     int opt;
     int arg_cnt = 0;
     bool err = false;
-    while ((opt = getopt(argc, argv, "o:")))
+    while ((opt = getopt(argc, argv, "o:t:l:e:va:ch")))
     {
         if (opterr != 0)
         {
@@ -156,7 +156,6 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
 
     if (err)
     {
-        fprintf(stderr, "Usage: %s input [-o output]\n", argv[0]);
         return false;
     }
 
