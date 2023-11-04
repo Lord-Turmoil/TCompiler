@@ -6,7 +6,7 @@
 #define _TWIO_MACROS_H_
 
 #define TWIO_VERSION   "1.1.2"
-#define TWIO_PROJ_NAME "Tiny Wrapped Input/AstOutput"
+#define TWIO_PROJ_NAME "Tiny Wrapped Input/Output"
 
 #define TWIO_BEGIN namespace twio {
 #define TWIO_END   }

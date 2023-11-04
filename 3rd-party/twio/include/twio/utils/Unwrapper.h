@@ -7,12 +7,13 @@
 
 #include <twio/Common.h>
 #include <twio/stream/IStream.h>
+#include <memory>
 
 TWIO_BEGIN
 
 
 // A utility class to unwrap stream to raw buffer.
-void UnwrapStream(const IOutputStreamPtr& stream, char* buffer);
+std::unique_ptr<char[]> UnwrapStream(const IOutputStreamPtr& stream);
 
 
 TWIO_END

@@ -8,7 +8,7 @@
 TWIO_BEGIN
 
 
-void UnwrapStream(const IOutputStreamPtr& stream, char* buffer)
+std::unique_ptr<char[]> UnwrapStream(const IOutputStreamPtr& stream)
 {
     TWIO_ASSERT(stream);
 
@@ -18,12 +18,10 @@ void UnwrapStream(const IOutputStreamPtr& stream, char* buffer)
         TWIO_PANIC("UnwrapStream only accept buffer request.");
     }
 
-    // TODO: for compiler compatibility, use strcpy instead of strcpy_s.
-    strcpy(buffer, request->buffer.get());
-
     // Release old buffer.
     request->protocol = RedirectProtocol::SRP_NONE;
-    request->buffer.reset();
+
+    return std::move(request->buffer);
 }
 
 
