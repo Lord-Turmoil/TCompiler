@@ -13,7 +13,8 @@
 #ifndef _TOMIC_LLVM_TYPE_H_
 #define _TOMIC_LLVM_TYPE_H_
 
-#include "Llvm.h"
+#include <tomic/llvm/Llvm.h>
+#include <tomic/llvm/ir/IrForward.h>
 #include <vector>
 
 TOMIC_LLVM_BEGIN
@@ -64,8 +65,6 @@ protected:
 private:
     TypeID _typeId;
 };
-
-using TypePtr = Type*;
 
 TOMIC_LLVM_END
 
