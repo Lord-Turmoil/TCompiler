@@ -58,13 +58,14 @@ protected:
     // Prohibit direct instantiation.
     Type(TypeID typeId) : _typeId(typeId) {}
 
-    int ContainedTypeCount() const { return _containedTypes.size(); }
+    int _ContainedTypeCount() const { return _containedTypes.size(); }
+    void _AddContainedType(TypePtr type) { _containedTypes.push_back(type); }
 
     /*
      * A container for types contained by this type. For example, this includes
      * the arguments of a function type, the element type of array, etc.
      */
-    std::vector<Type*> _containedTypes;
+    std::vector<TypePtr> _containedTypes;
 
 private:
     TypeID _typeId;

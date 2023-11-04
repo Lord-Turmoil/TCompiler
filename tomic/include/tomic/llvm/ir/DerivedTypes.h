@@ -57,7 +57,7 @@ public:
     static FunctionTypePtr Get(TypePtr returnType, const std::vector<Type*>& paramTypes);
     static FunctionTypePtr Get(TypePtr returnType);
 
-    Type* ReturnType() const { return _returnType; }
+    Type* ReturnType() const { return _containedTypes[0]; }
 
     using param_iterator = std::vector<Type*>::iterator;
     using const_param_iterator = std::vector<Type*>::const_iterator;
@@ -69,15 +69,12 @@ public:
 
     int ParamCount() const { return _containedTypes.size() - 1; }
 
-    bool Equals(TypePtr returnType, const std::vector<Type*>& paramTypes) const;
+    bool Equals(TypePtr returnType, const std::vector<TypePtr>& paramTypes) const;
     bool Equals(TypePtr returnType) const;
 
 private:
-    FunctionType(TypePtr returnType, const std::vector<Type*>& paramTypes);
+    FunctionType(TypePtr returnType, const std::vector<TypePtr>& paramTypes);
     FunctionType(TypePtr returnType);
-
-private:
-    Type* _returnType;
 };
 
 class ArrayType;
