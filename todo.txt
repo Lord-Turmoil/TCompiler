@@ -62,3 +62,5 @@ Step 3.
 
 Step 4.
     1. Introduce array.
+
+g++ -o a.out $(find . -type f -iname *.cpp -print)

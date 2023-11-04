@@ -42,6 +42,7 @@ extern char* optarg;
 extern const char* optmsg;
 extern int opterr;
 extern int optopt;
+extern char* longopt;
 
 void resetopt();
 int getopt(int argc, char* argv[], const char* pattern);

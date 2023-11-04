@@ -204,8 +204,7 @@ TokenPtr IdentifierLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
         reader->Rewind();
     }
 
-    auto mapper = mioc::SingletonContainer::GetContainer()->Resolve<ITokenMapper>();
-    auto token = Token::New(mapper->Type(lexeme), lexeme, lineNo, charNo);
+    auto token = Token::New(_tokenMapper->Type(lexeme), lexeme, lineNo, charNo);
     if (token->type == TokenType::TK_UNKNOWN)
     {
         token->type = TokenType::TK_IDENTIFIER;
@@ -350,8 +349,7 @@ TokenPtr SingleOpLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
     // The first one must be a single-character operator.
     lexeme += ch;
 
-    auto mapper = mioc::SingletonContainer::GetContainer()->Resolve<ITokenMapper>();
-    return Token::New(mapper->Type(lexeme), lexeme, lineNo, charNo);
+    return Token::New(_tokenMapper->Type(lexeme), lexeme, lineNo, charNo);
 }
 
 
@@ -418,8 +416,7 @@ TokenPtr DoubleOpLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
         TOMIC_ASSERT(false && "Unknown double-character operator.");
     }
 
-    auto mapper = mioc::SingletonContainer::GetContainer()->Resolve<ITokenMapper>();
-    return Token::New(mapper->Type(lexeme), lexeme, lineNo, charNo);
+    return Token::New(_tokenMapper->Type(lexeme), lexeme, lineNo, charNo);
 }
 
 
@@ -444,8 +441,7 @@ TokenPtr DelimiterLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
     // The first one must be a delimiter.
     lexeme += ch;
 
-    auto mapper = mioc::SingletonContainer::GetContainer()->Resolve<ITokenMapper>();
-    return Token::New(mapper->Type(lexeme), lexeme, lineNo, charNo);
+    return Token::New(_tokenMapper->Type(lexeme), lexeme, lineNo, charNo);
 }
 
 

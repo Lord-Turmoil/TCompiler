@@ -32,11 +32,13 @@
 #include <cstring>
 
 static char _opt_buffer[128];
+static char _long_opt_buffer[128];
 
 char* optarg;
 const char* optmsg;
 int opterr;
 int optopt;
+char* longopt;
 
 static int optind;
 
@@ -80,7 +82,20 @@ int getopt(int argc, char* argv[], const char* pattern)
         if (long_opt)
         {
             opt = optopt = '@';
-            optarg = const_cast<char*>(long_opt);
+            longopt = _long_opt_buffer;
+            while (*long_opt && (*long_opt != '='))
+            {
+                *longopt++ = *long_opt;
+            }
+            *longopt = '\0';
+            if (*long_opt)
+            {
+                optarg = const_cast<char*>(long_opt + 1);
+            }
+            else
+            {
+                optarg = const_cast<char*>(long_opt);
+            }
         }
         else // not an option
         {

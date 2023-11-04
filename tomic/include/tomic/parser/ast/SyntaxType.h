@@ -8,7 +8,7 @@
 #define _TOMIC_SYNTAX_TYPE_H_
 
 #include <tomic/Shared.h>
-#include <tomic/utils/Config.h>
+#include <tomic/Config.h>
 #include <unordered_map>
 #include <memory>
 

@@ -23,11 +23,11 @@ SymbolTablePtr DefaultSemanticParser::Parse(SyntaxTreePtr tree)
     auto table = _analyzer->Analyze(tree);
     if (table)
     {
-        _logger->LogFormat(LogLevel::DEBUG, "Semantic analysis succeed.");
+        _logger->LogFormat(LogLevel::DEBUG, "SemanticParse analysis succeed.");
     }
     else
     {
-        _logger->LogFormat(LogLevel::DEBUG, "Semantic analysis failed.");
+        _logger->LogFormat(LogLevel::DEBUG, "SemanticParse analysis failed.");
     }
 
     return table;

@@ -9,7 +9,7 @@
 
 #include <tomic/Shared.h>
 #include <tomic/parser/table/SymbolTableForward.h>
-#include "tomic/parser/ast/SyntaxTree.h"
+#include <tomic/parser/ast/SyntaxTree.h>
 #include <memory>
 
 TOMIC_BEGIN

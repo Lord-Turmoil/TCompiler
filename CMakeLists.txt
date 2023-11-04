@@ -16,11 +16,11 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE mioc)
 
 # Twio Dependency
 add_subdirectory(3rd-party/twio)
-target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC twio)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE twio)
 
 # ToMiCompiler Core
 add_subdirectory(tomic)
-target_link_libraries(${CMAKE_PROJECT_NAME} PUBLIC tomic)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE tomic)
 
 set(CMAKE_INSTALL_PREFIX "${PROJECT_SOURCE_DIR}/output")
 install(TARGETS ${CMAKE_PROJECT_NAME} DESTINATION bin)

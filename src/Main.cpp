@@ -5,12 +5,12 @@
  */
 
 #include <tomic.h>
-#include "Compiler.h"
 #include "Argument.h"
 
 using namespace tomic;
 
 static bool ParseArgs(int argc, char* argv[], ConfigPtr config);
+static void HandleLongOpt(const char* opt, const char* arg, ConfigPtr config);
 
 /*
  * Usage: ToMiCompiler [input] [-a filename] [-i filename] [-e filename] [-l filename] [-c] [-v]
@@ -45,20 +45,18 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    mioc::SingletonContainer::GetContainer()->AddSingleton<Config>(config);
-
-    RegisterComponents();
-    Compile();
+    ToMiCompiler().Configure(config)->Compile();
 
     return 0;
 }
+
 
 static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
 {
     int opt;
     int arg_cnt = 0;
     bool err = false;
-    while ((opt = getopt(argc, argv, "a:i:e:l:cv")))
+    while ((opt = getopt(argc, argv, "o:")))
     {
         if (opterr != 0)
         {
@@ -69,29 +67,17 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
         }
         switch (opt)
         {
-        case 'a':
-            config->SetAstOutput(optarg);
+        case 'o':
+            config->Output = optarg;
             break;
-        case 'i':
-            config->SetIrOutput(optarg);
-            break;
-        case 'e':
-            config->SetErrorOutput(optarg);
-            break;
-        case 'l':
-            config->SetLogOutput(optarg);
-            break;
-        case 'c':
-            config->SetEnableCompleteAst(true);
-            break;
-        case 'v':
-            config->SetEnableVerboseError(true);
+        case '@':
+            HandleLongOpt(longopt, optarg, config);
             break;
         case '!':
             arg_cnt++;
             if (arg_cnt == 1)
             {
-                config->SetInput(optarg);
+                config->Input = optarg;
             }
             else if (arg_cnt == 2)
             {
@@ -115,4 +101,37 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
     }
 
     return true;
+}
+
+static void HandleLongOpt(const char* opt, const char* arg, ConfigPtr config)
+{
+    using namespace tomic::StringUtil;
+
+    if (Equals(opt, "enable-logger"))
+    {
+        config->EnableLog = true;
+        config->LogOutput = IsNullOrEmpty(arg) ? "stdout" : arg;
+    }
+    else if (Equals(opt, "enable-error"))
+    {
+        config->EnableError = true;
+        config->ErrorOutput = IsNullOrEmpty(arg) ? "stderr" : arg;
+    }
+    else if (Equals(opt, "verbose-error"))
+    {
+        config->EnableVerboseError = true;
+    }
+    else if (Equals(opt, "complete-ast"))
+    {
+        config->EnableCompleteAst = true;
+    }
+    else if (Equals(opt, "emit-ast"))
+    {
+        config->EmitAst = true;
+        config->AstOutput = IsNullOrEmpty(arg) ? "ast.xml" : arg;
+    }
+    else
+    {
+        fprintf(stderr, "Unknown parameter \"--%s\"\n", opt);
+    }
 }
