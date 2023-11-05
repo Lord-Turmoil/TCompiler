@@ -19,18 +19,23 @@
 #include <tomic/llvm/ir/Use.h>
 #include <vector>
 #include <memory>
+#include <string>
 
 TOMIC_LLVM_BEGIN
+
+using UseList = std::vector<UsePtr>;
+using UseListPtr = UseList*;
 
 class Value
 {
 public:
-    Value(TypePtr type, ValueType valueType) : _type(type), _valueType(valueType) {}
+    Value(ValueType valueType, TypePtr type) : _valueType(valueType), _type(type) {}
     virtual ~Value() = default;
+
+    ValueType GetValueType() const { return _valueType; }
 
     // Get the type of this value.
     TypePtr GetType() const { return _type; }
-    ValueType GetValueType() const { return _valueType; }
 
     // Cast this type to a specific type.
     // You should use this function only when you are sure that this type is
@@ -38,8 +43,23 @@ public:
     template<typename _Ty>
     _Ty* Cast() { return static_cast<_Ty*>(this); }
 
-private:
-    using _use_iterator_raw = std::vector<UsePtr>::iterator;
+    // Get and set name for this Value.
+    // If set, it will no longer use number as its name.
+    const std::string& GetName() const { return _name; }
+    void SetName(const std::string& name) { _name = name; }
+
+protected:
+    Value(ValueType valueType, TypePtr type, UseListPtr useList)
+            : _valueType(valueType), _type(type)
+    {
+        if (useList)
+        {
+            _useList = *useList;
+        }
+    }
+
+protected:
+    using _use_iterator_raw = UseList::iterator;
 
     class use_base_iterator_base
     {
@@ -120,7 +140,8 @@ public:
 
 protected:
     TypePtr _type;
-    std::vector<UsePtr> _useList;
+    UseList _useList;
+    std::string _name;
 
 private:
     ValueType _valueType;

@@ -57,7 +57,7 @@ public:
     static FunctionTypePtr Get(TypePtr returnType, const std::vector<Type*>& paramTypes);
     static FunctionTypePtr Get(TypePtr returnType);
 
-    Type* ReturnType() const { return _containedTypes[0]; }
+    TypePtr ReturnType() const { return _containedTypes[0]; }
 
     using param_iterator = std::vector<Type*>::iterator;
     using const_param_iterator = std::vector<Type*>::const_iterator;

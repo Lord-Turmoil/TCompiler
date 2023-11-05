@@ -16,10 +16,10 @@ TOMIC_LLVM_BEGIN
 class Argument final : public Value
 {
 public:
-    Argument(TypePtr type, const std::string& name, FunctionPtr parent, int argNo);
+    Argument(TypePtr type, FunctionPtr parent, int argNo);
     ~Argument() = default;
 
-    static Argument New(TypePtr type, const std::string& name, FunctionPtr parent, int argNo);
+    static Argument New(TypePtr type, FunctionPtr parent, int argNo);
 
     FunctionPtr Parent() const;
     int ArgNo() const;

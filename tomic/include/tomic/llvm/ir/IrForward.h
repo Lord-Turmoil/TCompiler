@@ -29,6 +29,9 @@ using ArgumentPtr = Argument*;
 class Function;
 using FunctionPtr = Function*;
 
+class BasicBlock;
+using BasicBlockPtr = BasicBlock*;
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_IR_FORWARD_H_
