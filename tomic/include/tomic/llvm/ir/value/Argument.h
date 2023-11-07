@@ -16,15 +16,16 @@ TOMIC_LLVM_BEGIN
 class Argument final : public Value
 {
 public:
-    Argument(TypePtr type, FunctionPtr parent, int argNo);
-    ~Argument() = default;
+    ~Argument() override = default;
 
-    static Argument New(TypePtr type, FunctionPtr parent, int argNo);
+    static ArgumentPtr New(TypePtr type, FunctionPtr parent, int argNo);
 
-    FunctionPtr Parent() const;
-    int ArgNo() const;
+    FunctionPtr Parent() const { return _parent; }
+    int ArgNo() const { return _argNo; }
 
 private:
+    Argument(TypePtr type, FunctionPtr parent, int argNo);
+
     FunctionPtr _parent;
     int _argNo;
 };

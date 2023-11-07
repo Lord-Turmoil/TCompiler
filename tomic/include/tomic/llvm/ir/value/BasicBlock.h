@@ -18,8 +18,12 @@ class BasicBlock final : public Value
 public:
     ~BasicBlock() override = default;
 
+    static BasicBlockPtr New(FunctionPtr parent);
+
 private:
-    BasicBlock();
+    BasicBlock(FunctionPtr parent);
+
+    FunctionPtr _parent;
 };
 
 TOMIC_LLVM_END

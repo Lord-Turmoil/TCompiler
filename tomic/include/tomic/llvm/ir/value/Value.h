@@ -29,7 +29,6 @@ using UseListPtr = UseList*;
 class Value
 {
 public:
-    Value(ValueType valueType, TypePtr type) : _valueType(valueType), _type(type) {}
     virtual ~Value() = default;
 
     ValueType GetValueType() const { return _valueType; }
@@ -49,6 +48,7 @@ public:
     void SetName(const std::string& name) { _name = name; }
 
 protected:
+    Value(ValueType valueType, TypePtr type) : _valueType(valueType), _type(type) {}
     Value(ValueType valueType, TypePtr type, UseListPtr useList)
             : _valueType(valueType), _type(type)
     {
