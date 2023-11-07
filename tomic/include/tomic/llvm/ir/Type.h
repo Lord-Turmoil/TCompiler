@@ -39,6 +39,7 @@ public:
     };
 
     TypeID TypeId() const { return _typeId; }
+    LlvmContextPtr Context() const { return _context; }
 
     bool IsVoidTy() const { return _typeId == VoidTyID; }
     bool IsLabelTy() const { return _typeId == LabelTyID; }
@@ -56,7 +57,7 @@ public:
 
 protected:
     // Prohibit direct instantiation.
-    Type(TypeID typeId) : _typeId(typeId) {}
+    Type(LlvmContextPtr context, TypeID typeId) : _context(context), _typeId(typeId) {}
 
     int _ContainedTypeCount() const { return _containedTypes.size(); }
     void _AddContainedType(TypePtr type) { _containedTypes.push_back(type); }
@@ -69,6 +70,7 @@ protected:
 
 private:
     TypeID _typeId;
+    LlvmContextPtr _context;
 };
 
 TOMIC_LLVM_END

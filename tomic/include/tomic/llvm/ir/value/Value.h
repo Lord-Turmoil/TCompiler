@@ -33,6 +33,9 @@ public:
     // Get the type of this value.
     TypePtr GetType() const { return _type; }
 
+    // Get the context.
+    LlvmContextPtr Context() const;
+
     // Cast this type to a specific type.
     // You should use this function only when you are sure that this type is
     // actually the type you want to cast to.
@@ -141,6 +144,7 @@ protected:
     std::string _name;
 
 private:
+
     ValueType _valueType;
 };
 

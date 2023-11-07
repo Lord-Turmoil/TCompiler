@@ -11,18 +11,10 @@
 TOMIC_LLVM_BEGIN
 
 LlvmContext::LlvmContext() :
-        voidTy(Type::VoidTyID),
-        labelTy(Type::LabelTyID),
-        int32Ty(32)
+        voidTy(this, Type::VoidTyID),
+        labelTy(this, Type::LabelTyID),
+        int32Ty(this, 32)
 {
-}
-
-LlvmContext* LlvmContext::Instance()
-{
-    // A simplest singleton pattern. :)
-    static LlvmContext instance;
-
-    return &instance;
 }
 
 ArrayTypePtr LlvmContext::GetArrayType(TypePtr elementType, int elementCount)

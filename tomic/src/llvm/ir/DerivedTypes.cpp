@@ -13,10 +13,10 @@ TOMIC_LLVM_BEGIN
  * ==================== IntegerType ====================
  */
 
-IntegerTypePtr IntegerType::Get(unsigned int bitWidth)
+IntegerTypePtr IntegerType::Get(LlvmContextPtr context, unsigned bitWidth)
 {
     TOMIC_ASSERT((bitWidth == 32) && "Unsupported bit width");
-    return LlvmContext::Instance()->GetInt32Ty();
+    return context->GetInt32Ty();
 }
 
 
@@ -40,12 +40,12 @@ FunctionType::FunctionType(TypePtr returnType)
 
 FunctionTypePtr FunctionType::Get(TypePtr returnType, const std::vector<Type*>& paramTypes)
 {
-    return LlvmContext::Instance()->GetFunctionType(returnType, paramTypes);
+    return returnType->Context()->GetFunctionType(returnType, paramTypes);
 }
 
 FunctionTypePtr FunctionType::Get(TypePtr returnType)
 {
-    return LlvmContext::Instance()->GetFunctionType(returnType);
+    return returnType->Context()->GetFunctionType(returnType);
 }
 
 bool FunctionType::Equals(TypePtr returnType, const std::vector<TypePtr>& paramTypes) const
@@ -87,7 +87,7 @@ ArrayType::ArrayType(TypePtr elementType, int elementCount)
 
 ArrayTypePtr ArrayType::Get(TypePtr elementType, int elementCount)
 {
-    return LlvmContext::Instance()->GetArrayType(elementType, elementCount);
+    return elementType->Context()->GetArrayType(elementType, elementCount);
 }
 
 

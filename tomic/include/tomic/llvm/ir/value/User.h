@@ -24,7 +24,8 @@ protected:
     // Prohibit direct construction of User.
     User(ValueType valueType, TypePtr type, UseListPtr useList)
             : Value(valueType, type, useList) {}
-
+    User(ValueType valueType, TypePtr type)
+            : Value(valueType, type) {}
 
 protected:
     class value_iterator_impl : use_base_iterator_base

@@ -17,9 +17,6 @@
 
 TOMIC_LLVM_BEGIN
 
-class LlvmContext;
-using LlvmContextPtr = LlvmContext*;
-
 // Hope this hash function works well...
 
 struct ArrayTypePair
@@ -46,13 +43,14 @@ struct ArrayTypePairHash
 
 class LlvmContext
 {
+    // Only Module can create LlvmContext.
+    friend class Module;
+
 public:
     ~LlvmContext() = default;
 
     LlvmContext(const LlvmContext&) = delete;
     LlvmContext& operator=(const LlvmContext&) = delete;
-
-    static LlvmContextPtr Instance();
 
     TypePtr GetVoidTy() { return &voidTy; }
     TypePtr GetLabelTy() { return &labelTy; }

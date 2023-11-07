@@ -30,12 +30,13 @@ public:
     IntegerType(const IntegerType&) = delete;
     IntegerType& operator=(const IntegerType&) = delete;
 
-    static IntegerType* Get(unsigned bitWidth);
+    static IntegerType* Get(LlvmContextPtr context, unsigned bitWidth);
 
     unsigned BitWidth() const { return _bitWidth; }
 
 protected:
-    IntegerType(unsigned bitWidth) : Type(IntegerTyID), _bitWidth(bitWidth) {}
+    IntegerType(LlvmContextPtr context, unsigned bitWidth)
+            : Type(context, IntegerTyID), _bitWidth(bitWidth) {}
 
 private:
     unsigned _bitWidth;
