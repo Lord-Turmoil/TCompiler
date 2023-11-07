@@ -8,7 +8,7 @@
 #define _TOMIC_LLVM_ARGUMENT_H_
 
 #include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/Value.h>
+#include <tomic/llvm/ir/value/Value.h>
 #include <tomic/llvm/ir/IrForward.h>
 
 TOMIC_LLVM_BEGIN

@@ -8,12 +8,28 @@
 #define _TOMIC_LLVM_FUNCTION_H_
 
 #include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/GlobalValue.h>
-#include <tomic/llvm/ir/Argument.h>
+#include <tomic/llvm/ir/value/GlobalValue.h>
+#include <tomic/llvm/ir/value/Argument.h>
 #include <vector>
 #include <list>
 
 TOMIC_LLVM_BEGIN
+
+/*
+ * The structure of LLVM IR is like this:
+ *
+ * Module
+ *  |- Function
+ *  \- Function
+ *      |- Parameter
+ *      |- Parameter
+ *      |- BasicBlock
+ *      |   |- Instruction
+ *      |   |- Instruction
+ *      |   \- Instruction
+ *      \- BasicBlock
+ *          \- Instruction
+ */
 
 class Function final : public GlobalValue
 {

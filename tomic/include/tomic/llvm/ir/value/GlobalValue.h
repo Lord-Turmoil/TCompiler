@@ -8,8 +8,8 @@
 #define _TOMIC_LLVM_GLOBAL_VALUE_H_
 
 #include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/Constant.h>
-#include "ValueType.h"
+#include <tomic/llvm/ir/value/Constant.h>
+#include <tomic/llvm/ir/value/ValueType.h>
 
 TOMIC_LLVM_BEGIN
 

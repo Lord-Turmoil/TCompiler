@@ -8,7 +8,7 @@
 #define _TOMIC_LLVM_USER_H_
 
 #include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/Value.h>
+#include <tomic/llvm/ir/value/Value.h>
 
 TOMIC_LLVM_BEGIN
 

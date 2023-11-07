@@ -28,8 +28,8 @@
 
 #pragma once
 
-#ifndef _ARGUMENT_H_
-#define _ARGUMENT_H_
+#ifndef _ARG_H_
+#define _ARG_H_
 
 
 /*

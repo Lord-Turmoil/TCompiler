@@ -9,6 +9,12 @@
 
 #include <tomic/Shared.h>
 
+#define LLVM_VERSION_MAJOR "0"
+#define LLVM_VERSION_MINOR "1"
+#define LLVM_VERSION_PATCH "1"
+
+#define LLVM_VERSION (LLVM_VERSION_MAJOR "." LLVM_VERSION_MINOR "." LLVM_VERSION_PATCH)
+
 #define LLVM_BEGIN namespace llvm {
 #define LLVM_END   }
 

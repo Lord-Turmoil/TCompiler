@@ -102,4 +102,4 @@ private:
 
 TOMIC_LLVM_END
 
-#endif // _TOMIC_LLVM_TYPE_H_
+#endif // _TOMIC_LLVM_DERIVED_TYPE_H_

@@ -5,7 +5,7 @@
  */
 
 #include <tomic.h>
-#include "Argument.h"
+#include "Arg.h"
 
 using namespace tomic;
 

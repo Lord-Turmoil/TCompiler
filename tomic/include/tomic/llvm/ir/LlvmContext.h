@@ -11,7 +11,7 @@
 #include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/IrForward.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
-#include <tomic/llvm/ir/Value.h>
+#include <tomic/llvm/ir/value/Value.h>
 #include <unordered_map>
 #include <utility>
 

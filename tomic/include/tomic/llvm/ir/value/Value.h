@@ -15,8 +15,8 @@
 
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/IrForward.h>
-#include <tomic/llvm/ir/ValueType.h>
-#include <tomic/llvm/ir/Use.h>
+#include <tomic/llvm/ir/value/ValueType.h>
+#include <tomic/llvm/ir/value/Use.h>
 #include <vector>
 #include <memory>
 #include <string>
