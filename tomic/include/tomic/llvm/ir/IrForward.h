@@ -9,6 +9,7 @@
 
 #include <tomic/llvm/Llvm.h>
 #include <memory>
+#include <vector>
 
 TOMIC_LLVM_BEGIN
 
@@ -22,6 +23,11 @@ using ValueSmartPtr = std::shared_ptr<Value>;
 class User;
 using UserPtr = User*;
 
+class Use;
+using UsePtr = Use*;
+using UseSmartPtr = std::shared_ptr<Use>;
+using UseList = std::vector<UsePtr>;
+using UseListPtr = UseList*;
 
 class Argument;
 using ArgumentPtr = Argument*;

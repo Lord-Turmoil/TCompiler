@@ -23,9 +23,6 @@
 
 TOMIC_LLVM_BEGIN
 
-using UseList = std::vector<UsePtr>;
-using UseListPtr = UseList*;
-
 class Value
 {
 public:

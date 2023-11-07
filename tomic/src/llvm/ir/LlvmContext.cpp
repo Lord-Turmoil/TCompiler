@@ -80,5 +80,16 @@ void LlvmContext::RemoveValue(ValuePtr value)
     _valueMap.erase(value);
 }
 
+UsePtr LlvmContext::StoreUse(UseSmartPtr use)
+{
+    _useMap.emplace(use.get(), use);
+    return use.get();
+}
+
+void LlvmContext::RemoveUse(UsePtr use)
+{
+    _useMap.erase(use);
+}
+
 
 TOMIC_LLVM_END

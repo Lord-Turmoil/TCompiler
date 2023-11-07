@@ -13,21 +13,14 @@
 
 TOMIC_LLVM_BEGIN
 
-class Use;
-using UsePtr = std::shared_ptr<Use>;
 
 class Use
 {
 public:
-    Use(UserPtr user, ValuePtr value) : _user(user), _value(value) {}
-
     Use(const Use&) = delete;
     Use& operator=(const Use&) = delete;
 
-    static UsePtr New(UserPtr user, ValuePtr value)
-    {
-        return std::make_shared<Use>(user, value);
-    }
+    static UsePtr New(UserPtr user, ValuePtr value);
 
     // Avoid using 'Value' again as function name.
     ValuePtr GetValue() const { return _value; }
@@ -35,6 +28,8 @@ public:
     UserPtr GetUser() const { return _user; }
 
 private:
+    Use(UserPtr user, ValuePtr value) : _user(user), _value(value) {}
+
     UserPtr _user;
     ValuePtr _value;
 };

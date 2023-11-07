@@ -67,6 +67,9 @@ public:
     ValuePtr StoreValue(ValueSmartPtr value);
     void RemoveValue(ValuePtr value);
 
+    UsePtr StoreUse(UseSmartPtr use);
+    void RemoveUse(UsePtr use);
+
 private:
     // Prohibit direct instantiation.
     LlvmContext();
@@ -83,11 +86,19 @@ private:
      */
     std::unordered_map<ArrayTypePair, ArrayTypeSmartPtr, ArrayTypePairHash> _arrayTypes;
 
-    // Since it is not that simple to compare two function types, we use a vector
-    // to store all function types, and compare them one by one... :(
+    /*
+     * Since it is not that simple to compare two function types, we use a vector
+     * to store all function types, and compare them one by one... :(
+     */
     std::vector<FunctionTypeSmartPtr> _functionTypes;
 
+    /*
+     * Since we want to use raw pointers, we need to store them somewhere.
+     * We use a map to store them, and use shared_ptr to manage them.
+     * But in fact, we use raw pointers everywhere. :P
+     */
     std::unordered_map<ValuePtr, ValueSmartPtr> _valueMap;
+    std::unordered_map<UsePtr, UseSmartPtr> _useMap;
 };
 
 TOMIC_LLVM_END
