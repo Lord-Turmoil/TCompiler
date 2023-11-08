@@ -63,7 +63,17 @@ using FunctionPtr = Function*;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Instruction Forward Declaration
+class Instruction;
+using InstructionPtr = Instruction*;
 
+class UnaryInstruction;
+using UnaryInstructionPtr = UnaryInstruction*;
+
+class UnaryOperator;
+using UnaryOperatorPtr = UnaryOperator*;
+
+class BinaryInstruction;
+using BinaryInstructionPtr = BinaryInstruction*;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Use Forward Declaration

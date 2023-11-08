@@ -18,7 +18,10 @@ class BasicBlock final : public Value
 public:
     ~BasicBlock() override = default;
 
-    static BasicBlockPtr New(FunctionPtr parent);
+    static BasicBlockPtr New(FunctionPtr parent = nullptr);
+
+    FunctionPtr Parent() const { return _parent; }
+    void SetParent(FunctionPtr parent) { _parent = parent; }
 
 private:
     BasicBlock(FunctionPtr parent);

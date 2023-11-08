@@ -138,6 +138,9 @@ public:
     user_iterator UserBegin() { return user_iterator(_useList.begin()); }
     user_iterator UserEnd() { return user_iterator(_useList.end()); }
 
+    UsePtr UseAt(int index) const { return _useList[index]; }
+    UserPtr UserAt(int index) const { return _useList[index]->GetUser(); }
+
 protected:
     TypePtr _type;
     UseList _useList;

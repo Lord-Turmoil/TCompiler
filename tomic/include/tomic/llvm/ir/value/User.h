@@ -49,6 +49,9 @@ public:
 
     value_iterator OperandBegin() { return value_iterator(_useList.begin()); }
     value_iterator OperandEnd() { return value_iterator(_useList.end()); }
+
+    ValuePtr OperandAt(int index) const { return _useList[index]->GetValue(); }
+    void AddOperand(ValuePtr value) { _useList.push_back(Use::New(this, value)); }
 };
 
 TOMIC_LLVM_END

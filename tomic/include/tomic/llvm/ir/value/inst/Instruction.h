@@ -14,9 +14,17 @@ TOMIC_LLVM_BEGIN
 class Instruction : public User
 {
 public:
+    ~Instruction() override = default;
+
     BasicBlockPtr Parent() const { return _parent; }
+    void SetParent(BasicBlockPtr parent) { _parent = parent; }
+
     FunctionPtr ParentFunction() const;
     ModulePtr ParentModule() const;
+
+protected:
+    Instruction(ValueType valueType, TypePtr type, UseListPtr operands);
+    Instruction(ValueType valueType, TypePtr type);
 
 private:
     BasicBlockPtr _parent;
