@@ -35,7 +35,8 @@ public:
         // Derived types
         IntegerTyID,
         FunctionTyID,
-        ArrayTyID
+        ArrayTyID,
+        PointerTyID
     };
 
     TypeID TypeId() const { return _typeId; }
@@ -47,6 +48,7 @@ public:
     bool IsIntegerTy() const { return _typeId == IntegerTyID; }
     bool IsFunctionTy() const { return _typeId == FunctionTyID; }
     bool IsArrayTy() const { return _typeId == ArrayTyID; }
+    bool IsPointerTy() const { return _typeId == PointerTyID; }
 
 public:
     // Cast this type to a specific type.

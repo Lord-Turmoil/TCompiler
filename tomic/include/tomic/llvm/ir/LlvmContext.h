@@ -57,8 +57,11 @@ public:
     IntegerTypePtr GetInt32Ty() { return &int32Ty; }
 
     ArrayTypePtr GetArrayType(TypePtr elementType, int elementCount);
+
     FunctionTypePtr GetFunctionType(TypePtr returnType, const std::vector<TypePtr>& paramTypes);
     FunctionTypePtr GetFunctionType(TypePtr returnType);
+
+    PointerTypePtr GetPointerType(TypePtr elementType);
 
     // We want to use raw pointers, but do not want to delete them manually.
     // So we use shared_ptr to manage them internally. :P
@@ -89,6 +92,11 @@ private:
      * to store all function types, and compare them one by one... :(
      */
     std::vector<FunctionTypeSmartPtr> _functionTypes;
+
+    /*
+     * Pointer types are easier to store and map.
+     */
+    std::unordered_map<TypePtr, PointerTypeSmartPtr> _pointerTypes;
 
     /*
      * Since we want to use raw pointers, we need to store them somewhere.

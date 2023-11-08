@@ -78,6 +78,7 @@ private:
     FunctionType(TypePtr returnType);
 };
 
+
 class ArrayType;
 using ArrayTypePtr = ArrayType*;
 using ArrayTypeSmartPtr = std::shared_ptr<ArrayType>;
@@ -97,8 +98,29 @@ protected:
     ArrayType(TypePtr elementType, int elementCount);
 
 private:
-    Type* _elementType;
+    TypePtr _elementType;
     int _elementCount;
+};
+
+
+class PointerType;
+using PointerTypePtr = PointerType*;
+using PointerTypeSmartPtr = std::shared_ptr<PointerType>;
+
+class PointerType : public Type
+{
+    friend class LlvmContext;
+public:
+    PointerType() : _elementType(nullptr) {}
+
+    static PointerTypePtr Get(TypePtr elementType);
+
+    TypePtr ElementType() const { return _elementType; }
+
+private:
+    PointerType(TypePtr elementType);
+
+    TypePtr _elementType;
 };
 
 TOMIC_LLVM_END

@@ -26,11 +26,9 @@ ArrayTypePtr LlvmContext::GetArrayType(TypePtr elementType, int elementCount)
     {
         return iter->second.get();
     }
-    else
-    {
-        auto it = _arrayTypes.emplace(pair, new ArrayType(elementType, elementCount));
-        return it.first->second.get();
-    }
+
+    return _arrayTypes.emplace(pair, new ArrayType(elementType, elementCount))
+            .first->second.get();
 }
 
 FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType, const std::vector<TypePtr>& paramTypes)
@@ -59,6 +57,18 @@ FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType)
 
     auto type = _functionTypes.emplace_back(new FunctionType(returnType));
     return type.get();
+}
+
+PointerTypePtr LlvmContext::GetPointerType(TypePtr elementType)
+{
+    auto it = _pointerTypes.find(elementType);
+    if (it != _pointerTypes.end())
+    {
+        return it->second.get();
+    }
+
+    return _pointerTypes.emplace(elementType, new PointerType(elementType))
+            .first->second.get();
 }
 
 ValuePtr LlvmContext::StoreValue(ValueSmartPtr value)
