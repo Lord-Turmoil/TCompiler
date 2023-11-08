@@ -17,6 +17,7 @@ class LlvmContext;
 using LlvmContextPtr = LlvmContext*;
 
 class Module;
+using ModulePtr = Module*;
 using ModuleSmartPtr = std::shared_ptr<Module>;
 
 
@@ -49,6 +50,9 @@ using UserPtr = User*;
 // Constant Forward Declaration
 class Constant;
 using ConstantPtr = Constant*;
+
+class GlobalValue;
+using GlobalValuePtr = GlobalValue*;
 
 class GlobalVariable;
 using GlobalVariablePtr = GlobalVariable*;

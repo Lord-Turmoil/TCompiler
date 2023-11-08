@@ -10,11 +10,11 @@
 
 TOMIC_LLVM_BEGIN
 
-ArgumentPtr Argument::New(tomic::llvm::TypePtr type, tomic::llvm::FunctionPtr parent, int argNo)
+ArgumentPtr Argument::New(TypePtr type, FunctionPtr parent, int argNo)
 {
     auto arg = std::shared_ptr<Argument>(new Argument(type, parent, argNo));
 
-    LlvmContext::Instance()->StoreValue(arg);
+    type->Context()->StoreValue(arg);
 
     return arg.get();
 }

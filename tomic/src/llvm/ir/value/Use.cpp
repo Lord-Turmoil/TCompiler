@@ -5,6 +5,8 @@
  */
 
 #include <tomic/llvm/ir/value/Use.h>
+#include <tomic/llvm/ir/value/User.h>
+#include <tomic/llvm/ir/value/Value.h>
 #include <tomic/llvm/ir/LlvmContext.h>
 
 TOMIC_LLVM_BEGIN
@@ -12,7 +14,7 @@ TOMIC_LLVM_BEGIN
 UsePtr Use::New(UserPtr user, ValuePtr value)
 {
     auto use = std::shared_ptr<Use>(new Use(user, value));
-    return LlvmContext::Instance()->StoreUse(use);
+    return user->Context()->StoreUse(use);
 }
 
 TOMIC_LLVM_END

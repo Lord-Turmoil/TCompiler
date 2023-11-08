@@ -35,6 +35,8 @@ enum class ValueType
     UnaryOperatorTy,
 
     // === Value.User.Constant.GlobalValue.GlobalObject ===
+    ConstantTy,
+    GlobalValueTy,
     FunctionTy,
     GlobalVariableTy,
 };

@@ -35,11 +35,11 @@ public:
     function_iterator FunctionEnd() { return _functions.end(); }
 
     FunctionPtr GetMainFunction() const { return _mainFunction; }
-    FunctionPtr SetMainFunction(FunctionPtr mainFunction)
-    {
-        _mainFunction = mainFunction;
-        return _mainFunction;
-    }
+
+public:
+    void AddGlobalVariable(GlobalVariablePtr globalVariable);
+    void AddFunction(FunctionPtr function);
+    void SetMainFunction(FunctionPtr mainFunction);
 
 private:
     Module(const char* name);

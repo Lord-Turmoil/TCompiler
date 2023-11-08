@@ -14,13 +14,13 @@ BasicBlockPtr BasicBlock::New(FunctionPtr parent)
 {
     auto block = std::shared_ptr<BasicBlock>(new BasicBlock(parent));
 
-    LlvmContext::Instance()->StoreValue(block);
+    block->Context()->StoreValue(block);
 
     return block.get();
 }
 
 BasicBlock::BasicBlock(FunctionPtr parent)
-        : Value(ValueType::BasicBlockTy, LlvmContext::Instance()->GetVoidTy()),
+        : Value(ValueType::BasicBlockTy, parent->Context()->GetVoidTy()),
           _parent(parent)
 {
 }

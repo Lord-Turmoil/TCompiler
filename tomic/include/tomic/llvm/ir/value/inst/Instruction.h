@@ -16,6 +16,7 @@ class Instruction : public User
 public:
     BasicBlockPtr Parent() const { return _parent; }
     FunctionPtr ParentFunction() const;
+    ModulePtr ParentModule() const;
 
 private:
     BasicBlockPtr _parent;

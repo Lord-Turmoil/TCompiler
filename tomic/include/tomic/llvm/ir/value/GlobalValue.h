@@ -15,15 +15,24 @@ TOMIC_LLVM_BEGIN
 
 class GlobalValue : public Constant
 {
+    friend class Module;
+
 public:
     ~GlobalValue() override = default;
 
+    ModulePtr Parent() const { return _parent; }
+
+private:
+    void SetParent(ModulePtr parent) { _parent = parent; }
+
 protected:
-    GlobalValue(ValueType valueType, TypePtr type, const std::string& name, UseListPtr operands)
-            : Constant(valueType, type, operands)
+    GlobalValue(ValueType valueType, TypePtr type, const std::string& name)
+            : Constant(valueType, type, nullptr), _parent(nullptr)
     {
         SetName(name);
     };
+
+    ModulePtr _parent;
 };
 
 TOMIC_LLVM_END

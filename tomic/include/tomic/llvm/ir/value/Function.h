@@ -38,7 +38,7 @@ public:
 
     ~Function() override = default;
 
-    static FunctionPtr New(TypePtr type, const std::string& name, UseListPtr operands);
+    static FunctionPtr New(TypePtr type, const std::string& name);
 
     int ArgCount() const { return _args.size(); }
     ArgumentPtr GetArg(int argNo) const { return _args[argNo]; }
@@ -55,7 +55,7 @@ public:
     FunctionPtr RemoveBasicBlock(BasicBlockPtr block);
 
 private:
-    Function(TypePtr type, const std::string& name, UseListPtr operands);
+    Function(TypePtr type, const std::string& name);
 
 private:
     // We can generate arguments via its type.

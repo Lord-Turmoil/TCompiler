@@ -7,6 +7,7 @@
 #include <tomic/llvm/ir/Module.h>
 #include <tomic/llvm/ir/LlvmContext.h>
 #include <tomic/llvm/ir/value/Function.h>
+#include <tomic/llvm/ir/value/GlobalVariable.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -35,5 +36,24 @@ Module::Module(const char* name)
         _name = "Default LLVM Module";
     }
 }
+
+void Module::AddGlobalVariable(GlobalVariablePtr globalVariable)
+{
+    globalVariable->SetParent(this);
+    _globalVariables.push_back(globalVariable);
+}
+
+void Module::AddFunction(FunctionPtr function)
+{
+    function->SetParent(this);
+    _functions.push_back(function);
+}
+
+void Module::SetMainFunction(FunctionPtr mainFunction)
+{
+    mainFunction->SetParent(this);
+    _mainFunction = mainFunction;
+}
+
 
 TOMIC_LLVM_END

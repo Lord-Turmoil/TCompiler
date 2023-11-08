@@ -11,17 +11,17 @@
 
 TOMIC_LLVM_BEGIN
 
-FunctionPtr Function::New(TypePtr type, const std::string& name, UseListPtr operands)
+FunctionPtr Function::New(TypePtr type, const std::string& name)
 {
-    auto func = std::shared_ptr<Function>(new Function(type, name, operands));
+    auto func = std::shared_ptr<Function>(new Function(type, name));
 
-    LlvmContext::Instance()->StoreValue(func);
+    type->Context()->StoreValue(func);
 
     return func.get();
 }
 
-Function::Function(TypePtr type, const std::string& name, UseListPtr operands)
-        : GlobalValue(ValueType::FunctionTy, type, name, operands)
+Function::Function(TypePtr type, const std::string& name)
+        : GlobalValue(ValueType::FunctionTy, type, name)
 {
 }
 
