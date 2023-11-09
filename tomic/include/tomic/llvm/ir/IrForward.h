@@ -78,6 +78,9 @@ using UnaryOperatorPtr = UnaryOperator*;
 class BinaryOperator;
 using BinaryOperatorPtr = BinaryOperator*;
 
+class CompareInstruction;
+using CompareInstructionPtr = CompareInstruction*;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Use Forward Declaration
 class Use;

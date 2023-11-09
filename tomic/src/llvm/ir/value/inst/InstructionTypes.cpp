@@ -39,4 +39,48 @@ UnaryOperatorPtr UnaryOperator::New(UnaryOpType opType, ValuePtr operand)
     return inst.get();
 }
 
+
+/*
+ * ============================== Binary Operator ==============================
+ */
+
+BinaryOperator::BinaryOperator(TypePtr type, ValuePtr lhs, ValuePtr rhs, BinaryOpType opType)
+        : Instruction(ValueType::BinaryOperatorTy, type), _opType(opType)
+{
+    AddOperand(lhs);
+    AddOperand(rhs);
+}
+
+BinaryOperatorPtr BinaryOperator::New(BinaryOpType opType, ValuePtr lhs, ValuePtr rhs)
+{
+    auto type = lhs->GetType();
+    auto inst = std::shared_ptr<BinaryOperator>(new BinaryOperator(type, lhs, rhs, opType));
+
+    lhs->Context()->StoreValue(inst);
+
+    return inst.get();
+}
+
+
+/*
+ * ============================== Compare Instruction ==============================
+ */
+
+CompareInstruction::CompareInstruction(TypePtr type, ValuePtr lhs, ValuePtr rhs, PredicateType predicateType)
+        : Instruction(ValueType::CompareInstTy, type), _predicateType(predicateType)
+{
+    AddOperand(lhs);
+    AddOperand(rhs);
+}
+
+CompareInstructionPtr CompareInstruction::New(PredicateType predicateType, ValuePtr lhs, ValuePtr rhs)
+{
+    auto type = lhs->GetType();
+    auto inst = std::shared_ptr<CompareInstruction>(new CompareInstruction(type, lhs, rhs, predicateType));
+
+    lhs->Context()->StoreValue(inst);
+
+    return inst.get();
+}
+
 TOMIC_LLVM_END

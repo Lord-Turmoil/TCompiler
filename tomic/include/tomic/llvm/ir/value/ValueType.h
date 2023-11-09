@@ -23,6 +23,7 @@ enum class ValueType
 
     // === Value.User.Instruction ===
     BinaryOperatorTy,
+    CompareInstTy,
     BranchInstTy,
     IndirectBrInstTy,
     GetElementPtrInstTy,
