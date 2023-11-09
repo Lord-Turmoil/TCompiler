@@ -9,7 +9,7 @@
 
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/value/GlobalValue.h>
-#include <tomic/llvm/ir/Initializer.h>
+#include <tomic/llvm/ir/value/ConstantData.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -19,17 +19,17 @@ public:
     ~GlobalVariable() override = default;
 
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name);
-    static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name, InitializerPtr initializer);
+    static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name, ConstantDataPtr initializer);
 
 public:
     bool IsConstant() const { return _isConstant; }
 
 private:
     GlobalVariable(TypePtr type, bool isConstant, const std::string& name);
-    GlobalVariable(TypePtr type, bool isConstant, const std::string& name, InitializerPtr initializer);
+    GlobalVariable(TypePtr type, bool isConstant, const std::string& name, ConstantDataPtr initializer);
 
     bool _isConstant;
-    InitializerPtr _initializer;
+    ConstantDataPtr _initializer;
 };
 
 TOMIC_LLVM_END

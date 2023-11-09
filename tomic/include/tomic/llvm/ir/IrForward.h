@@ -51,6 +51,9 @@ using UserPtr = User*;
 class Constant;
 using ConstantPtr = Constant*;
 
+class ConstantData;
+using ConstantDataPtr = ConstantData*;
+
 class GlobalValue;
 using GlobalValuePtr = GlobalValue*;
 
@@ -72,8 +75,8 @@ using UnaryInstructionPtr = UnaryInstruction*;
 class UnaryOperator;
 using UnaryOperatorPtr = UnaryOperator*;
 
-class BinaryInstruction;
-using BinaryInstructionPtr = BinaryInstruction*;
+class BinaryOperator;
+using BinaryOperatorPtr = BinaryOperator*;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Use Forward Declaration

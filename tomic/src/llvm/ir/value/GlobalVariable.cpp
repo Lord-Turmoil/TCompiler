@@ -15,7 +15,7 @@ GlobalVariable::GlobalVariable(TypePtr type, bool isConstant, const std::string&
 {
 }
 
-GlobalVariable::GlobalVariable(TypePtr type, bool isConstant, const std::string& name, InitializerPtr initializer)
+GlobalVariable::GlobalVariable(TypePtr type, bool isConstant, const std::string& name, ConstantDataPtr initializer)
         : GlobalValue(ValueType::GlobalVariableTy, type, name), _isConstant(isConstant), _initializer(initializer)
 {
 }
@@ -32,7 +32,7 @@ GlobalVariablePtr GlobalVariable::New(TypePtr type, bool isConstant, const std::
 GlobalVariablePtr GlobalVariable::New(TypePtr type,
                                       bool isConstant,
                                       const std::string& name,
-                                      InitializerPtr initializer)
+                                      ConstantDataPtr initializer)
 {
     auto globalVariable = std::shared_ptr<GlobalVariable>(new GlobalVariable(type, isConstant, name, initializer));
 

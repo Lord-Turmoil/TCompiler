@@ -34,8 +34,11 @@ enum class ValueType
     LoadInstTy,
     UnaryOperatorTy,
 
-    // === Value.User.Constant.GlobalValue.GlobalObject ===
+    // === Value.User.Constant ===
     ConstantTy,
+    ConstantDataTy,
+
+    // === Value.User.Constant.GlobalValue.GlobalObject ===
     GlobalValueTy,
     FunctionTy,
     GlobalVariableTy,
