@@ -81,6 +81,15 @@ using BinaryOperatorPtr = BinaryOperator*;
 class CompareInstruction;
 using CompareInstructionPtr = CompareInstruction*;
 
+class AllocaInst;
+using AllocaInstPtr = AllocaInst*;
+
+class LoadInst;
+using LoadInstPtr = LoadInst*;
+
+class StoreInst;
+using StoreInstPtr = StoreInst*;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Use Forward Declaration
 class Use;
