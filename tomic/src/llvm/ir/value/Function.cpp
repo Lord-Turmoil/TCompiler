@@ -7,7 +7,7 @@
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/Argument.h>
 #include <tomic/llvm/ir/value/BasicBlock.h>
-#include "tomic/llvm/ir/LlvmContext.h"
+#include <tomic/llvm/ir/LlvmContext.h>
 
 TOMIC_LLVM_BEGIN
 

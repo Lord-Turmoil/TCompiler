@@ -37,6 +37,8 @@
 #include <tomic/parser/ast/printer/JsonAstPrinter.h>
 #include <tomic/parser/ast/printer/XmlAstPrinter.h>
 #include <tomic/parser/ast/printer/StandardAstPrinter.h>
+#include <tomic/llvm/asm/IAsmGenerator.h>
+#include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
 
 TOMIC_BEGIN
 
@@ -185,6 +187,9 @@ void ToMiCompiler::Compile()
                 container->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
             }
         }
+    })->Configure([&](mioc::ServiceContainerPtr container) {
+        // LLVM
+        container->AddTransient<llvm::IAsmGenerator, llvm::StandardAsmGenerator>();
     });
 
     _impl->Compile();
