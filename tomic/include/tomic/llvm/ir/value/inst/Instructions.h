@@ -83,6 +83,30 @@ private:
     StoreInst(ValuePtr value, ValuePtr address);
 };
 
+
+/*
+ * ============================== ReturnInst ==============================
+ */
+
+/*
+ * ReturnInst is not strictly a unary instruction, since it may not require
+ * a value to be returned. So we just make it a simple instruction.
+ */
+
+class ReturnInst final : public Instruction
+{
+public:
+    ~ReturnInst() override = default;
+
+    ReturnInstPtr New(LlvmContextPtr context, ValuePtr value);
+    ReturnInstPtr New(LlvmContextPtr context);
+
+private:
+    ReturnInst(TypePtr type, ValuePtr value);
+    ReturnInst(TypePtr type);
+};
+
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_IR_INSTRUCTIONS_H_

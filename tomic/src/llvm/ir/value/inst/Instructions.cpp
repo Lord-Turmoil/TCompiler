@@ -66,4 +66,41 @@ StoreInstPtr StoreInst::New(ValuePtr value, ValuePtr address)
     return inst.get();
 }
 
+/*
+ * ============================== ReturnInst ==============================
+ */
+
+ReturnInst::ReturnInst(TypePtr type) : Instruction(ValueType::ReturnInstTy, type)
+{
+}
+
+ReturnInst::ReturnInst(TypePtr type, ValuePtr value)
+        : Instruction(ValueType::ReturnInstTy, type)
+{
+    if (!value->GetType()->IsVoidTy())
+    {
+        AddOperand(value);
+    }
+}
+
+ReturnInstPtr ReturnInst::New(LlvmContextPtr context)
+{
+    auto type = context->GetVoidTy();
+    auto inst = std::shared_ptr<ReturnInst>(new ReturnInst(type));
+
+    context->StoreValue(inst);
+
+    return inst.get();
+}
+
+ReturnInstPtr ReturnInst::New(LlvmContextPtr context, ValuePtr value)
+{
+    auto type = context->GetVoidTy();
+    auto inst = std::shared_ptr<ReturnInst>(new ReturnInst(type, value));
+
+    context->StoreValue(inst);
+
+    return inst.get();
+}
+
 TOMIC_LLVM_END
