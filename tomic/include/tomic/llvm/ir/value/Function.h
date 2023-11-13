@@ -10,6 +10,7 @@
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/value/GlobalValue.h>
 #include <tomic/llvm/ir/value/Argument.h>
+#include <tomic/llvm/ir/SlotTracker.h>
 #include <vector>
 #include <list>
 
@@ -35,6 +36,7 @@ class Function final : public GlobalValue
 {
 public:
     using block_iterator = std::list<BasicBlockPtr>::iterator;
+    using argument_iterator = std::vector<ArgumentPtr>::iterator;
 
     ~Function() override = default;
 
@@ -42,6 +44,8 @@ public:
 
     int ArgCount() const { return _args.size(); }
     ArgumentPtr GetArg(int argNo) const { return _args[argNo]; }
+    argument_iterator ArgBegin() { return _args.begin(); }
+    argument_iterator ArgEnd() { return _args.end(); }
 
     int BasicBlockCount() const { return _basicBlocks.size(); }
     block_iterator BasicBlockBegin() { return _basicBlocks.begin(); }
@@ -61,6 +65,9 @@ private:
     // We can generate arguments via its type.
     std::vector<ArgumentPtr> _args;
     std::list<BasicBlockPtr> _basicBlocks;
+
+    // Slot tracker is used to track all IDs of LLVM value.
+    SlotTracker _slotTracker;
 };
 
 TOMIC_LLVM_END
