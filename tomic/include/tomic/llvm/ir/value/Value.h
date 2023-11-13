@@ -141,6 +141,9 @@ public:
     UsePtr UseAt(int index) const { return _useList[index]; }
     UserPtr UserAt(int index) const { return _useList[index]->GetUser(); }
 
+    void AddUser(UserPtr user);
+    void AddUse(UsePtr use);
+
 protected:
     TypePtr _type;
     UseList _useList;
