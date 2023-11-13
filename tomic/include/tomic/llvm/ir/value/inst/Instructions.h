@@ -32,7 +32,7 @@ class AllocaInst final : public Instruction
 public:
     ~AllocaInst() override = default;
 
-    AllocaInstPtr New(TypePtr type, int alignment = 0);
+    static AllocaInstPtr New(TypePtr type, int alignment = 0);
 
 private:
     AllocaInst(TypePtr type, int alignment);
@@ -53,7 +53,7 @@ class LoadInst final : public UnaryInstruction
 public:
     ~LoadInst() override = default;
 
-    LoadInstPtr New(TypePtr type, ValuePtr address);
+    static LoadInstPtr New(TypePtr type, ValuePtr address);
 private:
     LoadInst(TypePtr type, ValuePtr address);
 };
@@ -77,7 +77,7 @@ class StoreInst final : public Instruction
 public:
     ~StoreInst() override = default;
 
-    StoreInstPtr New(ValuePtr value, ValuePtr address);
+    static StoreInstPtr New(ValuePtr value, ValuePtr address);
 
 private:
     StoreInst(ValuePtr value, ValuePtr address);
@@ -98,8 +98,8 @@ class ReturnInst final : public Instruction
 public:
     ~ReturnInst() override = default;
 
-    ReturnInstPtr New(LlvmContextPtr context, ValuePtr value);
-    ReturnInstPtr New(LlvmContextPtr context);
+    static ReturnInstPtr New(LlvmContextPtr context, ValuePtr value);
+    static ReturnInstPtr New(LlvmContextPtr context);
 
 private:
     ReturnInst(TypePtr type, ValuePtr value);

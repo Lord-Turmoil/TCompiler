@@ -90,6 +90,9 @@ using LoadInstPtr = LoadInst*;
 class StoreInst;
 using StoreInstPtr = StoreInst*;
 
+class ReturnInst;
+using ReturnInstPtr = ReturnInst*;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Use Forward Declaration
 class Use;

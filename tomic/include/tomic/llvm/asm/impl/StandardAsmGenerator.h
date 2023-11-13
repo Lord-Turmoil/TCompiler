@@ -73,8 +73,12 @@ private:
      * Parent entrance for generating instructions. Basic blocks will be
      * generated automatically depends on the instructions.
      */
-    void _GenerateInstructions(SyntaxNodePtr node);
+    bool _GenerateInstructions(SyntaxNodePtr node);
 
+    void _GenerateStatement(SyntaxNodePtr node);
+
+    ReturnInstPtr _GenerateReturnStatement(SyntaxNodePtr node);
+    ValuePtr _GenerateExpression(SyntaxNodePtr node);
 };
 
 TOMIC_LLVM_END
