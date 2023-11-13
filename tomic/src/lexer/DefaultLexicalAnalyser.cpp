@@ -90,7 +90,7 @@ TokenPtr DefaultLexicalAnalyzer::_Next()
 
     if (!token)
     {
-        TOMIC_ASSERT(false && "No task is registered to analyse the given character.");
+        TOMIC_PANIC("No task is registered to analyse the given character.");
     }
 
     return token;
@@ -413,7 +413,7 @@ TokenPtr DoubleOpLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
         }
         break;
     default:
-        TOMIC_ASSERT(false && "Unknown double-character operator.");
+        TOMIC_PANIC("Unknown double-character operator.");
     }
 
     return Token::New(_tokenMapper->Type(lexeme), lexeme, lineNo, charNo);

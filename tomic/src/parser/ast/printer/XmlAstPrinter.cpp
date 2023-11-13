@@ -85,7 +85,7 @@ bool XmlAstPrinter::Visit(tomic::SyntaxNodePtr node)
     }
     else
     {
-        TOMIC_ASSERT(false && "What the?");
+        TOMIC_PANIC("What the?");
     }
 
     _depth--;

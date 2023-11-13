@@ -597,7 +597,7 @@ static BinaryFunc _GetBinaryEvaluator(const char* op)
         }
         else
         {
-            TOMIC_ASSERT(false && "Invalid operator");
+            TOMIC_PANIC("Invalid operator");
             return _Add;
         }
     case '|':
@@ -607,7 +607,7 @@ static BinaryFunc _GetBinaryEvaluator(const char* op)
         }
         else
         {
-            TOMIC_ASSERT(false && "Invalid operator");
+            TOMIC_PANIC("Invalid operator");
             return _Add;
         }
     case '<':
@@ -635,7 +635,7 @@ static BinaryFunc _GetBinaryEvaluator(const char* op)
         }
         else
         {
-            TOMIC_ASSERT(false && "Invalid operator");
+            TOMIC_PANIC("Invalid operator");
             return _Add;
         }
     case '!':
@@ -645,11 +645,11 @@ static BinaryFunc _GetBinaryEvaluator(const char* op)
         }
         else
         {
-            TOMIC_ASSERT(false && "Invalid operator");
+            TOMIC_PANIC("Invalid operator");
             return _Add;
         }
     default:
-        TOMIC_ASSERT(false && "Invalid operator");
+        TOMIC_PANIC("Invalid operator");
         return _Add;
     }
 }
@@ -665,7 +665,7 @@ static UnaryFunc _GetUnaryEvaluator(const char* op)
     case '!':
         return _Not;
     default:
-        TOMIC_ASSERT(false && "Invalid operator");
+        TOMIC_PANIC("Invalid operator");
         return _UnaryAdd;
     }
 }
@@ -680,7 +680,7 @@ int EvaluateNumber(const SyntaxNodePtr node)
     }
     else
     {
-        TOMIC_ASSERT(false && "Invalid number");
+        TOMIC_PANIC("Invalid number");
         return 0;
     }
 }

@@ -67,7 +67,7 @@ void DefaultPreprocessor::_Process(int ch)
         _ProcessQuote(ch);
         break;
     default:
-        TOMIC_ASSERT(false && "Unknown state type");
+        TOMIC_PANIC("Unknown state type");
     }
 }
 
