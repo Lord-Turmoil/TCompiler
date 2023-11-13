@@ -25,8 +25,8 @@ bool EndsWith(const char* str, const char* suffix);
 bool ToInt(const char* str, int* value);
 bool ToBool(const char* str, bool* value);
 
-const char* ToString(int value);
-const char* ToString(bool value);
+const char* IntToString(int value);
+const char* BoolToString(bool value);
 
 }
 

@@ -292,12 +292,12 @@ SyntaxNodePtr SyntaxNode::SetAttribute(const char* name, const char* value)
 
 SyntaxNodePtr SyntaxNode::SetIntAttribute(const char* name, int value)
 {
-    return SetAttribute(name, StringUtil::ToString(value));
+    return SetAttribute(name, StringUtil::IntToString(value));
 }
 
 SyntaxNodePtr SyntaxNode::SetBoolAttribute(const char* name, bool value)
 {
-    return SetAttribute(name, StringUtil::ToString(value));
+    return SetAttribute(name, StringUtil::BoolToString(value));
 }
 
 SyntaxNodePtr SyntaxNode::RemoveAttribute(const char* name)

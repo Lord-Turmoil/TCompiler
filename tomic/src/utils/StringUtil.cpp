@@ -149,14 +149,14 @@ bool ToBool(const char* str, bool* value)
     return false;
 }
 
-const char* ToString(int value)
+const char* IntToString(int value)
 {
     static char buf[64];
     sprintf(buf, "%d", value);
     return buf;
 }
 
-const char* ToString(bool value)
+const char* BoolToString(bool value)
 {
     return value ? "true" : "false";
 }
