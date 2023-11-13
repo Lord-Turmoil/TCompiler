@@ -25,4 +25,25 @@ BasicBlock::BasicBlock(FunctionPtr parent)
 {
 }
 
+BasicBlockPtr BasicBlock::InsertInstruction(InstructionPtr inst)
+{
+    _instructions.push_back(inst);
+
+    return this;
+}
+
+BasicBlockPtr BasicBlock::InsertInstruction(instruction_iterator iter, InstructionPtr inst)
+{
+    _instructions.insert(iter, inst);
+
+    return this;
+}
+
+BasicBlockPtr BasicBlock::RemoveInstruction(InstructionPtr inst)
+{
+    _instructions.remove(inst);
+
+    return this;
+}
+
 TOMIC_LLVM_END
