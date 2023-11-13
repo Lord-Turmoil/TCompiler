@@ -16,6 +16,7 @@
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/Type.h>
 #include <memory>
+#include <tomic/llvm/asm/IAsmWriter.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -58,6 +59,8 @@ public:
     static FunctionTypePtr Get(TypePtr returnType, const std::vector<Type*>& paramTypes);
     static FunctionTypePtr Get(TypePtr returnType);
 
+    void PrintAsm(IAsmWriter writer) override;
+
     TypePtr ReturnType() const { return _containedTypes[0]; }
 
     using param_iterator = std::vector<Type*>::iterator;
@@ -89,6 +92,8 @@ class ArrayType : public Type
 public:
     ArrayType() : _elementType(nullptr), _elementCount(0) {}
 
+    void PrintAsm(IAsmWriter writer) override;
+
     static ArrayTypePtr Get(TypePtr elementType, int elementCount);
 
     Type* ElementType() const { return _elementType; }
@@ -112,6 +117,8 @@ class PointerType : public Type
     friend class LlvmContext;
 public:
     PointerType() : _elementType(nullptr) {}
+
+    void PrintAsm(IAsmWriter writer) override;
 
     static PointerTypePtr Get(TypePtr elementType);
 

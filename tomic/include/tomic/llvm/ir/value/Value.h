@@ -17,6 +17,7 @@
 #include <tomic/llvm/ir/IrForward.h>
 #include <tomic/llvm/ir/value/ValueType.h>
 #include <tomic/llvm/ir/value/Use.h>
+#include <tomic/llvm/asm/IAsmWriter.h>
 #include <vector>
 #include <memory>
 #include <string>
@@ -27,6 +28,15 @@ class Value
 {
 public:
     virtual ~Value() = default;
+
+    /*
+     * I suddenly realized that, except dependency injection, I hardly
+     * ever used Object-Oriented method in the whole project. Perhaps
+     * it is time for us to utilize it. :(
+     *
+     * All implementations will be placed under llvm/asm directory.
+     */
+    virtual void PrintAsm(IAsmWriter writer);
 
     ValueType GetValueType() const { return _valueType; }
 

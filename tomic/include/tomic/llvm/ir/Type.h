@@ -16,6 +16,7 @@
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/IrForward.h>
 #include <vector>
+#include <tomic/llvm/asm/IAsmWriter.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -25,6 +26,11 @@ class Type
 public:
     Type() : _typeId(VoidTyID) {}
     virtual ~Type() = default;
+
+    /*
+     * All implementations will be placed under llvm/asm.
+     */
+    virtual void PrintAsm(IAsmWriter writer);
 
     enum TypeID
     {
