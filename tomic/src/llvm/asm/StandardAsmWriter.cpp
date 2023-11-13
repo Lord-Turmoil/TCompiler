@@ -15,6 +15,11 @@ StandardAsmWriter::StandardAsmWriter(twio::IWriterPtr writer)
     TOMIC_ASSERT(writer);
 }
 
+StandardAsmWriterPtr StandardAsmWriter::New(twio::IWriterPtr writer)
+{
+    return std::make_shared<StandardAsmWriter>(writer);
+}
+
 void StandardAsmWriter::Push(char ch)
 {
     _writer->Write(ch);
@@ -25,6 +30,22 @@ void StandardAsmWriter::Push(const char* format, ...)
     va_list args;
 
     va_start(args, format);
+    _writer->WriteVFormat(format, args);
+    va_end(args);
+}
+
+void StandardAsmWriter::PushNext(char ch)
+{
+    PushSpace();
+    Push(ch);
+}
+
+void StandardAsmWriter::PushNext(const char* format, ...)
+{
+    va_list args;
+
+    va_start(args, format);
+    PushSpace();
     _writer->WriteVFormat(format, args);
     va_end(args);
 }

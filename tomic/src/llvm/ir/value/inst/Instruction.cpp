@@ -10,6 +10,17 @@
 
 TOMIC_LLVM_BEGIN
 
+
+Instruction::Instruction(ValueType valueType, TypePtr type, UseListPtr operands)
+        : User(valueType, type, operands)
+{
+}
+
+Instruction::Instruction(ValueType valueType, TypePtr type)
+        : User(valueType, type)
+{
+}
+
 FunctionPtr Instruction::ParentFunction() const
 {
     return Parent()->Parent();

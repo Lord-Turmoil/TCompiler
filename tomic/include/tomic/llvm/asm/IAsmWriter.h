@@ -25,6 +25,9 @@ public:
     virtual void Push(char ch) = 0;
     virtual void Push(const char* format, ...) = 0;
 
+    virtual void PushNext(char ch) = 0;
+    virtual void PushNext(const char* format, ...) = 0;
+
     virtual void PushSpace() = 0;
     virtual void PushSpaces(int repeat) = 0;
     virtual void PushNewLine() = 0;

@@ -26,6 +26,9 @@ public:
     void Push(char ch) override;
     void Push(const char* format, ...) override;
 
+    void PushNext(char ch) override;
+    void PushNext(const char* format, ...) override;
+
     void PushSpace() override;
     void PushSpaces(int repeat) override;
     void PushNewLine() override;

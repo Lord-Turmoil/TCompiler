@@ -30,7 +30,7 @@ public:
     /*
      * All implementations will be placed under llvm/asm.
      */
-    virtual void PrintAsm(IAsmWriter writer);
+    virtual void PrintAsm(IAsmWriterPtr writer);
 
     enum TypeID
     {

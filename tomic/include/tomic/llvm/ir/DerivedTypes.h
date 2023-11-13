@@ -28,8 +28,9 @@ class IntegerType : public Type
 {
     friend class LlvmContext;
 public:
-    IntegerType(const IntegerType&) = delete;
-    IntegerType& operator=(const IntegerType&) = delete;
+    ~IntegerType() override = default;
+
+    void PrintAsm(IAsmWriterPtr writer) override;
 
     static IntegerType* Get(LlvmContextPtr context, unsigned bitWidth);
 
@@ -56,10 +57,12 @@ class FunctionType : public Type
 {
     friend class LlvmContext;
 public:
+    ~FunctionType() override = default;
+
     static FunctionTypePtr Get(TypePtr returnType, const std::vector<Type*>& paramTypes);
     static FunctionTypePtr Get(TypePtr returnType);
 
-    void PrintAsm(IAsmWriter writer) override;
+    void PrintAsm(IAsmWriterPtr writer) override;
 
     TypePtr ReturnType() const { return _containedTypes[0]; }
 
@@ -91,8 +94,9 @@ class ArrayType : public Type
     friend class LlvmContext;
 public:
     ArrayType() : _elementType(nullptr), _elementCount(0) {}
+    ~ArrayType() override = default;
 
-    void PrintAsm(IAsmWriter writer) override;
+    void PrintAsm(IAsmWriterPtr writer) override;
 
     static ArrayTypePtr Get(TypePtr elementType, int elementCount);
 
@@ -117,8 +121,9 @@ class PointerType : public Type
     friend class LlvmContext;
 public:
     PointerType() : _elementType(nullptr) {}
+    ~PointerType() override = default;
 
-    void PrintAsm(IAsmWriter writer) override;
+    void PrintAsm(IAsmWriterPtr writer) override;
 
     static PointerTypePtr Get(TypePtr elementType);
 
