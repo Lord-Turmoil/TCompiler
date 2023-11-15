@@ -19,16 +19,7 @@ SymbolTablePtr DefaultSemanticParser::Parse(SyntaxTreePtr tree)
 {
     TOMIC_ASSERT(tree);
 
-    _logger->LogFormat(LogLevel::DEBUG, "Start semantic analysis.");
     auto table = _analyzer->Analyze(tree);
-    if (table)
-    {
-        _logger->LogFormat(LogLevel::DEBUG, "SemanticParse analysis succeed.");
-    }
-    else
-    {
-        _logger->LogFormat(LogLevel::DEBUG, "SemanticParse analysis failed.");
-    }
 
     return table;
 }
