@@ -36,7 +36,7 @@ public:
     // Push a line comment, will insert a new line at the end.
     virtual void PushComment(const char* format, ...) = 0;
     // Push a ';' and a space.
-    virtual void CommentStart() = 0;
+    virtual void CommentBegin() = 0;
     // Push a new line to terminate the comment.
     virtual void CommentEnd() = 0;
 };

@@ -7,6 +7,13 @@
 #ifndef _TOMIC_DEFINES_H_
 #define _TOMIC_DEFINES_H_
 
+#define TOMIC_VERSION_MAJOR "0"
+#define TOMIC_VERSION_MINOR "4"
+#define TOMIC_VERSION_PATCH "1"
+
+#define TOMIC_VERSION (TOMIC_VERSION_MAJOR "." TOMIC_VERSION_MINOR "." TOMIC_VERSION_PATCH)
+
+
 #define TOMIC_BEGIN namespace tomic {
 #define TOMIC_END   }
 #define TOMIC       ::tomic::

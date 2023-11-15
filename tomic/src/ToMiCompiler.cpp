@@ -39,11 +39,14 @@
 #include <tomic/parser/ast/printer/StandardAstPrinter.h>
 #include <tomic/llvm/asm/IAsmGenerator.h>
 #include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
+#include <tomic/llvm/asm/IAsmPrinter.h>
+#include <tomic/llvm/asm/impl/StandardAsmPrinter.h>
 
 TOMIC_BEGIN
 
 static twio::IWriterPtr BuildWriter(const char* filename);
 static void OutputSyntaxTree(const char* filename, IAstPrinterPtr printer, SyntaxTreePtr tree);
+static void OutputLlvmAsm(const char* filename, llvm::IAsmPrinterPtr printer, llvm::ModuleSmartPtr module);
 
 class ToMiCompilerImpl
 {
@@ -68,11 +71,13 @@ public:
     // Compilation processes.
     void Compile();
 
-    bool Preprocess(twio::IWriterPtr* outWriter);
-    bool SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTreePtr* outAst);
-    bool SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable);
-
 private:
+    bool _Preprocess(twio::IWriterPtr* outWriter);
+    bool _SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTreePtr* outAst);
+    bool _SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable);
+
+    bool _GenerateLlvmAsm(SyntaxTreePtr ast, SymbolTablePtr table, llvm::ModuleSmartPtr* outModule);
+
     void _LogError();
 
     ConfigPtr _config;
@@ -108,7 +113,7 @@ void ToMiCompiler::Compile()
 
     // Configure all components.
     auto config = _impl->_config;
-    _impl->Configure([&](mioc::ServiceContainerPtr container) {
+    _impl->Configure([=](mioc::ServiceContainerPtr container) {
         // Logger
         if (config->EnableLog)
         {
@@ -132,7 +137,7 @@ void ToMiCompiler::Compile()
         {
             container->AddSingleton<ILogger, DumbLogger>();
         }
-    })->Configure([&](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container) {
         // Error logger
         if (config->EnableVerboseError)
         {
@@ -144,13 +149,13 @@ void ToMiCompiler::Compile()
             container->AddSingleton<IErrorMapper, StandardErrorMapper>()
                     ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
         }
-    })->Configure([&](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container) {
         // Lexical
         container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
                 ->AddTransient<IPreprocessor, DefaultPreprocessor>()
                 ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
                 ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
-    })->Configure([&](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container) {
         // Syntactic
         if (config->EnableCompleteAst)
         {
@@ -161,11 +166,11 @@ void ToMiCompiler::Compile()
             container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
         }
         container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, IErrorLogger, ILogger>();
-    })->Configure([&](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container) {
         // Semantic
         container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger, ILogger>();
         container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
-    })->Configure([&](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container) {
         // Ast printer
         if (config->EmitAst)
         {
@@ -187,9 +192,10 @@ void ToMiCompiler::Compile()
                 container->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
             }
         }
-    })->Configure([&](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container) {
         // LLVM
         container->AddTransient<llvm::IAsmGenerator, llvm::StandardAsmGenerator>();
+        container->AddTransient<llvm::IAsmPrinter, llvm::StandardAsmPrinter>();
     });
 
     _impl->Compile();
@@ -205,7 +211,7 @@ void ToMiCompilerImpl::Compile()
 
     // Preprocess
     twio::IWriterPtr output;
-    if (!Preprocess(&output))
+    if (!_Preprocess(&output))
     {
         _LogError();
         return;
@@ -214,7 +220,7 @@ void ToMiCompilerImpl::Compile()
     // Syntax parse
     SyntaxTreePtr ast;
     auto syntaxReader = twio::AdvancedReader::New(twio::BufferInputStream::New(output->Stream()->Yield()));
-    if (!SyntacticParse(syntaxReader, &ast))
+    if (!_SyntacticParse(syntaxReader, &ast))
     {
         _LogError();
         return;
@@ -222,16 +228,26 @@ void ToMiCompilerImpl::Compile()
 
     // Semantic parse
     SymbolTablePtr table;
-    if (!SemanticParse(ast, &table))
+    if (!_SemanticParse(ast, &table))
     {
         _LogError();
         return;
     }
 
+    // Generate LLVM IR
+    llvm::ModuleSmartPtr module;
+    if (!_GenerateLlvmAsm(ast, table, &module))
+    {
+        _LogError();
+        return;
+    }
+
+
+    // Final error output.
     _LogError();
 }
 
-bool ToMiCompilerImpl::Preprocess(twio::IWriterPtr* outWriter)
+bool ToMiCompilerImpl::_Preprocess(twio::IWriterPtr* outWriter)
 {
     if (_config->Target < Config::TargetType::Preprocess)
     {
@@ -268,7 +284,7 @@ bool ToMiCompilerImpl::Preprocess(twio::IWriterPtr* outWriter)
     return true;
 }
 
-bool ToMiCompilerImpl::SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTreePtr* outAst)
+bool ToMiCompilerImpl::_SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTreePtr* outAst)
 {
     if (_config->Target < Config::TargetType::Syntactic)
     {
@@ -307,7 +323,7 @@ bool ToMiCompilerImpl::SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTre
     return true;
 }
 
-bool ToMiCompilerImpl::SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable)
+bool ToMiCompilerImpl::_SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable)
 {
     if (_config->Target < Config::TargetType::Semantic)
     {
@@ -328,6 +344,45 @@ bool ToMiCompilerImpl::SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable
     if (outTable)
     {
         *outTable = table;
+    }
+
+    if (!table)
+    {
+        logger->LogFormat(LogLevel::FATAL, "Semantic analysis failed, compilation aborted");
+        return false;
+    }
+
+    logger->LogFormat(LogLevel::DEBUG, "Semantic analysis completed");
+
+    return true;
+}
+
+bool ToMiCompilerImpl::_GenerateLlvmAsm(SyntaxTreePtr ast, SymbolTablePtr table, llvm::ModuleSmartPtr* outModule)
+{
+    if (_config->Target < Config::TargetType::IR)
+    {
+        return false;
+    }
+    auto logger = _container->Resolve<ILogger>();
+    logger->LogFormat(LogLevel::DEBUG, "Generating LLVM IR...");
+
+    auto asmGenerator = _container->Resolve<llvm::IAsmGenerator>();
+    auto module = asmGenerator->Generate(ast, table, _config->Input.c_str());
+
+    if (!module)
+    {
+        logger->LogFormat(LogLevel::FATAL, "Generating LLVM IR failed, compilation aborted");
+        return false;
+    }
+
+    if (outModule)
+    {
+        *outModule = module;
+    }
+
+    if (_config->EmitLlvm)
+    {
+        OutputLlvmAsm(_config->LlvmOutput.c_str(), _container->Resolve<llvm::IAsmPrinter>(), module);
     }
 
     return true;
@@ -390,6 +445,11 @@ static void OutputSyntaxTree(const char* filename, IAstPrinterPtr printer, Synta
     {
         printer->Print(tree, writer);
     }
+}
+
+static void OutputLlvmAsm(const char* filename, llvm::IAsmPrinterPtr printer, llvm::ModuleSmartPtr module)
+{
+    printer->Print(module.get(), BuildWriter(filename));
 }
 
 TOMIC_END

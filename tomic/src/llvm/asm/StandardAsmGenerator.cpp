@@ -54,9 +54,7 @@ ModuleSmartPtr StandardAsmGenerator::Generate(
 }
 
 /*
- * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- *                      Overall Generation
- * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * ==================== Overall Parsing ====================
  */
 
 bool StandardAsmGenerator::VisitEnter(SyntaxNodePtr node)
@@ -103,7 +101,8 @@ FunctionPtr StandardAsmGenerator::_GenerateMainFunction(SyntaxNodePtr node)
 
     // Generate the main function.
     TypePtr returnType = IntegerType::Get(context, 32);
-    FunctionPtr function = Function::New(returnType, "main");
+    TypePtr funcType = FunctionType::Get(returnType);
+    FunctionPtr function = Function::New(funcType, "main");
 
     // Generate the first basic block.
     BasicBlockPtr block = BasicBlock::New(function);
@@ -160,9 +159,7 @@ void StandardAsmGenerator::_GenerateStatement(SyntaxNodePtr node)
 
 
 /*
- * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- *                     Concrete Parsing
- * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * ==================== Instruction Parsing ====================
  */
 
 ReturnInstPtr StandardAsmGenerator::_GenerateReturnStatement(SyntaxNodePtr node)
@@ -188,6 +185,9 @@ ReturnInstPtr StandardAsmGenerator::_GenerateReturnStatement(SyntaxNodePtr node)
         inst = ReturnInst::New(context, value);
     }
 
+    // Add the instruction to the current basic block.
+    _InsertInstruction(inst);
+
     return inst;
 }
 
@@ -207,10 +207,9 @@ ValuePtr StandardAsmGenerator::_GenerateExpression(SyntaxNodePtr node)
     return nullptr;
 }
 
+
 /*
- * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- *                    Helper Functions
- * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ * =================== Utility Functions ===================
  */
 
 SymbolTableBlockPtr StandardAsmGenerator::_GetSymbolTableBlock(SyntaxNodePtr node)
@@ -234,9 +233,24 @@ FunctionPtr StandardAsmGenerator::_SetCurrentFunction(FunctionPtr function)
 
 BasicBlockPtr StandardAsmGenerator::_SetCurrentBasicBlock(BasicBlockPtr block)
 {
+    TOMIC_ASSERT(_currentFunction && "Missing current function");
+
     auto old = _currentBlock;
     _currentBlock = block;
+
+    // Add the basic block to the function.
+    _currentFunction->InsertBasicBlock(block);
+
     return old;
+}
+
+InstructionPtr StandardAsmGenerator::_InsertInstruction(InstructionPtr instruction)
+{
+    TOMIC_ASSERT(_currentBlock && "Missing current basic block");
+
+    _currentBlock->InsertInstruction(instruction);
+
+    return instruction;
 }
 
 TOMIC_LLVM_END

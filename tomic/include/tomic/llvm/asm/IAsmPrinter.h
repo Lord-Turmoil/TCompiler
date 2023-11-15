@@ -9,6 +9,7 @@
 
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/IrForward.h>
+#include <memory>
 
 TOMIC_LLVM_BEGIN
 
@@ -22,9 +23,11 @@ class IAsmPrinter
 public:
     virtual ~IAsmPrinter() = default;
 
-    // In print, twio::IWriter will be converted to IAsmWriter.
-    virtual void Print(ModulePtr module, twio::IWriter writer) = 0;
+    // In print, twio::IWriterPtr will be converted to IAsmWriterPtr.
+    virtual void Print(ModulePtr module, twio::IWriterPtr writer) = 0;
 };
+
+using IAsmPrinterPtr = std::shared_ptr<IAsmPrinter>;
 
 TOMIC_LLVM_END
 

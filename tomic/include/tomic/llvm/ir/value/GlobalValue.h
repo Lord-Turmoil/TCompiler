@@ -20,6 +20,9 @@ class GlobalValue : public Constant
 public:
     ~GlobalValue() override = default;
 
+    void PrintName(IAsmWriterPtr writer) override;
+    bool IsGlobalValue() const override { return true; }
+
     ModulePtr Parent() const { return _parent; }
 
 private:

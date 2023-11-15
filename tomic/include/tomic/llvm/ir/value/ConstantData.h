@@ -20,6 +20,9 @@ public:
     static ConstantDataPtr New(TypePtr type, int value);
     static ConstantDataPtr New(std::vector<ConstantDataPtr> values);
 
+    void PrintAsm(IAsmWriterPtr writer) override;
+    void PrintName(IAsmWriterPtr writer) override;
+
     bool IsAllZero() const { return _isAllZero; }
     bool IsArray() const { return !_values.empty(); }
     int IntValue() const { return _value; }

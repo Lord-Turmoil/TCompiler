@@ -4,10 +4,6 @@
   <component name="CidrRootsConfiguration">
     <sourceRoots>
       <file path="$PROJECT_DIR$/src" />
-      <file path="$PROJECT_DIR$/tomic/3rd-party/mioc/include" />
-      <file path="$PROJECT_DIR$/tomic/3rd-party/mioc/src" />
-      <file path="$PROJECT_DIR$/tomic/3rd-party/twio/include" />
-      <file path="$PROJECT_DIR$/tomic/3rd-party/twio/src" />
       <file path="$PROJECT_DIR$/tomic/include" />
       <file path="$PROJECT_DIR$/tomic/src" />
     </sourceRoots>

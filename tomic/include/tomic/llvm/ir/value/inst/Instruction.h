@@ -16,6 +16,10 @@ class Instruction : public User
 public:
     ~Instruction() override = default;
 
+    void PrintName(IAsmWriterPtr writer) override;
+
+    bool IsInstruction() const override { return true; }
+
     BasicBlockPtr Parent() const { return _parent; }
     void SetParent(BasicBlockPtr parent) { _parent = parent; }
 

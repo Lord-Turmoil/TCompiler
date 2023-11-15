@@ -81,7 +81,7 @@ void StandardAsmWriter::PushComment(const char* format, ...)
 {
     va_list args;
 
-    CommentStart();
+    CommentBegin();
 
     va_start(args, format);
     _writer->WriteVFormat(format, args);
@@ -90,7 +90,7 @@ void StandardAsmWriter::PushComment(const char* format, ...)
     CommentEnd();
 }
 
-void StandardAsmWriter::CommentStart()
+void StandardAsmWriter::CommentBegin()
 {
     _writer->Write(';');
     PushSpace();

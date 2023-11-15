@@ -54,6 +54,7 @@ private:
      */
     FunctionPtr _SetCurrentFunction(FunctionPtr function);
     BasicBlockPtr _SetCurrentBasicBlock(BasicBlockPtr block);
+    InstructionPtr _InsertInstruction(InstructionPtr instruction);
 
 private:
     /*

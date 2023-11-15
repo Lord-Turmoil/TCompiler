@@ -75,6 +75,7 @@ Usage: ToMiCompiler <input> [-o output]
           --enable-logger[=filename]
           --enable-error[=filename] --verbose-error
           --emit-ast[=filename] --complete-ast
+          --emit-llvm[=filename]
 
   --target, -t:         specify the target type
   --enable-logger, -l:  enable logger
@@ -82,6 +83,7 @@ Usage: ToMiCompiler <input> [-o output]
   --verbose-error, -v:  verbose error
   --emit-ast, -a:       emit ast
   --complete-ast, -c:   complete ast
+  --emit-llvm, -i:      emit llvm ir
   --help, -h:           show help
     )";
     printf("%s\n", HELP);
@@ -92,7 +94,7 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
     int opt;
     int arg_cnt = 0;
     bool err = false;
-    while ((opt = getopt(argc, argv, "o:t:l:e:va:ch")))
+    while ((opt = getopt(argc, argv, "o:t:l:e:va:ci:h")))
     {
         if (opterr != 0)
         {
@@ -123,6 +125,9 @@ static bool ParseArgs(int argc, char* argv[], ConfigPtr config)
             break;
         case 'c':
             HandleLongOpt("complete-ast", optarg, config);
+            break;
+        case 'i':
+            HandleLongOpt("emit-llvm", optarg, config);
             break;
         case 'h':
             HandleLongOpt("help", optarg, config);
@@ -221,6 +226,11 @@ static bool HandleLongOpt(const char* opt, const char* arg, ConfigPtr config)
     {
         config->EmitAst = true;
         config->AstOutput = IsNullOrEmpty(arg) ? "ast.xml" : arg;
+    }
+    else if (Equals(opt, "emit-llvm"))
+    {
+        config->EmitLlvm = true;
+        config->LlvmOutput = IsNullOrEmpty(arg) ? "llvm.ll" : arg;
     }
     else if (Equals(opt, "help"))
     {

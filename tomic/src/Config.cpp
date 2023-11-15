@@ -12,6 +12,7 @@ Config::Config()
         : Target(TargetType::Initial),
           EnableCompleteAst(false),
           EmitAst(false),
+          EmitLlvm(false),
           EnableLog(false),
           EnableError(false),
           EnableVerboseError(false)

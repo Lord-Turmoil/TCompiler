@@ -17,6 +17,8 @@ class User : public Value
 public:
     ~User() override = default;
 
+    virtual bool IsUser() const override { return true; }
+
     // Get the number of operands.
     int OperandsCount() const { return _useList.size(); }
 

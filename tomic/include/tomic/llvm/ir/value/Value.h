@@ -36,7 +36,18 @@ public:
      *
      * All implementations will be placed under llvm/asm directory.
      */
-    virtual void PrintAsm(IAsmWriter writer);
+
+    /*
+     * Print the complete asm code of this value. This is used to print
+     * the value itself on its occurrence.
+     */
+    virtual void PrintAsm(IAsmWriterPtr writer);
+
+    /*
+     * Print only the name of this value. This is used to print the value
+     * on its use.
+     */
+    virtual void PrintName(IAsmWriterPtr writer);
 
     ValueType GetValueType() const { return _valueType; }
 
@@ -54,8 +65,19 @@ public:
 
     // Get and set name for this Value.
     // If set, it will no longer use number as its name.
-    const std::string& GetName() const { return _name; }
+    const char* GetName() const { return _name.c_str(); }
     void SetName(const std::string& name) { _name = name; }
+
+public:
+    /*
+     * Some properties of this value.
+     * Should be overridden by subclasses respectively.
+     */
+    virtual bool IsInstruction() const { return false; }
+    virtual bool IsUser() const { return false; }
+    virtual bool IsFunction() const { return false; }
+    virtual bool IsArgument() const { return false; }
+    virtual bool IsGlobalValue() const { return false; }
 
 protected:
     Value(ValueType valueType, TypePtr type) : _valueType(valueType), _type(type) {}

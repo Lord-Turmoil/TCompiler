@@ -30,9 +30,11 @@ public:
 
     global_iterator GlobalBegin() { return _globalVariables.begin(); }
     global_iterator GlobalEnd() { return _globalVariables.end(); }
+    int GlobalCount() const { return _globalVariables.size(); }
 
     function_iterator FunctionBegin() { return _functions.begin(); }
     function_iterator FunctionEnd() { return _functions.end(); }
+    int FunctionCount() const { return _functions.size(); }
 
     FunctionPtr GetMainFunction() const { return _mainFunction; }
 

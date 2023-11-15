@@ -45,6 +45,10 @@ public:
     bool EmitAst;
     std::string AstOutput;
 
+    // LLVM IR
+    bool EmitLlvm;
+    std::string LlvmOutput;
+
     // logger
     bool EnableLog;
     std::string LogOutput;

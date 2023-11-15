@@ -36,6 +36,8 @@ private:
     std::unordered_map<ValuePtr, int> _slot;
 };
 
+using SlotTrackerPtr = SlotTracker*;
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_SLOT_TRACKER_H_

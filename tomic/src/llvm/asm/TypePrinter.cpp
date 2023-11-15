@@ -50,7 +50,7 @@ void IntegerType::PrintAsm(IAsmWriterPtr writer)
 void FunctionType::PrintAsm(IAsmWriterPtr writer)
 {
     ReturnType()->PrintAsm(writer);
-    writer->PushNext("( ");
+    writer->PushNext("(");
     for (auto argIter = ParamBegin(); argIter != ParamEnd(); ++argIter)
     {
         if (argIter != ParamBegin())
@@ -59,7 +59,7 @@ void FunctionType::PrintAsm(IAsmWriterPtr writer)
         }
         (*argIter)->PrintAsm(writer);
     }
-    writer->PushNext(')');
+    writer->Push(')');
 }
 
 

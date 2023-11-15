@@ -42,6 +42,11 @@ public:
 
     static FunctionPtr New(TypePtr type, const std::string& name);
 
+    void PrintAsm(IAsmWriterPtr writer) override;
+
+    bool IsFunction() const override { return true; }
+
+public:
     int ArgCount() const { return _args.size(); }
     ArgumentPtr GetArg(int argNo) const { return _args[argNo]; }
     argument_iterator ArgBegin() { return _args.begin(); }
@@ -57,6 +62,9 @@ public:
     FunctionPtr InsertBasicBlock(block_iterator iter, BasicBlockPtr block);
     // Remove a basic block from the function.
     FunctionPtr RemoveBasicBlock(BasicBlockPtr block);
+
+    // Get the slot tracker of this function.
+    SlotTrackerPtr GetSlotTracker() { return &_slotTracker; }
 
 private:
     Function(TypePtr type, const std::string& name);

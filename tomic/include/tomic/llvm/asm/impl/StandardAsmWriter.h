@@ -35,7 +35,7 @@ public:
     void PushNewLines(int repeat) override;
 
     void PushComment(const char* format, ...) override;
-    void CommentStart() override;
+    void CommentBegin() override;
     void CommentEnd() override;
 
 private:

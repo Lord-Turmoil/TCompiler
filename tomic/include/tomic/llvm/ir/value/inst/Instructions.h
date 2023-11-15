@@ -101,6 +101,8 @@ public:
     static ReturnInstPtr New(LlvmContextPtr context, ValuePtr value);
     static ReturnInstPtr New(LlvmContextPtr context);
 
+    void PrintAsm(IAsmWriterPtr writer) override;
+
 private:
     ReturnInst(TypePtr type, ValuePtr value);
     ReturnInst(TypePtr type);
