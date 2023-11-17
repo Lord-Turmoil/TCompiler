@@ -90,12 +90,16 @@ private:
 
     void _ParseStatement(SyntaxNodePtr node);
 
+    // Global variable and constant.
     void _ParseGlobalDecl(SyntaxNodePtr node);
-    void _ParseGlobalVariable(SyntaxNodePtr node);
-    void _ParseGlobalConstant(SyntaxNodePtr node);
+    GlobalVariablePtr _ParseGlobalVarDef(SyntaxNodePtr node);
+    GlobalVariablePtr _ParseGlobalConstant(SyntaxNodePtr node);
     ConstantDataPtr _ParseGlobalInitValue(SyntaxNodePtr node);
 
-    AllocaInstPtr _ParseVariableDecl(SyntaxNodePtr node);
+    // Local variable and constant.
+    void _ParseVariableDecl(SyntaxNodePtr node);
+    AllocaInstPtr _ParseVariableDef(SyntaxNodePtr node);
+    AllocaInstPtr _ParseArrayDef(SyntaxNodePtr node);
 
     ReturnInstPtr _ParseReturnStatement(SyntaxNodePtr node);
     ValuePtr _ParseExpression(SyntaxNodePtr node);

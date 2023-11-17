@@ -69,11 +69,23 @@ void StandardAsmGenerator::_ParseGlobalDecl(SyntaxNodePtr node)
     auto child = node->FirstChild();
     if (child->Type() == SyntaxType::ST_VAR_DECL)
     {
-        _ParseGlobalVariable(child);
+        for (auto it = child->FirstChild(); it; it = it->NextSibling())
+        {
+            if (it->Type() == SyntaxType::ST_VAR_DEF)
+            {
+                _module->AddGlobalVariable(_ParseGlobalVarDef(it));
+            }
+        }
     }
     else if (child->Type() == SyntaxType::ST_CONST_DECL)
     {
-        _ParseGlobalConstant(child);
+        for (auto it = child->FirstChild(); it; it = it->NextSibling())
+        {
+            if (it->Type() == SyntaxType::ST_CONST_DEF)
+            {
+                _module->AddGlobalVariable(_ParseGlobalConstant(it));
+            }
+        }
     }
     else
     {
@@ -81,70 +93,54 @@ void StandardAsmGenerator::_ParseGlobalDecl(SyntaxNodePtr node)
     }
 }
 
-void StandardAsmGenerator::_ParseGlobalVariable(SyntaxNodePtr node)
+GlobalVariablePtr StandardAsmGenerator::_ParseGlobalVarDef(SyntaxNodePtr node)
 {
-    for (auto it = node->FirstChild(); it; it = it->NextSibling())
+    // Get variable name.
+    const std::string& name = node->FirstChild()->Token()->lexeme;
+    auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
+    auto type = _GetEntryType(entry);
+    GlobalVariablePtr value;
+
+    if (node->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
     {
-        if (it->Type() != SyntaxType::ST_VAR_DEF)
-        {
-            continue;
-        }
-
-        // Get variable name.
-        const std::string& name = it->FirstChild()->Token()->lexeme;
-        auto entry = _GetSymbolTableBlock(it)->FindEntry(name);
-        auto type = _GetEntryType(entry);
-        GlobalVariablePtr value;
-
-        if (it->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
-        {
-            // with init value
-            auto initValue = _ParseGlobalInitValue(it->LastChild());
-            value = GlobalVariable::New(type, false, name, initValue);
-        }
-        else
-        {
-            value = GlobalVariable::New(type, false, name);
-        }
-
-        // Add the value to the symbol table.
-        _AddValue(entry, value);
-
-        _module->AddGlobalVariable(value);
+        // with init value
+        auto initValue = _ParseGlobalInitValue(node->LastChild());
+        value = GlobalVariable::New(type, false, name, initValue);
     }
+    else
+    {
+        value = GlobalVariable::New(type, false, name);
+    }
+
+    // Add the value to the symbol table.
+    _AddValue(entry, value);
+
+    return value;
 }
 
-void StandardAsmGenerator::_ParseGlobalConstant(SyntaxNodePtr node)
+GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstant(SyntaxNodePtr node)
 {
-    for (auto it = node->FirstChild(); it; it = it->NextSibling())
+    // Get constant name.
+    const std::string& name = node->FirstChild()->Token()->lexeme;
+    auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
+    auto type = _GetEntryType(entry);
+    GlobalVariablePtr value;
+
+    if (node->LastChild()->Type() == SyntaxType::ST_CONST_INIT_VAL)
     {
-        if (it->Type() != SyntaxType::ST_CONST_DEF)
-        {
-            continue;
-        }
-
-        // Get constant name.
-        const std::string& name = it->FirstChild()->Token()->lexeme;
-        auto entry = _GetSymbolTableBlock(it)->FindEntry(name);
-        auto type = _GetEntryType(entry);
-        GlobalVariablePtr value;
-
-        if (it->LastChild()->Type() == SyntaxType::ST_CONST_INIT_VAL)
-        {
-            // with init value
-            auto initValue = _ParseGlobalInitValue(it->LastChild());
-            value = GlobalVariable::New(type, true, name, initValue);
-        }
-        else
-        {
-            TOMIC_PANIC("Constant must have init value");
-        }
-
-        // Add the value to the symbol table.
-        _AddValue(entry, value);
-
-        _module->AddGlobalVariable(value);
+        // with init value
+        auto initValue = _ParseGlobalInitValue(node->LastChild());
+        value = GlobalVariable::New(type, true, name, initValue);
     }
+    else
+    {
+        TOMIC_PANIC("Constant must have init value");
+    }
+
+    // Add the value to the symbol table.
+    _AddValue(entry, value);
+
+    return value;
 }
 
 // node is a InitVal or ConstInitVal.
