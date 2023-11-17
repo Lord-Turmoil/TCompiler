@@ -8,6 +8,7 @@
 #include <tomic/llvm/ir/DerivedTypes.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
 #include <tomic/llvm/ir/value/ConstantData.h>
+#include <tomic/llvm/ir/value/GlobalVariable.h>
 #include <tomic/llvm/ir/value/Value.h>
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/Argument.h>
@@ -101,6 +102,39 @@ void GlobalValue::PrintName(IAsmWriterPtr writer)
 {
     writer->Push('@');
     writer->Push(GetName());
+}
+
+void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
+{
+    // Name
+    PrintName(writer);
+
+    writer->PushNext('=');
+
+    // Attribute
+    writer->PushNext("dso_local");
+    writer->PushNext(IsConstant() ? "constant" : "global");
+    writer->PushSpace();
+
+    // Initializer
+    if (_initializer)
+    {
+        _initializer->PrintAsm(writer);
+    }
+    else
+    {
+        GetType()->PrintAsm(writer);
+        if (GetType()->IsArrayTy())
+        {
+            writer->PushNext("zeroinitializer");
+        }
+        else
+        {
+            writer->PushNext('0');
+        }
+    }
+
+    writer->PushNewLine();
 }
 
 

@@ -21,6 +21,8 @@ public:
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name);
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name, ConstantDataPtr initializer);
 
+    void PrintAsm(IAsmWriterPtr writer) override;
+
 public:
     bool IsConstant() const { return _isConstant; }
 

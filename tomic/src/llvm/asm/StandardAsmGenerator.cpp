@@ -99,7 +99,7 @@ void StandardAsmGenerator::_ParseGlobalVariable(SyntaxNodePtr node)
         if (it->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
         {
             // with init value
-            auto initValue = _ParseInitValue(it->LastChild());
+            auto initValue = _ParseGlobalInitValue(it->LastChild());
             value = GlobalVariable::New(type, false, name, initValue);
         }
         else
@@ -132,7 +132,7 @@ void StandardAsmGenerator::_ParseGlobalConstant(SyntaxNodePtr node)
         if (it->LastChild()->Type() == SyntaxType::ST_CONST_INIT_VAL)
         {
             // with init value
-            auto initValue = _ParseInitValue(it->LastChild());
+            auto initValue = _ParseGlobalInitValue(it->LastChild());
             value = GlobalVariable::New(type, true, name, initValue);
         }
         else
@@ -148,49 +148,29 @@ void StandardAsmGenerator::_ParseGlobalConstant(SyntaxNodePtr node)
 }
 
 // node is a InitVal or ConstInitVal.
-ConstantDataPtr StandardAsmGenerator::_ParseInitValue(SyntaxNodePtr node)
+ConstantDataPtr StandardAsmGenerator::_ParseGlobalInitValue(SyntaxNodePtr node)
 {
     if (!node->BoolAttribute("det"))
     {
         TOMIC_PANIC("Global initialization value must be deterministic");
     }
 
-    auto context = _module->Context();
     int dim = node->IntAttribute("dim");
-    TypePtr type;
-
     if (dim == 0)
     {
-        type = context->GetInt32Ty();
-        return ConstantData::New(type, node->IntAttribute("value"));
+        return ConstantData::New(_module->Context()->GetInt32Ty(), node->IntAttribute("value"));
     }
 
-    auto array = SemanticUtil::DeserializeArray(node->Attribute("value"));
     std::vector<ConstantDataPtr> values;
-
-    if (dim == 1)
+    for (auto it = node->FirstChild(); it; it = it->NextSibling())
     {
-        for (auto val : array[0])
+        if ((it->Type() == SyntaxType::ST_CONST_INIT_VAL) || (it->Type() == SyntaxType::ST_INIT_VAL))
         {
-            values.push_back(ConstantData::New(context->GetInt32Ty(), val));
+            values.push_back(_ParseGlobalInitValue(it));
         }
-        return ConstantData::New(values);
-    }
-    if (dim == 2)
-    {
-        for (auto& row : array)
-        {
-            std::vector<ConstantDataPtr> rowValues;
-            for (auto val : row)
-            {
-                rowValues.push_back(ConstantData::New(context->GetInt32Ty(), val));
-            }
-            values.push_back(ConstantData::New(rowValues));
-        }
-        return ConstantData::New(values);
     }
 
-    TOMIC_PANIC("Not implemented yet");
+    return ConstantData::New(values);
 }
 
 ReturnInstPtr StandardAsmGenerator::_ParseReturnStatement(SyntaxNodePtr node)

@@ -67,11 +67,11 @@ void FunctionType::PrintAsm(IAsmWriterPtr writer)
 void ArrayType::PrintAsm(IAsmWriterPtr writer)
 {
     writer->Push('[');
-    writer->PushNext(StringUtil::IntToString(ElementCount()));
+    writer->Push(StringUtil::IntToString(ElementCount()));
     writer->PushNext('x');
     writer->PushSpace();
     ElementType()->PrintAsm(writer);
-    writer->PushNext(" ]");
+    writer->Push("]");
 }
 
 

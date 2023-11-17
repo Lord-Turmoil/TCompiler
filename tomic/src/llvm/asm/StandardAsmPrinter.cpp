@@ -8,6 +8,7 @@
 #include <tomic/llvm/asm/impl/StandardAsmWriter.h>
 #include <tomic/llvm/ir/Module.h>
 #include <tomic/llvm/ir/value/Function.h>
+#include <tomic/llvm/ir/value/GlobalVariable.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -105,6 +106,7 @@ void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
 
 void StandardAsmPrinter::_PrintGlobalVariable(IAsmWriterPtr writer, GlobalVariablePtr globalVariable)
 {
+    globalVariable->PrintAsm(writer);
 }
 
 void StandardAsmPrinter::_PrintFunction(IAsmWriterPtr writer, FunctionPtr function)

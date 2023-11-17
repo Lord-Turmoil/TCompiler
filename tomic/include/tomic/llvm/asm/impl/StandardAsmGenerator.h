@@ -93,7 +93,7 @@ private:
     void _ParseGlobalDecl(SyntaxNodePtr node);
     void _ParseGlobalVariable(SyntaxNodePtr node);
     void _ParseGlobalConstant(SyntaxNodePtr node);
-    ConstantDataPtr _ParseInitValue(SyntaxNodePtr node);
+    ConstantDataPtr _ParseGlobalInitValue(SyntaxNodePtr node);
 
     AllocaInstPtr _ParseVariableDecl(SyntaxNodePtr node);
 
