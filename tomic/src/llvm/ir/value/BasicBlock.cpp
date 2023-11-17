@@ -7,6 +7,7 @@
 #include <tomic/llvm/ir/value/BasicBlock.h>
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/LlvmContext.h>
+#include <tomic/llvm/ir/value/inst/Instructions.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -27,6 +28,7 @@ BasicBlock::BasicBlock(FunctionPtr parent)
 
 BasicBlockPtr BasicBlock::InsertInstruction(InstructionPtr inst)
 {
+    inst->SetParent(this);
     _instructions.push_back(inst);
 
     return this;
@@ -34,6 +36,7 @@ BasicBlockPtr BasicBlock::InsertInstruction(InstructionPtr inst)
 
 BasicBlockPtr BasicBlock::InsertInstruction(instruction_iterator iter, InstructionPtr inst)
 {
+    inst->SetParent(this);
     _instructions.insert(iter, inst);
 
     return this;
@@ -41,6 +44,7 @@ BasicBlockPtr BasicBlock::InsertInstruction(instruction_iterator iter, Instructi
 
 BasicBlockPtr BasicBlock::RemoveInstruction(InstructionPtr inst)
 {
+    inst->SetParent(nullptr);
     _instructions.remove(inst);
 
     return this;

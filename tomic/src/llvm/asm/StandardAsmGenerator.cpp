@@ -56,11 +56,7 @@ ModuleSmartPtr StandardAsmGenerator::Generate(
 
 
 /*
- * ==================== Instruction Parsing ====================
- */
-
-/*
- * Node is a Decl, it can be a VarDecl or ConstDecl.
+ * ==================== Global Variable Parsing ====================
  */
 
 // node is a Decl
@@ -73,7 +69,7 @@ void StandardAsmGenerator::_ParseGlobalDecl(SyntaxNodePtr node)
         {
             if (it->Type() == SyntaxType::ST_VAR_DEF)
             {
-                _module->AddGlobalVariable(_ParseGlobalVarDef(it));
+                _ParseGlobalVarDef(it);
             }
         }
     }
@@ -83,7 +79,7 @@ void StandardAsmGenerator::_ParseGlobalDecl(SyntaxNodePtr node)
         {
             if (it->Type() == SyntaxType::ST_CONST_DEF)
             {
-                _module->AddGlobalVariable(_ParseGlobalConstant(it));
+                _ParseGlobalConstantDef(it);
             }
         }
     }
@@ -112,13 +108,14 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalVarDef(SyntaxNodePtr node)
         value = GlobalVariable::New(type, false, name);
     }
 
-    // Add the value to the symbol table.
+    // Add the value to the symbol table and module.
     _AddValue(entry, value);
+    _module->AddGlobalVariable(value);
 
     return value;
 }
 
-GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstant(SyntaxNodePtr node)
+GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstantDef(SyntaxNodePtr node)
 {
     // Get constant name.
     const std::string& name = node->FirstChild()->Token()->lexeme;
@@ -137,8 +134,9 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstant(SyntaxNodePtr node)
         TOMIC_PANIC("Constant must have init value");
     }
 
-    // Add the value to the symbol table.
+    // Add the value to the symbol table and module.
     _AddValue(entry, value);
+    _module->AddGlobalVariable(value);
 
     return value;
 }
@@ -168,6 +166,64 @@ ConstantDataPtr StandardAsmGenerator::_ParseGlobalInitValue(SyntaxNodePtr node)
 
     return ConstantData::New(values);
 }
+
+
+/*
+ * ==================== Local Variable Parsing ====================
+ */
+void StandardAsmGenerator::_ParseVariableDecl(SyntaxNodePtr node)
+{
+    if (node->Type() == SyntaxType::ST_VAR_DECL || node->Type() == SyntaxType::ST_CONST_DECL)
+    {
+        for (auto it = node->FirstChild(); it; it = it->NextSibling())
+        {
+            if (it->Type() == SyntaxType::ST_VAR_DEF || it->Type() == SyntaxType::ST_CONST_DEF)
+            {
+                if (it->IntAttribute("dim") == 0)
+                {
+                    _ParseVariableDef(it);
+                }
+                else
+                {
+                    _ParseArrayDef(it);
+                }
+            }
+        }
+    }
+    else
+    {
+        TOMIC_PANIC("Illegal type for Decl");
+    }
+}
+
+AllocaInstPtr StandardAsmGenerator::_ParseVariableDef(SyntaxNodePtr node)
+{
+    // Get variable name.
+    const std::string& name = node->FirstChild()->Token()->lexeme;
+    auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
+    auto type = _GetEntryType(entry);
+    AllocaInstPtr value = AllocaInst::New(type);
+
+    _InsertInstruction(value);
+    if ((node->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
+        || (node->LastChild()->Type() == SyntaxType::ST_CONST_INIT_VAL))
+    {
+        // with init value
+        auto initValue = _ParseExpression(node->LastChild());
+        _InsertInstruction(StoreInst::New(initValue, value));
+    }
+
+    // Add the value to the symbol table and module.
+    _AddValue(entry, value);
+
+    return value;
+}
+
+AllocaInstPtr StandardAsmGenerator::_ParseArrayDef(SyntaxNodePtr node)
+{
+    TOMIC_PANIC("Not implemented yet");
+}
+
 
 ReturnInstPtr StandardAsmGenerator::_ParseReturnStatement(SyntaxNodePtr node)
 {

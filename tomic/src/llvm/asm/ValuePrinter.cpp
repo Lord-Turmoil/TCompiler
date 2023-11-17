@@ -26,6 +26,11 @@ void Value::PrintAsm(IAsmWriterPtr writer)
     TOMIC_PANIC("Not implemented!");
 }
 
+void Value::PrintUse(IAsmWriterPtr writer)
+{
+    TOMIC_PANIC("Not implemented!");
+}
+
 void Value::PrintName(IAsmWriterPtr writer)
 {
     TOMIC_PANIC("Not implemented!");
@@ -72,7 +77,7 @@ void ConstantData::PrintAsm(IAsmWriterPtr writer)
     }
 }
 
-void ConstantData::PrintName(IAsmWriterPtr writer)
+void ConstantData::PrintUse(IAsmWriterPtr writer)
 {
     GetType()->PrintAsm(writer);
     if (IsArray())
@@ -102,6 +107,13 @@ void GlobalValue::PrintName(IAsmWriterPtr writer)
 {
     writer->Push('@');
     writer->Push(GetName());
+}
+
+void GlobalValue::PrintUse(IAsmWriterPtr writer)
+{
+    GetType()->PrintAsm(writer);
+    writer->PushSpace();
+    PrintName(writer);
 }
 
 void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
@@ -136,7 +148,6 @@ void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
 
     writer->PushNewLine();
 }
-
 
 /*
  * ============================ Function =============================
@@ -220,6 +231,11 @@ void Argument::PrintAsm(IAsmWriterPtr writer)
     writer->Push(StringUtil::IntToString(parent->GetSlotTracker()->Slot(this)));
 }
 
+void Argument::PrintUse(IAsmWriterPtr writer)
+{
+    PrintAsm(writer);
+}
+
 
 /*
  * =========================== BasicBlock ============================
@@ -246,6 +262,13 @@ void BasicBlock::PrintAsm(IAsmWriterPtr writer)
 
 }
 
+void BasicBlock::PrintUse(IAsmWriterPtr writer)
+{
+    writer->Push("label");
+    writer->PushSpace();
+    PrintName(writer);
+}
+
 void BasicBlock::PrintName(IAsmWriterPtr writer)
 {
     writer->Push('%');
@@ -261,11 +284,43 @@ void Instruction::PrintName(IAsmWriterPtr writer)
 {
     TOMIC_ASSERT(!(GetType()->IsVoidTy()));
 
+    writer->Push('%');
+    writer->Push(StringUtil::IntToString(ParentFunction()->GetSlotTracker()->Slot(this)));
+}
+
+void Instruction::PrintUse(IAsmWriterPtr writer)
+{
+    TOMIC_ASSERT(!(GetType()->IsVoidTy()));
+
     GetType()->PrintAsm(writer);
     writer->PushNext('%');
     writer->Push(StringUtil::IntToString(ParentFunction()->GetSlotTracker()->Slot(this)));
 }
 
+// %1 = alloca i32[, align 4]
+void AllocaInst::PrintAsm(IAsmWriterPtr writer)
+{
+    PrintName(writer);
+
+    writer->PushNext('=');
+    writer->PushNext("alloca");
+    writer->PushSpace();
+    GetType()->PrintAsm(writer);
+    writer->PushNewLine();
+}
+
+// store i32 1, i32* %3[, align 4]
+void StoreInst::PrintAsm(IAsmWriterPtr writer)
+{
+    writer->Push("store");
+    writer->PushSpace();
+
+    OperandAt(0)->PrintUse(writer);
+    writer->Push(", ");
+    OperandAt(1)->PrintUse(writer);
+
+    writer->PushNewLine();
+}
 
 /*
  * ========================== ReturnInst =============================
@@ -277,7 +332,7 @@ void ReturnInst::PrintAsm(IAsmWriterPtr writer)
     if (OperandsCount() > 0)
     {
         writer->PushSpace();
-        OperandAt(0)->PrintName(writer);
+        OperandAt(0)->PrintUse(writer);
     }
     writer->PushNewLine();
 }

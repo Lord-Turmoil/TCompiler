@@ -44,8 +44,12 @@ public:
     virtual void PrintAsm(IAsmWriterPtr writer);
 
     /*
-     * Print only the name of this value. This is used to print the value
-     * on its use.
+     * Print the use of this value. Usually, the type and name.
+     */
+    virtual void PrintUse(IAsmWriterPtr writer);
+
+    /*
+     * Print only the name of this value. For example, only %1.
      */
     virtual void PrintName(IAsmWriterPtr writer);
 

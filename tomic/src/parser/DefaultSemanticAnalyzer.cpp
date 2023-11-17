@@ -444,6 +444,8 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
         _LogError(ErrorType::ERR_UNKNOWN, "Invalid dimension: %d", dim);
     }
 
+    node->SetIntAttribute("dim", dim);
+
     _AddToSymbolTable(entry);
 
     return true;

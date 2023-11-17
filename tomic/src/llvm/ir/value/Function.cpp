@@ -28,18 +28,21 @@ Function::Function(TypePtr type, const std::string& name)
 // Insert a basic block at the end of the function.
 FunctionPtr Function::InsertBasicBlock(BasicBlockPtr block)
 {
+    block->SetParent(this);
     _basicBlocks.push_back(block);
     return this;
 }
 
 FunctionPtr Function::InsertBasicBlock(block_iterator iter, BasicBlockPtr block)
 {
+    block->SetParent(this);
     _basicBlocks.insert(iter, block);
     return this;
 }
 
 FunctionPtr Function::RemoveBasicBlock(BasicBlockPtr block)
 {
+    block->SetParent(nullptr);
     _basicBlocks.remove(block);
     return this;
 }

@@ -36,7 +36,7 @@ void SlotTracker::Trace(FunctionPtr function)
             auto inst = *instIter;
 
             // We only track non-void instructions.
-            if (inst->GetType()->IsVoidTy())
+            if (!inst->GetType()->IsVoidTy())
             {
                 _slot.emplace(inst, slot++);
             }

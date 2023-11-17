@@ -17,6 +17,7 @@ public:
     ~Instruction() override = default;
 
     void PrintName(IAsmWriterPtr writer) override;
+    void PrintUse(IAsmWriterPtr writer) override;
 
     bool IsInstruction() const override { return true; }
 

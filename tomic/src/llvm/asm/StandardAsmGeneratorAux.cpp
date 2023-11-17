@@ -113,9 +113,13 @@ bool StandardAsmGenerator::_ParseInstructions(SyntaxNodePtr node)
 
     auto child = node->FirstChild();
 
-    if (child->Type() == SyntaxType::ST_DECL)
+    if (child->Type() == SyntaxType::ST_VAR_DECL)
     {
-        // Generate Decl
+        _ParseVariableDecl(child);
+    }
+    else if (child->Type() == SyntaxType::ST_CONST_DECL)
+    {
+        _ParseVariableDecl(child);
     }
     else if (child->Type() == SyntaxType::ST_STMT)
     {

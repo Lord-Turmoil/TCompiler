@@ -34,6 +34,8 @@ public:
 
     static AllocaInstPtr New(TypePtr type, int alignment = 0);
 
+    void PrintAsm(IAsmWriterPtr writer) override;
+
 private:
     AllocaInst(TypePtr type, int alignment);
 
@@ -78,6 +80,8 @@ public:
     ~StoreInst() override = default;
 
     static StoreInstPtr New(ValuePtr value, ValuePtr address);
+
+    void PrintAsm(IAsmWriterPtr writer) override;
 
 private:
     StoreInst(ValuePtr value, ValuePtr address);

@@ -22,6 +22,7 @@ public:
     static BasicBlockPtr New(FunctionPtr parent = nullptr);
 
     void PrintAsm(IAsmWriterPtr writer) override;
+    void PrintUse(IAsmWriterPtr writer) override;
     void PrintName(IAsmWriterPtr writer) override;
 
     FunctionPtr Parent() const { return _parent; }

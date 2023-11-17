@@ -79,7 +79,7 @@ void ArrayType::PrintAsm(IAsmWriterPtr writer)
 void PointerType::PrintAsm(IAsmWriterPtr writer)
 {
     ElementType()->PrintAsm(writer);
-    writer->PushNext('*');
+    writer->Push('*');
 }
 
 TOMIC_LLVM_END

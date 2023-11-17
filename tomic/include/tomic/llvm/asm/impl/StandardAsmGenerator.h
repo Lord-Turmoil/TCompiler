@@ -93,7 +93,7 @@ private:
     // Global variable and constant.
     void _ParseGlobalDecl(SyntaxNodePtr node);
     GlobalVariablePtr _ParseGlobalVarDef(SyntaxNodePtr node);
-    GlobalVariablePtr _ParseGlobalConstant(SyntaxNodePtr node);
+    GlobalVariablePtr _ParseGlobalConstantDef(SyntaxNodePtr node);
     ConstantDataPtr _ParseGlobalInitValue(SyntaxNodePtr node);
 
     // Local variable and constant.

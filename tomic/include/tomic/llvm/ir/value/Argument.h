@@ -21,6 +21,8 @@ public:
     static ArgumentPtr New(TypePtr type, FunctionPtr parent, int argNo);
 
     void PrintAsm(IAsmWriterPtr writer) override;
+    void PrintUse(IAsmWriterPtr writer) override;
+
     bool IsArgument() const override { return true; }
 
     FunctionPtr Parent() const { return _parent; }
