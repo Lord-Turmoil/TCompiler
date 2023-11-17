@@ -21,9 +21,11 @@ AllocaInst::AllocaInst(TypePtr type, int alignment)
 
 AllocaInstPtr AllocaInst::New(TypePtr type, int alignment)
 {
-    auto inst = std::shared_ptr<AllocaInst>(new AllocaInst(type, alignment));
+    auto context = type->Context();
+    auto inst = std::shared_ptr<AllocaInst>(
+            new AllocaInst(context->GetPointerType(type), alignment));
 
-    type->Context()->StoreValue(inst);
+    context->StoreValue(inst);
 
     return inst.get();
 }
