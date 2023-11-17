@@ -37,7 +37,7 @@ void BuildParamVariableEntries(SyntaxNodePtr funcParams,
     for (auto& param : params)
     {
         int dim = param->IntAttribute("dim");
-        ValueType type = static_cast<ValueType>(param->IntAttribute("type"));
+        SymbolValueType type = static_cast<SymbolValueType>(param->IntAttribute("type"));
         VariableEntryBuilder builder(param->Attribute("name"));
         builder.Type(type);
 

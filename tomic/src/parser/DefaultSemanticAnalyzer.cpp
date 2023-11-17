@@ -143,8 +143,8 @@ int DefaultSemanticAnalyzer::_ValidateConstSubscription(SyntaxNodePtr constExp)
         _LogError(ErrorType::ERR_UNKNOWN, "Undetermined expression as subscription.");
     }
 
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(constExp, "type"));
-    if (type != ValueType::VT_INT)
+    SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(constExp, "type"));
+    if (type != SymbolValueType::VT_INT)
     {
         _Log(LogLevel::ERROR, "Invalid subscription type: %d.", type);
         _LogError(ErrorType::ERR_UNKNOWN, "Invalid subscription type: %d", type);
@@ -163,8 +163,8 @@ int DefaultSemanticAnalyzer::_ValidateConstSubscription(SyntaxNodePtr constExp)
 
 void DefaultSemanticAnalyzer::_ValidateSubscription(SyntaxNodePtr exp)
 {
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type"));
-    if (type != ValueType::VT_INT)
+    SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type"));
+    if (type != SymbolValueType::VT_INT)
     {
         _Log(LogLevel::ERROR, "Invalid subscription type: %d", type);
         _LogError(ErrorType::ERR_UNKNOWN, "Invalid subscription type: %d", type);
@@ -247,7 +247,7 @@ bool DefaultSemanticAnalyzer::_EnterDecl(SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitBType(SyntaxNodePtr node)
 {
-    ValueType type = ValueType::VT_INT;
+    SymbolValueType type = SymbolValueType::VT_INT;
     node->SetIntAttribute("type", static_cast<int>(type));
 
     // Well, BType should have a parent.
@@ -271,12 +271,12 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
     ConstantEntryBuilder builder(ident->Token()->lexeme.c_str());
     if (dim == 0)
     {
-        builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")));
+        builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")));
     }
     else if (dim == 1)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
-        builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
+        builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
                 ->Size(size);
     }
     else if (dim == 2)
@@ -284,7 +284,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
         int size1 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
-        builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
+        builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
                 ->Size(size1, size2);
     }
     else
@@ -419,13 +419,13 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
     VariableEntryBuilder builder(ident->Token()->lexeme.c_str());
     if (dim == 0)
     {
-        entry = builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
+        entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
                 ->Build();
     }
     else if (dim == 1)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
-        entry = builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
+        entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
                 ->Size(size)
                 ->Build();
     }
@@ -434,7 +434,7 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
         int size1 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
-        entry = builder.Type(static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
+        entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
                 ->Size(size1, size2)
                 ->Build();
     }
@@ -508,8 +508,8 @@ bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
     }
 
     // Check return value of non-void function.
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
-    if (type == ValueType::VT_INT)
+    SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
+    if (type == SymbolValueType::VT_INT)
     {
         // Set error candidate to '}'.
         _errorCandidate = node->LastChild()->LastChild();
@@ -529,7 +529,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitFuncDecl(tomic::SyntaxNodePtr node)
 {
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
+    SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
 
     node->SetIntAttribute("type", static_cast<int>(type));
     // Pull this attribute up. This parent must be a FuncDef.
@@ -547,7 +547,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncDecl(tomic::SyntaxNodePtr node)
         SemanticUtil::GetDirectChildNodes(params, SyntaxType::ST_FUNC_FPARAM, paramList);
         for (auto& param : paramList)
         {
-            ValueType paramType = static_cast<ValueType>(param->IntAttribute("type"));
+            SymbolValueType paramType = static_cast<SymbolValueType>(param->IntAttribute("type"));
             int paramDim = param->IntAttribute("dim");
             const char* paramName = param->Attribute("name");
             int paramSize = param->IntAttribute("size"); // it may not exist, but is OK
@@ -568,17 +568,17 @@ bool DefaultSemanticAnalyzer::_ExitFuncDecl(tomic::SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitFuncType(SyntaxNodePtr node)
 {
     auto tokenType = node->FirstChild()->Token()->type;
-    ValueType type;
+    SymbolValueType type;
     switch (tokenType)
     {
     case TokenType::TK_INT:
-        type = ValueType::VT_INT;
+        type = SymbolValueType::VT_INT;
         break;
     case TokenType::TK_VOID:
-        type = ValueType::VT_VOID;
+        type = SymbolValueType::VT_VOID;
         break;
     default:
-        type = ValueType::VT_ANY;
+        type = SymbolValueType::VT_ANY;
         break;
     }
 
@@ -606,11 +606,11 @@ bool DefaultSemanticAnalyzer::_ExitFuncFParam(SyntaxNodePtr node)
     node->SetIntAttribute("dim", dim);
     if (dim > 0)
     {
-        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ARRAY));
+        node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_ARRAY));
     }
     else
     {
-        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+        node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
     }
 
     if (dim == 2)
@@ -644,10 +644,10 @@ bool DefaultSemanticAnalyzer::_ExitFuncAParams(SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitFuncAParam(SyntaxNodePtr node)
 {
     auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
-    auto type = static_cast<ValueType>(exp->IntAttribute("type"));
+    auto type = static_cast<SymbolValueType>(exp->IntAttribute("type"));
     node->SetIntAttribute("type", static_cast<int>(type));
 
-    if (type == ValueType::VT_ARRAY)
+    if (type == SymbolValueType::VT_ARRAY)
     {
         int dim = exp->IntAttribute("dim");
         node->SetIntAttribute("dim", dim);
@@ -700,7 +700,7 @@ bool DefaultSemanticAnalyzer::_ExitBlock(tomic::SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_EnterMainFuncDef(tomic::SyntaxNodePtr node)
 {
-    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
     return true;
 }
 
@@ -725,8 +725,8 @@ bool DefaultSemanticAnalyzer::_ExitAssignmentStmt(tomic::SyntaxNodePtr node)
 {
     // Check LVal
     auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
-    ValueType type = static_cast<ValueType>(lval->IntAttribute("type"));
-    if (type != ValueType::VT_INT)
+    SymbolValueType type = static_cast<SymbolValueType>(lval->IntAttribute("type"));
+    if (type != SymbolValueType::VT_INT)
     {
         _Log(LogLevel::ERROR, "Invalid lvalue of type %d", static_cast<int>(type));
         _LogError(ErrorType::ERR_UNKNOWN, "Invalid lvalue of type %d", static_cast<int>(type));
@@ -739,7 +739,7 @@ bool DefaultSemanticAnalyzer::_ExitAssignmentStmt(tomic::SyntaxNodePtr node)
     }
 
     auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
-    if (type != static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type")))
+    if (type != static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type")))
     {
         _Log(LogLevel::ERROR, "Type mismatch");
         _LogError(ErrorType::ERR_UNKNOWN, "Type mismatch");
@@ -755,18 +755,18 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     SymbolTableEntryPtr rawEntry = _currentBlock->FindEntry(name);
 
     // In case any error occurs, we set the type to int by default.
-    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
 
     if (!rawEntry)
     {
         _Log(LogLevel::ERROR, "Undefined variable: %s", name);
         _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined variable: %s", name);
-        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ANY));
+        node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_ANY));
         return true;
     }
 
     int expectedDim = 0;
-    ValueType type;
+    SymbolValueType type;
     int size;
     if (rawEntry->EntryType() == SymbolTableEntryType::ET_CONSTANT)
     {
@@ -795,7 +795,7 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
         // Not a variable, so undefined symbol should be reported.
         _Log(LogLevel::ERROR, "Undefined variable: %s", name);
         _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined variable: %s", name);
-        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ANY));
+        node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_ANY));
         return true;
     }
 
@@ -822,11 +822,11 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     node->SetIntAttribute("dim", finalDim);
     if (finalDim == 0)
     {
-        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+        node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
     }
     else
     {
-        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ARRAY));
+        node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_ARRAY));
         if (finalDim == 2)
         {
             node->SetIntAttribute("size", size);
@@ -838,8 +838,8 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitCond(tomic::SyntaxNodePtr node)
 {
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
-    if (type != ValueType::VT_INT)
+    SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
+    if (type != SymbolValueType::VT_INT)
     {
         _Log(LogLevel::ERROR, "Wrong type for condition");
         _LogError(ErrorType::ERR_UNKNOWN, "Wrong type for condition");
@@ -858,8 +858,8 @@ bool DefaultSemanticAnalyzer::_ExitForInnerStmt(tomic::SyntaxNodePtr node)
 {
     // Check LVal
     auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
-    ValueType type = static_cast<ValueType>(lval->IntAttribute("type"));
-    if (type != ValueType::VT_INT)
+    SymbolValueType type = static_cast<SymbolValueType>(lval->IntAttribute("type"));
+    if (type != SymbolValueType::VT_INT)
     {
         _Log(LogLevel::ERROR, "Invalid lvalue of type %d", static_cast<int>(type));
         _LogError(ErrorType::ERR_UNKNOWN, "Invalid lvalue of type %d", static_cast<int>(type));
@@ -873,7 +873,7 @@ bool DefaultSemanticAnalyzer::_ExitForInnerStmt(tomic::SyntaxNodePtr node)
 
     // Check Exp.
     auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
-    if (type != static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type")))
+    if (type != static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(exp, "type")))
     {
         _Log(LogLevel::ERROR, "Type mismatch");
         _LogError(ErrorType::ERR_UNKNOWN, "Type mismatch");
@@ -907,26 +907,26 @@ bool DefaultSemanticAnalyzer::_ExitContinueStmt(tomic::SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
 {
     auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
-    ValueType type;
+    SymbolValueType type;
     if (exp)
     {
-        type = static_cast<ValueType>(exp->IntAttribute("type"));
+        type = static_cast<SymbolValueType>(exp->IntAttribute("type"));
     }
     else
     {
-        type = ValueType::VT_VOID;
+        type = SymbolValueType::VT_VOID;
     }
     node->SetIntAttribute("type", static_cast<int>(type));
 
     // Check return value in void function.
-    ValueType funcType = static_cast<ValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
+    SymbolValueType funcType = static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
     // if (funcType == ValueType::VT_VOID && ((type != ValueType::VT_VOID) || exp))
-    if (funcType == ValueType::VT_VOID && (type != ValueType::VT_VOID))
+    if (funcType == SymbolValueType::VT_VOID && (type != SymbolValueType::VT_VOID))
     {
         _Log(LogLevel::ERROR, "Return value in void function.");
         _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return value in void function.");
     }
-    else if (funcType == ValueType::VT_INT && type != ValueType::VT_INT)
+    else if (funcType == SymbolValueType::VT_INT && type != SymbolValueType::VT_INT)
     {
         _Log(LogLevel::ERROR, "Return type mismatch.");
         _LogError(ErrorType::ERR_RETURN_TYPE_MISMATCH, "Return type mismatch.");
@@ -938,8 +938,8 @@ bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitInStmt(tomic::SyntaxNodePtr node)
 {
     auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
-    ValueType type = static_cast<ValueType>(SemanticUtil::GetSynthesizedIntAttribute(lval, "type"));
-    if (type != ValueType::VT_INT)
+    SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(lval, "type"));
+    if (type != SymbolValueType::VT_INT)
     {
         _Log(LogLevel::ERROR, "Invalid lvalue of type %d", static_cast<int>(type));
         _LogError(ErrorType::ERR_UNKNOWN, "Invalid lvalue of type %d", static_cast<int>(type));
@@ -976,8 +976,8 @@ bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
     }
     for (auto& arg : args)
     {
-        ValueType type = static_cast<ValueType>(arg->IntAttribute("type"));
-        if (type != ValueType::VT_INT)
+        SymbolValueType type = static_cast<SymbolValueType>(arg->IntAttribute("type"));
+        if (type != SymbolValueType::VT_INT)
         {
             _Log(LogLevel::ERROR, "Invalid argument type in OutStmt: %d", static_cast<int>(type));
             _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
@@ -992,15 +992,15 @@ bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
 {
     // In case any error occurs, this node will have a default int type.
-    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
 
     if (node->HasManyChildren())
     {
         // Combine all children's type.
         auto left = node->FirstChild();
-        ValueType leftType = static_cast<ValueType>(left->IntAttribute("type"));
+        SymbolValueType leftType = static_cast<SymbolValueType>(left->IntAttribute("type"));
         auto right = node->LastChild();
-        ValueType rightType = static_cast<ValueType>(right->IntAttribute("type"));
+        SymbolValueType rightType = static_cast<SymbolValueType>(right->IntAttribute("type"));
 
         if (leftType != rightType)
         {
@@ -1013,7 +1013,7 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
         }
         else
         {
-            if (leftType == ValueType::VT_ARRAY)
+            if (leftType == SymbolValueType::VT_ARRAY)
             {
                 _Log(LogLevel::ERROR, "Array cannot be operated.");
                 _LogError(ErrorType::ERR_UNKNOWN, "Array cannot be operated.");
@@ -1039,9 +1039,9 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
     else
     {
         // Simple get the type from its single child.
-        ValueType type = static_cast<ValueType>(node->FirstChild()->IntAttribute("type"));
+        SymbolValueType type = static_cast<SymbolValueType>(node->FirstChild()->IntAttribute("type"));
         node->SetIntAttribute("type", static_cast<int>(type));
-        if (type == ValueType::VT_ARRAY)
+        if (type == SymbolValueType::VT_ARRAY)
         {
             int dim = node->FirstChild()->IntAttribute("dim");
             node->SetIntAttribute("dim", dim);
@@ -1050,7 +1050,7 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
                 node->SetIntAttribute("size", node->FirstChild()->IntAttribute("size"));
             }
         }
-        else if (type == ValueType::VT_INT)
+        else if (type == SymbolValueType::VT_INT)
         {
             if (node->FirstChild()->BoolAttribute("det"))
             {
@@ -1066,7 +1066,7 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitExp(SyntaxNodePtr node)
 {
     auto child = node->FirstChild();
-    ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
+    SymbolValueType type = static_cast<SymbolValueType>(child->IntAttribute("type"));
 
     node->SetIntAttribute("type", static_cast<int>(type));
 
@@ -1077,7 +1077,7 @@ bool DefaultSemanticAnalyzer::_ExitExp(SyntaxNodePtr node)
     }
     else
     {
-        if (type == ValueType::VT_ARRAY)
+        if (type == SymbolValueType::VT_ARRAY)
         {
             node->SetIntAttribute("dim", child->IntAttribute("dim"));
             if (node->IntAttribute("dim") == 2)
@@ -1112,13 +1112,13 @@ bool DefaultSemanticAnalyzer::_ExitConstExp(tomic::SyntaxNodePtr node)
 bool DefaultSemanticAnalyzer::_ExitUnaryExp(tomic::SyntaxNodePtr node)
 {
     // Set a default type.
-    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
 
     if (node->HasManyChildren())
     {
         auto exp = node->LastChild();
-        ValueType type = static_cast<ValueType>(exp->IntAttribute("type"));
-        if (type != ValueType::VT_INT)
+        SymbolValueType type = static_cast<SymbolValueType>(exp->IntAttribute("type"));
+        if (type != SymbolValueType::VT_INT)
         {
             _Log(LogLevel::ERROR, "Invalid operand type: %d", static_cast<int>(type));
             _LogError(ErrorType::ERR_UNKNOWN, "Invalid operand type: %d", static_cast<int>(type));
@@ -1137,9 +1137,9 @@ bool DefaultSemanticAnalyzer::_ExitUnaryExp(tomic::SyntaxNodePtr node)
     else
     {
         auto child = node->FirstChild();
-        ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
+        SymbolValueType type = static_cast<SymbolValueType>(child->IntAttribute("type"));
         node->SetIntAttribute("type", static_cast<int>(type));
-        if (type == ValueType::VT_INT)
+        if (type == SymbolValueType::VT_INT)
         {
             if (child->BoolAttribute("det"))
             {
@@ -1147,7 +1147,7 @@ bool DefaultSemanticAnalyzer::_ExitUnaryExp(tomic::SyntaxNodePtr node)
                 node->SetIntAttribute("value", child->IntAttribute("value"));
             }
         }
-        else if (type == ValueType::VT_ARRAY)
+        else if (type == SymbolValueType::VT_ARRAY)
         {
             node->SetIntAttribute("dim", child->IntAttribute("dim"));
             if (node->IntAttribute("dim") == 2)
@@ -1168,7 +1168,7 @@ bool DefaultSemanticAnalyzer::_ExitUnaryOp(tomic::SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitPrimaryExp(tomic::SyntaxNodePtr node)
 {
-    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
 
     SyntaxNodePtr child = node->FirstChild();
     if (node->HasManyChildren())
@@ -1179,8 +1179,8 @@ bool DefaultSemanticAnalyzer::_ExitPrimaryExp(tomic::SyntaxNodePtr node)
 
     if (child->Type() == SyntaxType::ST_LVAL)
     {
-        ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
-        if (type != ValueType::VT_INT)
+        SymbolValueType type = static_cast<SymbolValueType>(child->IntAttribute("type"));
+        if (type != SymbolValueType::VT_INT)
         {
             node->SetIntAttribute("type", static_cast<int>(type));
             node->SetIntAttribute("dim", child->IntAttribute("dim"));
@@ -1206,8 +1206,8 @@ bool DefaultSemanticAnalyzer::_ExitPrimaryExp(tomic::SyntaxNodePtr node)
     }
     else    // Exp
     {
-        ValueType type = static_cast<ValueType>(child->IntAttribute("type"));
-        if (type != ValueType::VT_INT)
+        SymbolValueType type = static_cast<SymbolValueType>(child->IntAttribute("type"));
+        if (type != SymbolValueType::VT_INT)
         {
             node->SetIntAttribute("type", static_cast<int>(type));
             node->SetIntAttribute("dim", child->IntAttribute("dim"));
@@ -1234,7 +1234,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
     {
         _Log(LogLevel::ERROR, "Undefined function: %s", name);
         _LogError(ErrorType::ERR_UNDEFINED_SYMBOL, "Undefined function: %s", name);
-        node->SetIntAttribute("type", static_cast<int>(ValueType::VT_ANY));
+        node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_ANY));
         return true;
     }
 
@@ -1261,8 +1261,8 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
         for (int i = 0; i < upper; i++)
         {
             auto param = entry->Param(i);
-            ValueType argType = static_cast<ValueType>(args[i]->IntAttribute("type"));
-            if ((argType != param.type) && (argType != ValueType::VT_ANY))
+            SymbolValueType argType = static_cast<SymbolValueType>(args[i]->IntAttribute("type"));
+            if ((argType != param.type) && (argType != SymbolValueType::VT_ANY))
             {
                 _Log(LogLevel::ERROR,
                      "Argument type mismatch: %d != %d",
@@ -1274,7 +1274,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
                           static_cast<int>(param.type));
                 continue;
             }
-            if (argType == ValueType::VT_ARRAY)
+            if (argType == SymbolValueType::VT_ARRAY)
             {
                 if (args[i]->IntAttribute("dim") != param.dimension)
                 {
@@ -1317,7 +1317,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitNumber(tomic::SyntaxNodePtr node)
 {
-    node->SetIntAttribute("type", static_cast<int>(ValueType::VT_INT));
+    node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
     node->SetBoolAttribute("det", true);
 
     int value;
