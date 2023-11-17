@@ -281,10 +281,13 @@ struct FunctionParamProperty
     }
 };
 
+using FunctionParamPropertyPtr = FunctionParamProperty*;
+using FunctionParamPropertySmartPtr = std::shared_ptr<FunctionParamProperty>;
+
 struct FunctionEntryProperty
 {
     SymbolValueType type;
-    std::vector<FunctionParamProperty> params;
+    std::vector<FunctionParamPropertySmartPtr> params;
 
     int ArgsCount() const { return params.size(); }
 };
@@ -299,10 +302,10 @@ public:
 
     int ArgsCount() const { return _props.ArgsCount(); }
 
-    FunctionParamProperty Param(int index) const
+    FunctionParamPropertyPtr Param(int index) const
     {
         TOMIC_ASSERT(index < ArgsCount());
-        return _props.params[index];
+        return _props.params[index].get();
     }
 
 private:
@@ -334,7 +337,7 @@ public:
 
     FunctionEntryBuilder* AddParam(SymbolValueType type, std::string name, int dimension, int size)
     {
-        _props.params.emplace_back(type, name, dimension, 0, size);
+        _props.params.emplace_back(std::make_shared<FunctionParamProperty>(type, name, dimension, 0, size));
         return this;
     }
 

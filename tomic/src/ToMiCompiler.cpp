@@ -330,7 +330,7 @@ bool ToMiCompilerImpl::_SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTabl
         return false;
     }
     auto logger = _container->Resolve<ILogger>();
-    logger->LogFormat(LogLevel::DEBUG, "Performing semantic analyzing \"%s\"...", _config->Input.c_str());
+    logger->LogFormat(LogLevel::DEBUG, "Performing semantic analyzing on \"%s\"...", _config->Input.c_str());
 
     // ===============
     auto table = _container->Resolve<ISemanticParser>()->Parse(ast);

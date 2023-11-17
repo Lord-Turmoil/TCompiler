@@ -11,6 +11,8 @@
 #include <tomic/llvm/asm/IAsmGenerator.h>
 #include <tomic/parser/ast/AstVisitor.h>
 
+#include <unordered_map>
+
 TOMIC_LLVM_BEGIN
 
 /*
@@ -45,8 +47,18 @@ private:
     FunctionPtr _currentFunction;
     BasicBlockPtr _currentBlock;
 
+    /**
+     * Maintain a map from SymbolTableEntry to Value.
+     */
+    std::unordered_map<SymbolTableEntryPtr, ValuePtr> _valueMap;
+
 private:
     SymbolTableBlockPtr _GetSymbolTableBlock(SyntaxNodePtr node);
+
+    void _AddValue(SymbolTableEntryPtr entry, ValuePtr value);
+    ValuePtr _GetValue(SymbolTableEntryPtr entry);
+
+    TypePtr _GetEntryType(SymbolTableEntryPtr entry);
 
     /*
      * Set the current function and basic block.
@@ -67,19 +79,26 @@ private:
 
     bool _ParseCompilationUnit();
 
-    FunctionPtr _GenerateMainFunction(SyntaxNodePtr node);
+    FunctionPtr _ParseMainFunction(SyntaxNodePtr node);
     // FunctionPtr _GenerateFunction(SyntaxNodePtr node);
 
     /*
      * Parent entrance for generating instructions. Basic blocks will be
      * generated automatically depends on the instructions.
      */
-    bool _GenerateInstructions(SyntaxNodePtr node);
+    bool _ParseInstructions(SyntaxNodePtr node);
 
-    void _GenerateStatement(SyntaxNodePtr node);
+    void _ParseStatement(SyntaxNodePtr node);
 
-    ReturnInstPtr _GenerateReturnStatement(SyntaxNodePtr node);
-    ValuePtr _GenerateExpression(SyntaxNodePtr node);
+    void _ParseGlobalDecl(SyntaxNodePtr node);
+    void _ParseGlobalVariable(SyntaxNodePtr node);
+    void _ParseGlobalConstant(SyntaxNodePtr node);
+    ConstantDataPtr _ParseInitValue(SyntaxNodePtr node);
+
+    AllocaInstPtr _ParseVariableDecl(SyntaxNodePtr node);
+
+    ReturnInstPtr _ParseReturnStatement(SyntaxNodePtr node);
+    ValuePtr _ParseExpression(SyntaxNodePtr node);
 };
 
 TOMIC_LLVM_END

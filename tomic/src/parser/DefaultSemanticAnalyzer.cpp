@@ -1262,44 +1262,44 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
         {
             auto param = entry->Param(i);
             SymbolValueType argType = static_cast<SymbolValueType>(args[i]->IntAttribute("type"));
-            if ((argType != param.type) && (argType != SymbolValueType::VT_ANY))
+            if ((argType != param->type) && (argType != SymbolValueType::VT_ANY))
             {
                 _Log(LogLevel::ERROR,
                      "Argument type mismatch: %d != %d",
                      static_cast<int>(argType),
-                     static_cast<int>(param.type));
+                     static_cast<int>(param->type));
                 _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
                           "Argument type mismatch: %d != %d",
                           static_cast<int>(argType),
-                          static_cast<int>(param.type));
+                          static_cast<int>(param->type));
                 continue;
             }
             if (argType == SymbolValueType::VT_ARRAY)
             {
-                if (args[i]->IntAttribute("dim") != param.dimension)
+                if (args[i]->IntAttribute("dim") != param->dimension)
                 {
                     _Log(LogLevel::ERROR,
                          "Argument dimension mismatch: %d != %d",
                          args[i]->IntAttribute("dim"),
-                         param.dimension);
+                         param->dimension);
                     _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
                               "Argument dimension mismatch: %d != %d",
                               args[i]->IntAttribute("dim"),
-                              param.dimension);
+                              param->dimension);
                     continue;
                 }
-                if (param.dimension == 2)
+                if (param->dimension == 2)
                 {
-                    if (args[i]->IntAttribute("size") != param.size[1])
+                    if (args[i]->IntAttribute("size") != param->size[1])
                     {
                         _Log(LogLevel::ERROR,
                              "Argument size mismatch: %d != %d",
                              args[i]->IntAttribute("size"),
-                             param.size[1]);
+                             param->size[1]);
                         _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
                                   "Argument size mismatch: %d != %d",
                                   args[i]->IntAttribute("size"),
-                                  param.size[1]);
+                                  param->size[1]);
                         continue;
                     }
                 }

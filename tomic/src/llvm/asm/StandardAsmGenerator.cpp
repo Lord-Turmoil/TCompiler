@@ -13,6 +13,7 @@
 #include <tomic/llvm/ir/value/Argument.h>
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/BasicBlock.h>
+#include <tomic/llvm/ir/value/GlobalVariable.h>
 #include <tomic/llvm/ir/value/User.h>
 #include <tomic/llvm/ir/value/ConstantData.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
@@ -53,116 +54,146 @@ ModuleSmartPtr StandardAsmGenerator::Generate(
     return _module;
 }
 
-/*
- * ==================== Overall Parsing ====================
- */
-
-bool StandardAsmGenerator::VisitEnter(SyntaxNodePtr node)
-{
-    if (node->Type() == SyntaxType::ST_BLOCK_ITEM)
-    {
-        // Generate instruction, and stop visiting if
-        // this block item does not nest any other block.
-        return _GenerateInstructions(node);
-    }
-
-    return true;
-}
-
-bool StandardAsmGenerator::_ParseCompilationUnit()
-{
-    auto root = _syntaxTree->Root();
-
-    TOMIC_ASSERT(root);
-    TOMIC_ASSERT(root->Type() == SyntaxType::ST_COMP_UNIT);
-
-    for (auto it = root->FirstChild(); it; it = it->NextSibling())
-    {
-        if (it->Type() == SyntaxType::ST_MAIN_FUNC_DEF)
-        {
-            auto mainFunc = _GenerateMainFunction(it);
-
-            // TODO: Error handling.
-            if (!mainFunc)
-            {
-                return false;
-            }
-
-            _module->SetMainFunction(mainFunc);
-        }
-    }
-
-    return true;
-}
-
-FunctionPtr StandardAsmGenerator::_GenerateMainFunction(SyntaxNodePtr node)
-{
-    auto context = _module->Context();
-
-    // Generate the main function.
-    TypePtr returnType = IntegerType::Get(context, 32);
-    TypePtr funcType = FunctionType::Get(returnType);
-    FunctionPtr function = Function::New(funcType, "main");
-
-    // Generate the first basic block.
-    BasicBlockPtr block = BasicBlock::New(function);
-
-    // Set the current function and basic block as parents.
-    _SetCurrentFunction(function);
-    _SetCurrentBasicBlock(block);
-
-    // Generate all instructions in the main function.
-    node->Accept(this);
-
-    return function;
-}
-
-// Here, node is a BlockItem.
-bool StandardAsmGenerator::_GenerateInstructions(SyntaxNodePtr node)
-{
-    TOMIC_ASSERT(node->Type() == SyntaxType::ST_BLOCK_ITEM);
-
-    auto child = node->FirstChild();
-
-    if (child->Type() == SyntaxType::ST_DECL)
-    {
-        // Generate Decl
-    }
-    else if (child->Type() == SyntaxType::ST_STMT)
-    {
-        // Generate Stmt
-        auto statement = child->FirstChild();
-        // If is a nested block, return true to continue visiting.
-        if (statement->Type() == SyntaxType::ST_BLOCK)
-        {
-            return true;
-        }
-
-        _GenerateStatement(statement);
-    }
-    else
-    {
-        TOMIC_PANIC("Illegal type for BlockItem");
-    }
-
-    return false;
-}
-
-// Here the node is a specific statement.
-void StandardAsmGenerator::_GenerateStatement(SyntaxNodePtr node)
-{
-    if (node->Type() == SyntaxType::ST_RETURN_STMT)
-    {
-        _GenerateReturnStatement(node);
-    }
-}
-
 
 /*
  * ==================== Instruction Parsing ====================
  */
 
-ReturnInstPtr StandardAsmGenerator::_GenerateReturnStatement(SyntaxNodePtr node)
+/*
+ * Node is a Decl, it can be a VarDecl or ConstDecl.
+ */
+
+// node is a Decl
+void StandardAsmGenerator::_ParseGlobalDecl(SyntaxNodePtr node)
+{
+    auto child = node->FirstChild();
+    if (child->Type() == SyntaxType::ST_VAR_DECL)
+    {
+        _ParseGlobalVariable(child);
+    }
+    else if (child->Type() == SyntaxType::ST_CONST_DECL)
+    {
+        _ParseGlobalConstant(child);
+    }
+    else
+    {
+        TOMIC_PANIC("Illegal type for Decl");
+    }
+}
+
+void StandardAsmGenerator::_ParseGlobalVariable(SyntaxNodePtr node)
+{
+    for (auto it = node->FirstChild(); it; it = it->NextSibling())
+    {
+        if (it->Type() != SyntaxType::ST_VAR_DEF)
+        {
+            continue;
+        }
+
+        // Get variable name.
+        const std::string& name = it->FirstChild()->Token()->lexeme;
+        auto entry = _GetSymbolTableBlock(it)->FindEntry(name);
+        auto type = _GetEntryType(entry);
+        GlobalVariablePtr value;
+
+        if (it->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
+        {
+            // with init value
+            auto initValue = _ParseInitValue(it->LastChild());
+            value = GlobalVariable::New(type, false, name, initValue);
+        }
+        else
+        {
+            value = GlobalVariable::New(type, false, name);
+        }
+
+        // Add the value to the symbol table.
+        _AddValue(entry, value);
+
+        _module->AddGlobalVariable(value);
+    }
+}
+
+void StandardAsmGenerator::_ParseGlobalConstant(SyntaxNodePtr node)
+{
+    for (auto it = node->FirstChild(); it; it = it->NextSibling())
+    {
+        if (it->Type() != SyntaxType::ST_CONST_DEF)
+        {
+            continue;
+        }
+
+        // Get constant name.
+        const std::string& name = it->FirstChild()->Token()->lexeme;
+        auto entry = _GetSymbolTableBlock(it)->FindEntry(name);
+        auto type = _GetEntryType(entry);
+        GlobalVariablePtr value;
+
+        if (it->LastChild()->Type() == SyntaxType::ST_CONST_INIT_VAL)
+        {
+            // with init value
+            auto initValue = _ParseInitValue(it->LastChild());
+            value = GlobalVariable::New(type, true, name, initValue);
+        }
+        else
+        {
+            TOMIC_PANIC("Constant must have init value");
+        }
+
+        // Add the value to the symbol table.
+        _AddValue(entry, value);
+
+        _module->AddGlobalVariable(value);
+    }
+}
+
+// node is a InitVal or ConstInitVal.
+ConstantDataPtr StandardAsmGenerator::_ParseInitValue(SyntaxNodePtr node)
+{
+    if (!node->BoolAttribute("det"))
+    {
+        TOMIC_PANIC("Global initialization value must be deterministic");
+    }
+
+    auto context = _module->Context();
+    int dim = node->IntAttribute("dim");
+    TypePtr type;
+
+    if (dim == 0)
+    {
+        type = context->GetInt32Ty();
+        return ConstantData::New(type, node->IntAttribute("value"));
+    }
+
+    auto array = SemanticUtil::DeserializeArray(node->Attribute("value"));
+    std::vector<ConstantDataPtr> values;
+
+    if (dim == 1)
+    {
+        for (auto val : array[0])
+        {
+            values.push_back(ConstantData::New(context->GetInt32Ty(), val));
+        }
+        return ConstantData::New(values);
+    }
+    if (dim == 2)
+    {
+        for (auto& row : array)
+        {
+            std::vector<ConstantDataPtr> rowValues;
+            for (auto val : row)
+            {
+                rowValues.push_back(ConstantData::New(context->GetInt32Ty(), val));
+            }
+            values.push_back(ConstantData::New(rowValues));
+        }
+        return ConstantData::New(values);
+    }
+
+    TOMIC_PANIC("Not implemented yet");
+}
+
+ReturnInstPtr StandardAsmGenerator::_ParseReturnStatement(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node->Type() == SyntaxType::ST_RETURN_STMT);
     auto context = _module->Context();
@@ -177,7 +208,7 @@ ReturnInstPtr StandardAsmGenerator::_GenerateReturnStatement(SyntaxNodePtr node)
     }
     else
     {
-        auto value = _GenerateExpression(exp);
+        auto value = _ParseExpression(exp);
 
         // TODO: Error handling.
         TOMIC_ASSERT(value);
@@ -191,7 +222,7 @@ ReturnInstPtr StandardAsmGenerator::_GenerateReturnStatement(SyntaxNodePtr node)
     return inst;
 }
 
-ValuePtr StandardAsmGenerator::_GenerateExpression(SyntaxNodePtr node)
+ValuePtr StandardAsmGenerator::_ParseExpression(SyntaxNodePtr node)
 {
     auto context = _module->Context();
 
@@ -207,50 +238,5 @@ ValuePtr StandardAsmGenerator::_GenerateExpression(SyntaxNodePtr node)
     return nullptr;
 }
 
-
-/*
- * =================== Utility Functions ===================
- */
-
-SymbolTableBlockPtr StandardAsmGenerator::_GetSymbolTableBlock(SyntaxNodePtr node)
-{
-    TOMIC_ASSERT(node);
-
-    int tbl = SemanticUtil::GetInheritedIntAttribute(node, "tbl", -1);
-    auto block = _symbolTable->GetBlock(tbl);
-
-    TOMIC_ASSERT(block);
-
-    return block;
-}
-
-FunctionPtr StandardAsmGenerator::_SetCurrentFunction(FunctionPtr function)
-{
-    auto old = _currentFunction;
-    _currentFunction = function;
-    return old;
-}
-
-BasicBlockPtr StandardAsmGenerator::_SetCurrentBasicBlock(BasicBlockPtr block)
-{
-    TOMIC_ASSERT(_currentFunction && "Missing current function");
-
-    auto old = _currentBlock;
-    _currentBlock = block;
-
-    // Add the basic block to the function.
-    _currentFunction->InsertBasicBlock(block);
-
-    return old;
-}
-
-InstructionPtr StandardAsmGenerator::_InsertInstruction(InstructionPtr instruction)
-{
-    TOMIC_ASSERT(_currentBlock && "Missing current basic block");
-
-    _currentBlock->InsertInstruction(instruction);
-
-    return instruction;
-}
 
 TOMIC_LLVM_END
