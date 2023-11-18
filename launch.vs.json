@@ -1,0 +1,45 @@
+{
+  "version": "0.2.1",
+  "defaults": {},
+    "configurations": [
+        {
+            "type": "default",
+            "project": "CMakeLists.txt",
+            "projectTarget": "ToMiCompiler.exe",
+            "name": "ToMiCompiler semantic",
+            "currentDir": "${workspaceRoot}\\works",
+            "args": [
+                "--target=semantic",
+                "in.c",
+                "--enable-logger",
+                "--enable-error",
+                "-v",
+                "--emit-ast",
+                "-c"
+            ]
+        },
+        {
+            "type": "default",
+            "project": "CMakeLists.txt",
+            "projectTarget": "ToMiCompiler.exe",
+            "name": "ToMiCompiler ir",
+            "currentDir": "${workspaceRoot}\\works",
+            "args": [
+                "--target=ir",
+                "in.c",
+                "--enable-logger",
+                "--enable-error",
+                "-v",
+                "--emit-ast",
+                "-c",
+                "--emit-llvm"
+            ]
+        },
+        {
+            "type": "default",
+            "project": "CMakeLists.txt",
+            "projectTarget": "ToMiCompiler.exe",
+            "name": "ToMiCompiler.exe"
+        }
+    ]
+}
