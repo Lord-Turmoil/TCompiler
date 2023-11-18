@@ -15,6 +15,7 @@ TOMIC_BEGIN
 class SyntaxTree;
 using SyntaxTreePtr = std::shared_ptr<SyntaxTree>;
 
+
 class ISyntacticParser
 {
 public:
@@ -24,6 +25,7 @@ public:
 
     virtual SyntaxTreePtr Parse() = 0;
 };
+
 
 TOMIC_END
 

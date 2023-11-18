@@ -30,5 +30,14 @@
 #define TOMIC_PANIC(expression)
 #endif
 
+#ifdef _WIN32
+#define TOMIC_SSCANF sscanf_s
+#define TOMIC_SPRINTF sprintf_s
+#define TOMIC_VSPRINTF vsprintf_s
+#else
+#define TOMIC_SSCANF sscanf
+#define TOMIC_SPRINTF sprintf
+#define TOMIC_VSPRINTF vsprintf
+#endif
 
 #endif

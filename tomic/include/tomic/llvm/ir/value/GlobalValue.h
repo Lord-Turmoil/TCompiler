@@ -33,13 +33,14 @@ private:
 
 protected:
     GlobalValue(ValueType valueType, TypePtr type, const std::string& name)
-            : Constant(valueType, type, nullptr), _parent(nullptr)
+        : Constant(valueType, type, nullptr), _parent(nullptr)
     {
         SetName(name);
     };
 
     ModulePtr _parent;
 };
+
 
 TOMIC_LLVM_END
 

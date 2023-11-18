@@ -41,6 +41,7 @@ public:
     virtual void CommentEnd() = 0;
 };
 
+
 using IAsmWriterPtr = std::shared_ptr<IAsmWriter>;
 
 

@@ -21,25 +21,35 @@ TOMIC_LLVM_BEGIN
 
 struct ArrayTypePair
 {
-    ArrayTypePair() : first(nullptr), second(0) {}
-    ArrayTypePair(TypePtr type, int count) : first(type), second(count) {}
+    ArrayTypePair() : first(nullptr), second(0)
+    {
+    }
+
+
+    ArrayTypePair(TypePtr type, int count) : first(type), second(count)
+    {
+    }
+
 
     bool operator==(const ArrayTypePair& other) const noexcept
     {
         return (first == other.first) && (second == other.second);
     }
 
+
     TypePtr first;
     int second;
 };
+
 
 struct ArrayTypePairHash
 {
     size_t operator()(const ArrayTypePair& p) const noexcept
     {
-        return ((size_t)(p.first) << 32) | (size_t)(p.second);
+        return ((size_t)(p.first) << 32) | static_cast<size_t>(p.second);
     }
 };
+
 
 class LlvmContext
 {
@@ -106,6 +116,7 @@ private:
     std::unordered_map<ValuePtr, ValueSmartPtr> _valueMap;
     std::unordered_map<UsePtr, UseSmartPtr> _useMap;
 };
+
 
 TOMIC_LLVM_END
 

@@ -18,6 +18,7 @@ TOMIC_BEGIN
 class SymbolTableBlock
 {
     friend class SymbolTable;
+
 public:
     SymbolTableBlockPtr NewChild();
 
@@ -34,10 +35,11 @@ public:
 
 private:
     SymbolTableBlock(int id, SymbolTable* table, SymbolTableBlockPtr parent)
-            : _id(id), _table(table), _parent(parent)
+        : _id(id), _table(table), _parent(parent)
     {
         TOMIC_ASSERT(_table);
     }
+
 
     static SymbolTableBlockSmartPtr New(int id, SymbolTable* table, SymbolTableBlockPtr parent)
     {
@@ -52,6 +54,7 @@ private:
 
     std::vector<SymbolTableEntryPtr> _entries;
 };
+
 
 TOMIC_END
 

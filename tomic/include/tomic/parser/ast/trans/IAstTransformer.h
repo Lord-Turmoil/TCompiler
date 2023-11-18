@@ -15,10 +15,11 @@ TOMIC_BEGIN
 class IAstTransformer : public AstVisitor
 {
 public:
-    virtual ~IAstTransformer() = default;
+    ~IAstTransformer() override = default;
 
     virtual SyntaxTreePtr Transform(SyntaxTreePtr tree) = 0;
 };
+
 
 TOMIC_END
 

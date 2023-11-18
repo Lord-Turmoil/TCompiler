@@ -11,11 +11,12 @@
 TOMIC_LLVM_BEGIN
 
 LlvmContext::LlvmContext() :
-        voidTy(this, Type::VoidTyID),
-        labelTy(this, Type::LabelTyID),
-        int32Ty(this, 32)
+    voidTy(this, Type::VoidTyID),
+    labelTy(this, Type::LabelTyID),
+    int32Ty(this, 32)
 {
 }
+
 
 ArrayTypePtr LlvmContext::GetArrayType(TypePtr elementType, int elementCount)
 {
@@ -28,8 +29,9 @@ ArrayTypePtr LlvmContext::GetArrayType(TypePtr elementType, int elementCount)
     }
 
     return _arrayTypes.emplace(pair, new ArrayType(elementType, elementCount))
-            .first->second.get();
+                      .first->second.get();
 }
+
 
 FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType, const std::vector<TypePtr>& paramTypes)
 {
@@ -45,6 +47,7 @@ FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType, const std::vect
     return type.get();
 }
 
+
 FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType)
 {
     for (auto& type : _functionTypes)
@@ -59,6 +62,7 @@ FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType)
     return type.get();
 }
 
+
 PointerTypePtr LlvmContext::GetPointerType(TypePtr elementType)
 {
     auto it = _pointerTypes.find(elementType);
@@ -68,8 +72,9 @@ PointerTypePtr LlvmContext::GetPointerType(TypePtr elementType)
     }
 
     return _pointerTypes.emplace(elementType, new PointerType(elementType))
-            .first->second.get();
+                        .first->second.get();
 }
+
 
 ValuePtr LlvmContext::StoreValue(ValueSmartPtr value)
 {
@@ -77,16 +82,19 @@ ValuePtr LlvmContext::StoreValue(ValueSmartPtr value)
     return value.get();
 }
 
+
 void LlvmContext::RemoveValue(ValuePtr value)
 {
     _valueMap.erase(value);
 }
+
 
 UsePtr LlvmContext::StoreUse(UseSmartPtr use)
 {
     _useMap.emplace(use.get(), use);
     return use.get();
 }
+
 
 void LlvmContext::RemoveUse(UsePtr use)
 {

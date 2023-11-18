@@ -16,12 +16,13 @@
 TOMIC_BEGIN
 
 DefaultSemanticAnalyzer::DefaultSemanticAnalyzer(IErrorLoggerPtr errorLogger, ILoggerPtr logger)
-        : _errorLogger(errorLogger), _logger(logger),
-          _currentBlock(nullptr), _errorCandidate(nullptr)
+    : _errorLogger(errorLogger), _logger(logger),
+      _currentBlock(nullptr), _errorCandidate(nullptr)
 {
     TOMIC_ASSERT(_errorLogger);
     TOMIC_ASSERT(_logger);
 }
+
 
 SymbolTablePtr DefaultSemanticAnalyzer::Analyze(SyntaxTreePtr tree)
 {
@@ -43,6 +44,7 @@ SymbolTablePtr DefaultSemanticAnalyzer::Analyze(SyntaxTreePtr tree)
 // Not that good, since a global variable is used.
 static DefaultSemanticAnalyzerActionMapper mapper;
 
+
 bool DefaultSemanticAnalyzer::VisitEnter(SyntaxNodePtr node)
 {
     _nodeStack.push(node);
@@ -56,6 +58,7 @@ bool DefaultSemanticAnalyzer::VisitEnter(SyntaxNodePtr node)
     return false;
 }
 
+
 bool DefaultSemanticAnalyzer::VisitExit(SyntaxNodePtr node)
 {
     auto action = mapper.GetExitAction(node->Type());
@@ -65,6 +68,7 @@ bool DefaultSemanticAnalyzer::VisitExit(SyntaxNodePtr node)
 
     return ret;
 }
+
 
 // Not sure if Visit is needed here.
 bool DefaultSemanticAnalyzer::Visit(SyntaxNodePtr node)
@@ -88,6 +92,7 @@ bool DefaultSemanticAnalyzer::_AnalyzePreamble(SyntaxNodePtr node)
 
     return !corrupted;
 }
+
 
 SymbolTableBlockPtr DefaultSemanticAnalyzer::_GetOrCreateBlock(SyntaxNodePtr node)
 {
@@ -117,6 +122,7 @@ SymbolTableBlockPtr DefaultSemanticAnalyzer::_GetOrCreateBlock(SyntaxNodePtr nod
     return block;
 }
 
+
 bool DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntryPtr entry)
 {
     TOMIC_ASSERT(entry);
@@ -134,6 +140,7 @@ bool DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntryPtr entry)
 
     return true;
 }
+
 
 int DefaultSemanticAnalyzer::_ValidateConstSubscription(SyntaxNodePtr constExp)
 {
@@ -160,6 +167,7 @@ int DefaultSemanticAnalyzer::_ValidateConstSubscription(SyntaxNodePtr constExp)
 
     return size;
 }
+
 
 void DefaultSemanticAnalyzer::_ValidateSubscription(SyntaxNodePtr exp)
 {
@@ -189,11 +197,12 @@ void DefaultSemanticAnalyzer::_Log(LogLevel level, const char* format, ...)
 
     va_list args;
     va_start(args, format);
-    vsprintf(buffer, format, args);
+    TOMIC_VSPRINTF(buffer, format, args);
     va_end(args);
 
     _logger->LogFormat(level, "(%d:%d) %s", line, column, buffer);
 }
+
 
 void DefaultSemanticAnalyzer::_LogError(ErrorType type, const char* format, ...)
 {
@@ -206,7 +215,7 @@ void DefaultSemanticAnalyzer::_LogError(ErrorType type, const char* format, ...)
 
     va_list args;
     va_start(args, format);
-    vsprintf(buffer, format, args);
+    TOMIC_VSPRINTF(buffer, format, args);
     va_end(args);
 
     _errorLogger->LogFormat(line, column, type, buffer);
@@ -225,12 +234,14 @@ bool DefaultSemanticAnalyzer::_EnterCompUnit(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitCompUnit(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(_currentBlock);
     _currentBlock = _currentBlock->Parent();
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_EnterDecl(SyntaxNodePtr node)
 {
@@ -245,6 +256,7 @@ bool DefaultSemanticAnalyzer::_EnterDecl(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitBType(SyntaxNodePtr node)
 {
     SymbolValueType type = SymbolValueType::VT_INT;
@@ -256,11 +268,13 @@ bool DefaultSemanticAnalyzer::_ExitBType(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_EnterConstDecl(SyntaxNodePtr node)
 {
     node->SetBoolAttribute("const", true);
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
 {
@@ -277,7 +291,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Size(size);
+               ->Size(size);
     }
     else if (dim == 2)
     {
@@ -285,7 +299,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
         builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Size(size1, size2);
+               ->Size(size1, size2);
     }
     else
     {
@@ -315,6 +329,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
 
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_ExitConstInitVal(SyntaxNodePtr node)
 {
@@ -388,6 +403,7 @@ bool DefaultSemanticAnalyzer::_ExitConstInitVal(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
 {
     SyntaxNodePtr initVal = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_INIT_VAL);
@@ -420,14 +436,14 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
     if (dim == 0)
     {
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Build();
+                       ->Build();
     }
     else if (dim == 1)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Size(size)
-                ->Build();
+                       ->Size(size)
+                       ->Build();
     }
     else if (dim == 2)
     {
@@ -435,8 +451,8 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                ->Size(size1, size2)
-                ->Build();
+                       ->Size(size1, size2)
+                       ->Build();
     }
     else
     {
@@ -450,6 +466,7 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
 
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_ExitInitVal(SyntaxNodePtr node)
 {
@@ -501,6 +518,7 @@ bool DefaultSemanticAnalyzer::_ExitInitVal(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
 {
     // If failed to declare, skip it.
@@ -529,7 +547,8 @@ bool DefaultSemanticAnalyzer::_ExitFuncDef(SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitFuncDecl(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitFuncDecl(SyntaxNodePtr node)
 {
     SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
 
@@ -567,6 +586,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncDecl(tomic::SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitFuncType(SyntaxNodePtr node)
 {
     auto tokenType = node->FirstChild()->Token()->type;
@@ -592,6 +612,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncType(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitFuncFParams(SyntaxNodePtr node)
 {
     int count = SemanticUtil::CountDirectChildNode(node, SyntaxType::ST_FUNC_FPARAM);
@@ -599,6 +620,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncFParams(SyntaxNodePtr node)
 
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_ExitFuncFParam(SyntaxNodePtr node)
 {
@@ -636,12 +658,14 @@ bool DefaultSemanticAnalyzer::_ExitFuncFParam(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitFuncAParams(SyntaxNodePtr node)
 {
     int argc = SemanticUtil::CountDirectChildNode(node, SyntaxType::ST_FUNC_APARAM);
     node->SetIntAttribute("argc", argc);
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_ExitFuncAParam(SyntaxNodePtr node)
 {
@@ -661,6 +685,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncAParam(SyntaxNodePtr node)
 
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_EnterBlock(SyntaxNodePtr node)
 {
@@ -693,20 +718,23 @@ bool DefaultSemanticAnalyzer::_EnterBlock(SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitBlock(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitBlock(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(_currentBlock);
     _currentBlock = _currentBlock->Parent();
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_EnterMainFuncDef(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_EnterMainFuncDef(SyntaxNodePtr node)
 {
     node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitMainFuncDef(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitMainFuncDef(SyntaxNodePtr node)
 {
     // Set error candidate to '}'.
     _errorCandidate = node->LastChild()->LastChild();
@@ -723,7 +751,8 @@ bool DefaultSemanticAnalyzer::_ExitMainFuncDef(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitAssignmentStmt(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitAssignmentStmt(SyntaxNodePtr node)
 {
     // Check LVal
     auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
@@ -750,7 +779,8 @@ bool DefaultSemanticAnalyzer::_ExitAssignmentStmt(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitLVal(SyntaxNodePtr node)
 {
     SyntaxNodePtr ident = node->FirstChild();
     const char* name = ident->Token()->lexeme.c_str();
@@ -768,14 +798,12 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     }
 
     int expectedDim = 0;
-    SymbolValueType type;
     int size;
     if (rawEntry->EntryType() == SymbolTableEntryType::ET_CONSTANT)
     {
         node->SetBoolAttribute("const", true);
 
         ConstantEntryPtr entry = std::static_pointer_cast<ConstantEntry>(rawEntry);
-        type = entry->Type();
         expectedDim = entry->Dimension();
         if (expectedDim == 2)
         {
@@ -785,7 +813,6 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     else if (rawEntry->EntryType() == SymbolTableEntryType::ET_VARIABLE)
     {
         VariableEntryPtr entry = std::static_pointer_cast<VariableEntry>(rawEntry);
-        type = entry->Type();
         expectedDim = entry->Dimension();
         if (expectedDim == 2)
         {
@@ -838,7 +865,8 @@ bool DefaultSemanticAnalyzer::_ExitLVal(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitCond(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitCond(SyntaxNodePtr node)
 {
     SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(node, "type"));
     if (type != SymbolValueType::VT_INT)
@@ -850,13 +878,15 @@ bool DefaultSemanticAnalyzer::_ExitCond(tomic::SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_EnterForStmt(SyntaxNodePtr node)
 {
     node->SetBoolAttribute("loop", true);
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitForInnerStmt(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitForInnerStmt(SyntaxNodePtr node)
 {
     // Check LVal
     auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
@@ -884,7 +914,8 @@ bool DefaultSemanticAnalyzer::_ExitForInnerStmt(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitBreakStmt(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitBreakStmt(SyntaxNodePtr node)
 {
     if (!SemanticUtil::GetInheritedBoolAttribute(node, "loop"))
     {
@@ -895,7 +926,8 @@ bool DefaultSemanticAnalyzer::_ExitBreakStmt(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitContinueStmt(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitContinueStmt(SyntaxNodePtr node)
 {
     if (!SemanticUtil::GetInheritedBoolAttribute(node, "loop"))
     {
@@ -906,7 +938,8 @@ bool DefaultSemanticAnalyzer::_ExitContinueStmt(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitReturnStmt(SyntaxNodePtr node)
 {
     auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP);
     SymbolValueType type;
@@ -937,7 +970,8 @@ bool DefaultSemanticAnalyzer::_ExitReturnStmt(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitInStmt(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitInStmt(SyntaxNodePtr node)
 {
     auto lval = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_LVAL);
     SymbolValueType type = static_cast<SymbolValueType>(SemanticUtil::GetSynthesizedIntAttribute(lval, "type"));
@@ -955,7 +989,8 @@ bool DefaultSemanticAnalyzer::_ExitInStmt(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitOutStmt(SyntaxNodePtr node)
 {
     auto formatStr = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_TERMINATOR, 3);
     if (formatStr->Token()->type != TokenType::TK_FORMAT)
@@ -990,6 +1025,7 @@ bool DefaultSemanticAnalyzer::_ExitOutStmt(tomic::SyntaxNodePtr node)
 
     return true;
 }
+
 
 bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
 {
@@ -1065,6 +1101,7 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_ExitExp(SyntaxNodePtr node)
 {
     auto child = node->FirstChild();
@@ -1092,13 +1129,15 @@ bool DefaultSemanticAnalyzer::_ExitExp(SyntaxNodePtr node)
     return true;
 }
 
+
 bool DefaultSemanticAnalyzer::_EnterConstExp(SyntaxNodePtr node)
 {
     node->SetBoolAttribute("const", true);
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitConstExp(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitConstExp(SyntaxNodePtr node)
 {
     _ExitExp(node);
 
@@ -1111,7 +1150,8 @@ bool DefaultSemanticAnalyzer::_ExitConstExp(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitUnaryExp(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitUnaryExp(SyntaxNodePtr node)
 {
     // Set a default type.
     node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
@@ -1162,13 +1202,15 @@ bool DefaultSemanticAnalyzer::_ExitUnaryExp(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitUnaryOp(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitUnaryOp(SyntaxNodePtr node)
 {
     node->SetAttribute("op", node->FirstChild()->Token()->lexeme.c_str());
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitPrimaryExp(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitPrimaryExp(SyntaxNodePtr node)
 {
     node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
 
@@ -1228,7 +1270,8 @@ bool DefaultSemanticAnalyzer::_ExitPrimaryExp(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitFuncCall(SyntaxNodePtr node)
 {
     const char* name = node->FirstChild()->Token()->lexeme.c_str();
     auto rawEntry = _currentBlock->FindEntry(name);
@@ -1317,7 +1360,8 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool DefaultSemanticAnalyzer::_ExitNumber(tomic::SyntaxNodePtr node)
+
+bool DefaultSemanticAnalyzer::_ExitNumber(SyntaxNodePtr node)
 {
     node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));
     node->SetBoolAttribute("det", true);
@@ -1331,5 +1375,6 @@ bool DefaultSemanticAnalyzer::_ExitNumber(tomic::SyntaxNodePtr node)
 
     return true;
 }
+
 
 TOMIC_END

@@ -8,28 +8,33 @@
 
 TOMIC_BEGIN
 
-DumbLogger::DumbLogger() : _count{ 0 }
+DumbLogger::DumbLogger() : _count { 0 }
 {
 }
+
 
 DumbLoggerPtr DumbLogger::New()
 {
     return std::make_shared<DumbLogger>();
 }
 
+
 void DumbLogger::LogFormat(LogLevel level, const char* format, ...)
 {
     LogVFormat(level, format, nullptr);
 }
 
+
 void DumbLogger::LogVFormat(LogLevel level, const char* format, va_list args)
 {
-    _count[(int)level]++;
+    _count[static_cast<int>(level)]++;
 }
+
 
 int DumbLogger::Count(LogLevel level)
 {
-    return _count[(int)level];
+    return _count[static_cast<int>(level)];
 }
+
 
 TOMIC_END

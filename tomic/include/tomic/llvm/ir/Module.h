@@ -55,6 +55,7 @@ private:
     FunctionPtr _mainFunction;
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_MODULE_H_

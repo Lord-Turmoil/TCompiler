@@ -18,6 +18,7 @@ TOMIC_BEGIN
 class DumbLogger;
 using DumbLoggerPtr = std::shared_ptr<DumbLogger>;
 
+
 class DumbLogger : public ILogger
 {
 public:
@@ -35,8 +36,9 @@ public:
     DumbLogger* SetWriter(twio::IWriterPtr writer) override { return this; }
 
 private:
-    int _count[(int)LogLevel::COUNT];
+    int _count[static_cast<int>(LogLevel::COUNT)];
 };
+
 
 TOMIC_END
 

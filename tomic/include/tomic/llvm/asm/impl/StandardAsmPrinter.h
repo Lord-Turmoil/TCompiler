@@ -29,6 +29,7 @@ private:
     void _PrintFunction(IAsmWriterPtr writer, FunctionPtr function);
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_STANDARD_ASM_PRINTER_H_

@@ -10,20 +10,23 @@
 TOMIC_LLVM_BEGIN
 
 StandardAsmWriter::StandardAsmWriter(twio::IWriterPtr writer)
-        : _writer(writer)
+    : _writer(writer)
 {
     TOMIC_ASSERT(writer);
 }
+
 
 StandardAsmWriterPtr StandardAsmWriter::New(twio::IWriterPtr writer)
 {
     return std::make_shared<StandardAsmWriter>(writer);
 }
 
+
 void StandardAsmWriter::Push(char ch)
 {
     _writer->Write(ch);
 }
+
 
 void StandardAsmWriter::Push(const char* format, ...)
 {
@@ -34,11 +37,13 @@ void StandardAsmWriter::Push(const char* format, ...)
     va_end(args);
 }
 
+
 void StandardAsmWriter::PushNext(char ch)
 {
     PushSpace();
     Push(ch);
 }
+
 
 void StandardAsmWriter::PushNext(const char* format, ...)
 {
@@ -49,6 +54,7 @@ void StandardAsmWriter::PushNext(const char* format, ...)
     _writer->WriteVFormat(format, args);
     va_end(args);
 }
+
 
 void StandardAsmWriter::PushSpace()
 {
@@ -64,10 +70,12 @@ void StandardAsmWriter::PushSpaces(int repeat)
     }
 }
 
+
 void StandardAsmWriter::PushNewLine()
 {
     _writer->Write('\n');
 }
+
 
 void StandardAsmWriter::PushNewLines(int repeat)
 {
@@ -76,6 +84,7 @@ void StandardAsmWriter::PushNewLines(int repeat)
         _writer->Write(' ');
     }
 }
+
 
 void StandardAsmWriter::PushComment(const char* format, ...)
 {
@@ -90,15 +99,18 @@ void StandardAsmWriter::PushComment(const char* format, ...)
     CommentEnd();
 }
 
+
 void StandardAsmWriter::CommentBegin()
 {
     _writer->Write(';');
     PushSpace();
 }
 
+
 void StandardAsmWriter::CommentEnd()
 {
     PushNewLine();
 }
+
 
 TOMIC_LLVM_END

@@ -24,6 +24,7 @@ TOMIC_BEGIN
 class SyntaxNode
 {
     friend class SyntaxTree;
+
 public:
     bool IsNonTerminal() const { return _nodeType == SyntaxNodeType::NON_TERMINAL; }
     bool IsTerminal() const { return _nodeType == SyntaxNodeType::TERMINAL; }
@@ -96,7 +97,6 @@ public:
     SyntaxType Type() const { return _type; }
     TokenPtr Token() const { return _token; }
 
-
 protected:
     enum class SyntaxNodeType
     {
@@ -104,6 +104,7 @@ protected:
         TERMINAL,
         EPSILON
     };
+
 
     SyntaxNode(SyntaxNodeType nodeType, SyntaxType type);
     SyntaxNode(SyntaxNodeType nodeType, SyntaxType type, TokenPtr token);
@@ -128,9 +129,11 @@ private:
     SyntaxNodeType _nodeType;
 };
 
+
 class NonTerminalSyntaxNode : public SyntaxNode
 {
     friend class SyntaxTree;
+
 protected:
     NonTerminalSyntaxNode(SyntaxType type);
 
@@ -143,6 +146,7 @@ protected:
 class TerminalSyntaxNode : public SyntaxNode
 {
     friend class SyntaxTree;
+
 protected:
     TerminalSyntaxNode(TokenPtr token);
 
@@ -151,9 +155,11 @@ protected:
     bool Accept(AstVisitorPtr visitor) override;
 };
 
+
 class EpsilonSyntaxNode : public SyntaxNode
 {
     friend class SyntaxTree;
+
 protected:
     EpsilonSyntaxNode();
 
@@ -161,6 +167,7 @@ protected:
 
     bool Accept(AstVisitorPtr visitor) override;
 };
+
 
 TOMIC_END
 

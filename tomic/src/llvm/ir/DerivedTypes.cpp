@@ -25,7 +25,7 @@ IntegerTypePtr IntegerType::Get(LlvmContextPtr context, unsigned bitWidth)
  */
 
 FunctionType::FunctionType(TypePtr returnType, const std::vector<TypePtr>& paramTypes)
-        : Type(returnType->Context(), FunctionTyID)
+    : Type(returnType->Context(), FunctionTyID)
 {
     _AddContainedType(returnType);
     for (auto paramType : paramTypes)
@@ -34,21 +34,25 @@ FunctionType::FunctionType(TypePtr returnType, const std::vector<TypePtr>& param
     }
 }
 
+
 FunctionType::FunctionType(TypePtr returnType)
-        : Type(returnType->Context(), FunctionTyID)
+    : Type(returnType->Context(), FunctionTyID)
 {
     _AddContainedType(returnType);
 }
+
 
 FunctionTypePtr FunctionType::Get(TypePtr returnType, const std::vector<Type*>& paramTypes)
 {
     return returnType->Context()->GetFunctionType(returnType, paramTypes);
 }
 
+
 FunctionTypePtr FunctionType::Get(TypePtr returnType)
 {
     return returnType->Context()->GetFunctionType(returnType);
 }
+
 
 bool FunctionType::Equals(TypePtr returnType, const std::vector<TypePtr>& paramTypes) const
 {
@@ -72,6 +76,7 @@ bool FunctionType::Equals(TypePtr returnType, const std::vector<TypePtr>& paramT
     return true;
 }
 
+
 bool FunctionType::Equals(TypePtr returnType) const
 {
     return (returnType == ReturnType()) && (ParamCount() == 0);
@@ -83,9 +88,10 @@ bool FunctionType::Equals(TypePtr returnType) const
  */
 
 ArrayType::ArrayType(TypePtr elementType, int elementCount)
-        : Type(elementType->Context(), ArrayTyID), _elementType(elementType), _elementCount(elementCount)
+    : Type(elementType->Context(), ArrayTyID), _elementType(elementType), _elementCount(elementCount)
 {
 }
+
 
 ArrayTypePtr ArrayType::Get(TypePtr elementType, int elementCount)
 {
@@ -102,9 +108,11 @@ PointerTypePtr PointerType::Get(TypePtr elementType)
     return elementType->Context()->GetPointerType(elementType);
 }
 
+
 PointerType::PointerType(TypePtr elementType)
-        : Type(elementType->Context(), PointerTyID), _elementType(elementType)
+    : Type(elementType->Context(), PointerTyID), _elementType(elementType)
 {
 }
+
 
 TOMIC_LLVM_END

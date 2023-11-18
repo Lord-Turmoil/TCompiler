@@ -48,13 +48,18 @@ static twio::IWriterPtr BuildWriter(const char* filename);
 static void OutputSyntaxTree(const char* filename, IAstPrinterPtr printer, SyntaxTreePtr tree);
 static void OutputLlvmAsm(const char* filename, llvm::IAsmPrinterPtr printer, llvm::ModuleSmartPtr module);
 
+
 class ToMiCompilerImpl
 {
     friend class ToMiCompiler;
+
 public:
     ToMiCompilerImpl() :
-            _config(nullptr),
-            _container(mioc::ServiceContainer::New()) {}
+        _config(nullptr),
+        _container(mioc::ServiceContainer::New())
+    {
+    }
+
 
     ToMiCompilerImpl* Configure(ConfigPtr config)
     {
@@ -62,11 +67,13 @@ public:
         return this;
     }
 
+
     ToMiCompilerImpl* Configure(std::function<void(mioc::ServiceContainerPtr)> config)
     {
         config(_container);
         return this;
     }
+
 
     // Compilation processes.
     void Compile();
@@ -90,6 +97,7 @@ ToMiCompiler::ToMiCompiler()
     _impl = new ToMiCompilerImpl();
 }
 
+
 ToMiCompiler::~ToMiCompiler()
 {
     if (_impl)
@@ -98,11 +106,13 @@ ToMiCompiler::~ToMiCompiler()
     }
 }
 
+
 ToMiCompiler* ToMiCompiler::Configure(ConfigPtr config)
 {
     _impl->Configure(config);
     return this;
 }
+
 
 void ToMiCompiler::Compile()
 {
@@ -113,7 +123,8 @@ void ToMiCompiler::Compile()
 
     // Configure all components.
     auto config = _impl->_config;
-    _impl->Configure([=](mioc::ServiceContainerPtr container) {
+    _impl->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // Logger
         if (config->EnableLog)
         {
@@ -137,25 +148,28 @@ void ToMiCompiler::Compile()
         {
             container->AddSingleton<ILogger, DumbLogger>();
         }
-    })->Configure([=](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // Error logger
         if (config->EnableVerboseError)
         {
             container->AddSingleton<IErrorMapper, VerboseErrorMapper>()
-                    ->AddSingleton<IErrorLogger, VerboseErrorLogger, IErrorMapper>();
+                     ->AddSingleton<IErrorLogger, VerboseErrorLogger, IErrorMapper>();
         }
         else
         {
             container->AddSingleton<IErrorMapper, StandardErrorMapper>()
-                    ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
+                     ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
         }
-    })->Configure([=](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // Lexical
         container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
-                ->AddTransient<IPreprocessor, DefaultPreprocessor>()
-                ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
-                ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
-    })->Configure([=](mioc::ServiceContainerPtr container) {
+                 ->AddTransient<IPreprocessor, DefaultPreprocessor>()
+                 ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
+                 ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // Syntactic
         if (config->EnableCompleteAst)
         {
@@ -165,12 +179,15 @@ void ToMiCompiler::Compile()
         {
             container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
         }
-        container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper, IErrorLogger, ILogger>();
-    })->Configure([=](mioc::ServiceContainerPtr container) {
+        container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper,
+                                IErrorLogger, ILogger>();
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // Semantic
         container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger, ILogger>();
         container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
-    })->Configure([=](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // Ast printer
         if (config->EmitAst)
         {
@@ -179,11 +196,11 @@ void ToMiCompiler::Compile()
                 config->AstOutput = "ast.xml";
             }
             const char* astFilename = config->AstOutput.c_str();
-            if (tomic::StringUtil::EndsWith(astFilename, ".xml"))
+            if (StringUtil::EndsWith(astFilename, ".xml"))
             {
                 container->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
             }
-            else if (tomic::StringUtil::EndsWith(astFilename, ".json"))
+            else if (StringUtil::EndsWith(astFilename, ".json"))
             {
                 container->AddTransient<IAstPrinter, JsonAstPrinter, ISyntaxMapper, ITokenMapper>();
             }
@@ -192,7 +209,8 @@ void ToMiCompiler::Compile()
                 container->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
             }
         }
-    })->Configure([=](mioc::ServiceContainerPtr container) {
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // LLVM
         container->AddTransient<llvm::IAsmGenerator, llvm::StandardAsmGenerator>();
         container->AddTransient<llvm::IAsmPrinter, llvm::StandardAsmPrinter>();
@@ -247,6 +265,7 @@ void ToMiCompilerImpl::Compile()
     _LogError();
 }
 
+
 bool ToMiCompilerImpl::_Preprocess(twio::IWriterPtr* outWriter)
 {
     if (_config->Target < Config::TargetType::Preprocess)
@@ -283,6 +302,7 @@ bool ToMiCompilerImpl::_Preprocess(twio::IWriterPtr* outWriter)
 
     return true;
 }
+
 
 bool ToMiCompilerImpl::_SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTreePtr* outAst)
 {
@@ -323,6 +343,7 @@ bool ToMiCompilerImpl::_SyntacticParse(twio::IAdvancedReaderPtr reader, SyntaxTr
     return true;
 }
 
+
 bool ToMiCompilerImpl::_SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTable)
 {
     if (_config->Target < Config::TargetType::Semantic)
@@ -357,6 +378,7 @@ bool ToMiCompilerImpl::_SemanticParse(SyntaxTreePtr ast, SymbolTablePtr* outTabl
     return true;
 }
 
+
 bool ToMiCompilerImpl::_GenerateLlvmAsm(SyntaxTreePtr ast, SymbolTablePtr table, llvm::ModuleSmartPtr* outModule)
 {
     if (_config->Target < Config::TargetType::IR)
@@ -388,6 +410,7 @@ bool ToMiCompilerImpl::_GenerateLlvmAsm(SyntaxTreePtr ast, SymbolTablePtr table,
     return true;
 }
 
+
 void ToMiCompilerImpl::_LogError()
 {
     if (!_config->EnableError)
@@ -411,6 +434,7 @@ void ToMiCompilerImpl::_LogError()
     }
 }
 
+
 static twio::IWriterPtr BuildWriter(const char* filename)
 {
     if (!filename)
@@ -418,23 +442,24 @@ static twio::IWriterPtr BuildWriter(const char* filename)
         return twio::Writer::New(twio::BufferOutputStream::New());
     }
 
-    if (tomic::StringUtil::Equals(filename, "null"))
+    if (StringUtil::Equals(filename, "null"))
     {
         return nullptr;
     }
 
-    if (tomic::StringUtil::Equals(filename, "stdout"))
+    if (StringUtil::Equals(filename, "stdout"))
     {
         return twio::Writer::New(twio::FileOutputStream::New(stdout, false));
     }
 
-    if (tomic::StringUtil::Equals(filename, "stderr"))
+    if (StringUtil::Equals(filename, "stderr"))
     {
         return twio::Writer::New(twio::FileOutputStream::New(stderr, false));
     }
 
     return twio::Writer::New(twio::FileOutputStream::New(filename));
 }
+
 
 static void OutputSyntaxTree(const char* filename, IAstPrinterPtr printer, SyntaxTreePtr tree)
 {
@@ -447,9 +472,11 @@ static void OutputSyntaxTree(const char* filename, IAstPrinterPtr printer, Synta
     }
 }
 
+
 static void OutputLlvmAsm(const char* filename, llvm::IAsmPrinterPtr printer, llvm::ModuleSmartPtr module)
 {
     printer->Print(module.get(), BuildWriter(filename));
 }
+
 
 TOMIC_END

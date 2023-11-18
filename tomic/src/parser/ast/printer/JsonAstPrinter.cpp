@@ -10,12 +10,13 @@
 
 TOMIC_BEGIN
 
-JsonAstPrinter::JsonAstPrinter(tomic::ISyntaxMapperPtr syntaxMapperPtr, tomic::ITokenMapperPtr tokenMapper)
-        : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper), _depth(0), _indent(2)
+JsonAstPrinter::JsonAstPrinter(ISyntaxMapperPtr syntaxMapperPtr, ITokenMapperPtr tokenMapper)
+    : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper), _depth(0), _indent(2)
 {
     TOMIC_ASSERT(_syntaxMapper);
     TOMIC_ASSERT(_tokenMapper);
 }
+
 
 void JsonAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
 {
@@ -29,6 +30,7 @@ void JsonAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
 
     tree->Accept(this);
 }
+
 
 bool JsonAstPrinter::VisitEnter(SyntaxNodePtr node)
 {
@@ -65,7 +67,8 @@ bool JsonAstPrinter::VisitEnter(SyntaxNodePtr node)
     return true;
 }
 
-bool JsonAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
+
+bool JsonAstPrinter::VisitExit(SyntaxNodePtr node)
 {
     if (node->HasChildren())
     {
@@ -80,7 +83,8 @@ bool JsonAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool JsonAstPrinter::Visit(tomic::SyntaxNodePtr node)
+
+bool JsonAstPrinter::Visit(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
 
@@ -103,6 +107,7 @@ bool JsonAstPrinter::Visit(tomic::SyntaxNodePtr node)
 
     return true;
 }
+
 
 void JsonAstPrinter::_VisitNonTerminal(SyntaxNodePtr node)
 {
@@ -128,6 +133,7 @@ void JsonAstPrinter::_VisitNonTerminal(SyntaxNodePtr node)
     // Closing.
     _PrintClosing(_depth, node);
 }
+
 
 void JsonAstPrinter::_VisitTerminal(SyntaxNodePtr node)
 {
@@ -183,6 +189,7 @@ void JsonAstPrinter::_VisitTerminal(SyntaxNodePtr node)
     _PrintClosing(_depth, node);
 }
 
+
 void JsonAstPrinter::_VisitEpsilon(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
@@ -206,6 +213,7 @@ void JsonAstPrinter::_VisitEpsilon(SyntaxNodePtr node)
     _PrintClosing(_depth, node);
 }
 
+
 void JsonAstPrinter::_PrintIndent(int depth)
 {
     for (int i = 0; i < depth * _indent; i++)
@@ -214,11 +222,13 @@ void JsonAstPrinter::_PrintIndent(int depth)
     }
 }
 
+
 void JsonAstPrinter::_PrintOpening(int depth, SyntaxNodePtr node)
 {
     _PrintIndent(depth);
     _writer->Write("{\n");
 }
+
 
 void JsonAstPrinter::_PrintClosing(int depth, SyntaxNodePtr node)
 {
@@ -231,5 +241,6 @@ void JsonAstPrinter::_PrintClosing(int depth, SyntaxNodePtr node)
     }
     _writer->Write("\n");
 }
+
 
 TOMIC_END

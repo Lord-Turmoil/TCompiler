@@ -51,7 +51,6 @@ private:
     std::stack<SyntaxNodePtr> _nodeStack;
     SyntaxNodePtr _errorCandidate;
 
-
 private:
     SymbolTableBlockPtr _GetOrCreateBlock(SyntaxNodePtr node);
     bool _AddToSymbolTable(SymbolTableEntryPtr entry);
@@ -189,8 +188,10 @@ private:
     bool _ExitRelExp(SyntaxNodePtr node) { return true; }
 };
 
+
 using EnterAction = bool (DefaultSemanticAnalyzer::*)(SyntaxNodePtr);
 using ExitAction = bool (DefaultSemanticAnalyzer::*)(SyntaxNodePtr);
+
 
 class DefaultSemanticAnalyzerActionMapper
 {
@@ -211,6 +212,7 @@ private:
     EnterAction _defaultEnter;
     ExitAction _defaultExit;
 };
+
 
 TOMIC_END
 

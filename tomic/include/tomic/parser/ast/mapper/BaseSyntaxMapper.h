@@ -23,6 +23,7 @@ protected:
     std::unordered_map<SyntaxType, const char*> _typeToDescription;
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_BASE_SYNTAX_MAPPER_H_

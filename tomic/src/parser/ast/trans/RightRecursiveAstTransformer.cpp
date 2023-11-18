@@ -12,13 +12,14 @@
 TOMIC_BEGIN
 
 std::vector<SyntaxType> RightRecursiveAstTransformer::_rightRecursiveTypes = {
-        SyntaxType::ST_ADD_EXP,
-        SyntaxType::ST_MUL_EXP,
-        SyntaxType::ST_OR_EXP,
-        SyntaxType::ST_AND_EXP,
-        SyntaxType::ST_EQ_EXP,
-        SyntaxType::ST_REL_EXP
+    SyntaxType::ST_ADD_EXP,
+    SyntaxType::ST_MUL_EXP,
+    SyntaxType::ST_OR_EXP,
+    SyntaxType::ST_AND_EXP,
+    SyntaxType::ST_EQ_EXP,
+    SyntaxType::ST_REL_EXP
 };
+
 
 SyntaxTreePtr RightRecursiveAstTransformer::Transform(SyntaxTreePtr tree)
 {
@@ -29,10 +30,12 @@ SyntaxTreePtr RightRecursiveAstTransformer::Transform(SyntaxTreePtr tree)
     return tree;
 }
 
+
 bool RightRecursiveAstTransformer::VisitEnter(SyntaxNodePtr node)
 {
     return true;
 }
+
 
 /*
  * We MUST NOT transform the current node, since it is still being visited.
@@ -72,10 +75,12 @@ bool RightRecursiveAstTransformer::VisitExit(SyntaxNodePtr node)
     return true;
 }
 
+
 bool RightRecursiveAstTransformer::Visit(SyntaxNodePtr node)
 {
     return true;
 }
+
 
 bool RightRecursiveAstTransformer::_IsRightRecursive(SyntaxNodePtr node)
 {
@@ -90,6 +95,7 @@ bool RightRecursiveAstTransformer::_IsRightRecursive(SyntaxNodePtr node)
     return false;
 }
 
+
 bool RightRecursiveAstTransformer::_NeedTransform(SyntaxNodePtr node)
 {
     if (!_IsRightRecursive(node))
@@ -101,6 +107,7 @@ bool RightRecursiveAstTransformer::_NeedTransform(SyntaxNodePtr node)
 
     return lastChild && (lastChild->Type() == node->Type());
 }
+
 
 void RightRecursiveAstTransformer::_Transform(SyntaxNodePtr node)
 {

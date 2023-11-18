@@ -26,26 +26,31 @@ public:
     }
 };
 
+
 bool StandardErrorEntryPred(const StandardErrorEntry& lhs, const StandardErrorEntry& rhs)
 {
     return lhs._line == rhs._line && lhs._type == rhs._type;
 }
 
+
 StandardErrorLogger::StandardErrorLogger(IErrorMapperPtr mapper)
-        : _mapper(mapper)
+    : _mapper(mapper)
 {
     TOMIC_ASSERT(_mapper);
 }
+
 
 void StandardErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
 {
     _entries.emplace_back(line, type);
 }
 
+
 void StandardErrorLogger::LogVFormat(int line, int column, ErrorType type, const char* format, va_list args)
 {
     _entries.emplace_back(line, type);
 }
+
 
 void StandardErrorLogger::Dumps(twio::IWriterPtr writer)
 {
@@ -63,9 +68,11 @@ void StandardErrorLogger::Dumps(twio::IWriterPtr writer)
     }
 }
 
+
 int StandardErrorLogger::Count()
 {
     return _entries.size();
 }
+
 
 TOMIC_END

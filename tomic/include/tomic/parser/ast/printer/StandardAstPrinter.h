@@ -42,6 +42,7 @@ private:
     ITokenMapperPtr _tokenMapper;
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_STANDARD_AST_PRINTER_H_

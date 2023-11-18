@@ -30,6 +30,7 @@ int CountDirectChildNode(const SyntaxNodePtr node, SyntaxType type)
     return count;
 }
 
+
 int CountDirectTerminalNode(const SyntaxNodePtr node, TokenType type)
 {
     int count = 0;
@@ -43,9 +44,12 @@ int CountDirectTerminalNode(const SyntaxNodePtr node, TokenType type)
     return count;
 }
 
+
 // Get direct child.
-static SyntaxNodePtr _FrontGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
-static SyntaxNodePtr _RearGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
+static SyntaxNodePtr _FrontGetDirectChildNode(SyntaxNodePtr node, SyntaxType type, int index);
+static SyntaxNodePtr _RearGetDirectChildNode(SyntaxNodePtr node, SyntaxType type, int index);
+
+
 SyntaxNodePtr GetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
 {
     TOMIC_ASSERT(index != 0);
@@ -65,6 +69,7 @@ SyntaxNodePtr GetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int 
     }
 }
 
+
 static SyntaxNodePtr _FrontGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
 {
     int i = 0;
@@ -81,6 +86,7 @@ static SyntaxNodePtr _FrontGetDirectChildNode(const SyntaxNodePtr node, SyntaxTy
     }
     return nullptr;
 }
+
 
 static SyntaxNodePtr _RearGetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
 {
@@ -99,6 +105,7 @@ static SyntaxNodePtr _RearGetDirectChildNode(const SyntaxNodePtr node, SyntaxTyp
     return nullptr;
 }
 
+
 bool GetDirectChildNodes(const SyntaxNodePtr node, SyntaxType type, std::vector<SyntaxNodePtr>& list)
 {
     bool found = false;
@@ -114,10 +121,13 @@ bool GetDirectChildNodes(const SyntaxNodePtr node, SyntaxType type, std::vector<
     return found;
 }
 
+
 // Get child node recursively. No re-entering allowed.
 static int _currentCount;
-static SyntaxNodePtr _FrontGetChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
-static SyntaxNodePtr _RearGetChildNode(const SyntaxNodePtr node, SyntaxType type, int index);
+static SyntaxNodePtr _FrontGetChildNode(SyntaxNodePtr node, SyntaxType type, int index);
+static SyntaxNodePtr _RearGetChildNode(SyntaxNodePtr node, SyntaxType type, int index);
+
+
 SyntaxNodePtr GetChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
 {
     TOMIC_ASSERT(index != 0);
@@ -164,6 +174,7 @@ static SyntaxNodePtr _FrontGetChildNode(const SyntaxNodePtr node, SyntaxType typ
     return nullptr;
 }
 
+
 static SyntaxNodePtr _RearGetChildNode(const SyntaxNodePtr node, SyntaxType type, int index)
 {
     if (node->Type() == type)
@@ -188,6 +199,7 @@ static SyntaxNodePtr _RearGetChildNode(const SyntaxNodePtr node, SyntaxType type
     return nullptr;
 }
 
+
 bool HasParent(const SyntaxNodePtr node, SyntaxType type)
 {
     SyntaxNodePtr parent = node->Parent();
@@ -202,6 +214,7 @@ bool HasParent(const SyntaxNodePtr node, SyntaxType type)
 
     return false;
 }
+
 
 bool HasAttribute(const SyntaxNodePtr node, const char* name)
 {
@@ -221,6 +234,7 @@ bool HasAttribute(const SyntaxNodePtr node, const char* name)
     return false;
 }
 
+
 const char* GetAttribute(const SyntaxNodePtr node, const char* name, const char* defaultValue)
 {
     const char* value;
@@ -232,6 +246,7 @@ const char* GetAttribute(const SyntaxNodePtr node, const char* name, const char*
 
     return defaultValue;
 }
+
 
 int GetIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue)
 {
@@ -245,6 +260,7 @@ int GetIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue
     return defaultValue;
 }
 
+
 bool GetBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultValue)
 {
     bool value;
@@ -256,6 +272,7 @@ bool GetBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultVa
 
     return defaultValue;
 }
+
 
 bool QueryAttribute(const SyntaxNodePtr node, const char* name, const char** value, const char* defaultValue)
 {
@@ -278,6 +295,7 @@ bool QueryAttribute(const SyntaxNodePtr node, const char* name, const char** val
 
     return false;
 }
+
 
 bool QueryIntAttribute(const SyntaxNodePtr node, const char* name, int* value, int defaultValue)
 {
@@ -303,6 +321,7 @@ bool QueryIntAttribute(const SyntaxNodePtr node, const char* name, int* value, i
     return false;
 }
 
+
 bool QueryBoolAttribute(const SyntaxNodePtr node, const char* name, bool* value, bool defaultValue)
 {
     const char* attr;
@@ -327,6 +346,7 @@ bool QueryBoolAttribute(const SyntaxNodePtr node, const char* name, bool* value,
     return false;
 }
 
+
 // Get Inherited Attribute value
 bool HasInheritedAttribute(const SyntaxNodePtr node, const char* name)
 {
@@ -343,6 +363,7 @@ bool HasInheritedAttribute(const SyntaxNodePtr node, const char* name)
     return false;
 }
 
+
 const char* GetInheritedAttribute(const SyntaxNodePtr node, const char* name, const char* defaultValue)
 {
     SyntaxNodePtr parent = node->Parent();
@@ -357,6 +378,7 @@ const char* GetInheritedAttribute(const SyntaxNodePtr node, const char* name, co
 
     return defaultValue;
 }
+
 
 int GetInheritedIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue)
 {
@@ -373,6 +395,7 @@ int GetInheritedIntAttribute(const SyntaxNodePtr node, const char* name, int def
     return defaultValue;
 }
 
+
 bool GetInheritedBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultValue)
 {
     SyntaxNodePtr parent = node->Parent();
@@ -387,6 +410,7 @@ bool GetInheritedBoolAttribute(const SyntaxNodePtr node, const char* name, bool 
 
     return defaultValue;
 }
+
 
 // Get Synthesized Attribute value.
 // Will look for it in front of the current node.
@@ -405,6 +429,7 @@ bool HasSynthesizedAttribute(const SyntaxNodePtr node, const char* name)
     return false;
 }
 
+
 const char* GetSynthesizedAttribute(const SyntaxNodePtr node, const char* name, const char* defaultValue)
 {
     const char* value;
@@ -421,6 +446,7 @@ const char* GetSynthesizedAttribute(const SyntaxNodePtr node, const char* name, 
 
     return defaultValue;
 }
+
 
 int GetSynthesizedIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue)
 {
@@ -439,6 +465,7 @@ int GetSynthesizedIntAttribute(const SyntaxNodePtr node, const char* name, int d
     return defaultValue;
 }
 
+
 bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultValue)
 {
     bool value;
@@ -455,6 +482,7 @@ bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, boo
 
     return defaultValue;
 }
+
 
 // Array serialization
 // The format is like this:
@@ -476,6 +504,7 @@ std::string SerializeArray(const std::vector<std::vector<int>>& array)
     }
     return str;
 }
+
 
 std::vector<std::vector<int>> DeserializeArray(const char* str)
 {
@@ -513,6 +542,7 @@ std::vector<std::vector<int>> DeserializeArray(const char* str)
     return array;
 }
 
+
 // For format string.
 int GetFormatStringArgCount(const char* format)
 {
@@ -540,8 +570,9 @@ int GetFormatStringArgCount(const char* format)
     return count;
 }
 
+
 // Compile-time calculation.
-typedef int (* BinaryFunc)(int, int);
+typedef int (*BinaryFunc)(int, int);
 static int _Add(int left, int right) { return left + right; }
 static int _Sub(int left, int right) { return left - right; }
 static int _Mul(int left, int right) { return left * right; }
@@ -559,21 +590,24 @@ static int _NotEqual(int left, int right) { return left != right; }
 
 static BinaryFunc _GetBinaryEvaluator(const char* op);
 
-typedef int (* UnaryFunc)(int);
+typedef int (*UnaryFunc)(int);
 static int _UnaryAdd(int value) { return value; }
 static int _UnarySub(int value) { return -value; }
 static int _Not(int value) { return !value; }
 static UnaryFunc _GetUnaryEvaluator(const char* op);
+
 
 int EvaluateBinary(const char* op, int left, int right)
 {
     return _GetBinaryEvaluator(op)(left, right);
 }
 
+
 int EvaluateUnary(const char* op, int value)
 {
     return _GetUnaryEvaluator(op)(value);
 }
+
 
 static BinaryFunc _GetBinaryEvaluator(const char* op)
 {
@@ -654,6 +688,7 @@ static BinaryFunc _GetBinaryEvaluator(const char* op)
     }
 }
 
+
 static UnaryFunc _GetUnaryEvaluator(const char* op)
 {
     switch (*op)
@@ -670,6 +705,7 @@ static UnaryFunc _GetUnaryEvaluator(const char* op)
     }
 }
 
+
 int EvaluateNumber(const SyntaxNodePtr node)
 {
     const char* number = node->FirstChild()->Token()->lexeme.c_str();
@@ -684,6 +720,7 @@ int EvaluateNumber(const SyntaxNodePtr node)
         return 0;
     }
 }
+
 
 bool TryEvaluateLVal(const SyntaxNodePtr node, SymbolTableBlockPtr block, int* value)
 {

@@ -21,13 +21,13 @@ class RightRecursiveAstTransformer : public IAstTransformer
 {
 public:
     RightRecursiveAstTransformer() = default;
-    virtual ~RightRecursiveAstTransformer() = default;
+    ~RightRecursiveAstTransformer() override = default;
 
-    virtual SyntaxTreePtr Transform(SyntaxTreePtr tree) override;
+    SyntaxTreePtr Transform(SyntaxTreePtr tree) override;
 
-    virtual bool VisitEnter(SyntaxNodePtr node) override;
-    virtual bool VisitExit(SyntaxNodePtr node) override;
-    virtual bool Visit(SyntaxNodePtr node) override;
+    bool VisitEnter(SyntaxNodePtr node) override;
+    bool VisitExit(SyntaxNodePtr node) override;
+    bool Visit(SyntaxNodePtr node) override;
 
 private:
     bool _IsRightRecursive(SyntaxNodePtr node);
@@ -36,6 +36,7 @@ private:
 
     static std::vector<SyntaxType> _rightRecursiveTypes;
 };
+
 
 TOMIC_END
 

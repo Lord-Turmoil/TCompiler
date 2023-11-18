@@ -25,7 +25,11 @@ TOMIC_BEGIN
 class LexicalTask
 {
 public:
-    explicit LexicalTask(ITokenMapperPtr tokenMapper) : _tokenMapper(tokenMapper) {}
+    explicit LexicalTask(ITokenMapperPtr tokenMapper) : _tokenMapper(tokenMapper)
+    {
+    }
+
+
     virtual ~LexicalTask() = default;
 
     // Return whether this task begins with the given character.
@@ -42,6 +46,7 @@ public:
 protected:
     ITokenMapperPtr _tokenMapper;
 };
+
 
 using LexicalTaskPtr = std::shared_ptr<LexicalTask>;
 
@@ -78,30 +83,41 @@ private:
 class NumberLexicalTask : public LexicalTask
 {
 public:
-    explicit NumberLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+    explicit NumberLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper)
+    {
+    }
+
 
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
 };
+
 
 // Recognize an identifier. (variable name, function name, etc.)
 // Can be keywords.
 class IdentifierLexicalTask : public LexicalTask
 {
 public:
-    explicit IdentifierLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+    explicit IdentifierLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper)
+    {
+    }
+
 
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
 };
 
+
 // Recognize a string literal.
 class StringLexicalTask : public LexicalTask
 {
 public:
-    explicit StringLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+    explicit StringLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper)
+    {
+    }
+
 
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
@@ -113,50 +129,67 @@ private:
     bool _IsFormatChar(int ch, const twio::IAdvancedReaderPtr& reader) const;
 };
 
+
 // Recognize a single-character operator. (+, -, *, /, brackets, etc.)
 // But not >, & that will get confused with double-character operators.
 class SingleOpLexicalTask : public LexicalTask
 {
 public:
-    explicit SingleOpLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+    explicit SingleOpLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper)
+    {
+    }
+
 
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
 };
+
 
 // Recognize a double-character operator. (&&, >=, etc.)
 // And also those single-character operators.
 class DoubleOpLexicalTask : public LexicalTask
 {
 public:
-    explicit DoubleOpLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+    explicit DoubleOpLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper)
+    {
+    }
+
 
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
 };
+
 
 // Recognize a delimiter. (comma, semicolon, brackets etc.)
 class DelimiterLexicalTask : public LexicalTask
 {
 public:
-    explicit DelimiterLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+    explicit DelimiterLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper)
+    {
+    }
+
 
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
 };
+
 
 class UnknownLexicalTask : public LexicalTask
 {
 public:
-    explicit UnknownLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper) {}
+    explicit UnknownLexicalTask(ITokenMapperPtr tokenMapper) : LexicalTask(tokenMapper)
+    {
+    }
+
 
     bool BeginsWith(int begin) const override;
     bool EndsWith(int end) const override;
     TokenPtr Analyse(const twio::IAdvancedReaderPtr& reader) override;
 };
+
 
 TOMIC_END
 

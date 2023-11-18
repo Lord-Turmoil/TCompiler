@@ -17,13 +17,19 @@ TOMIC_BEGIN
 class SymbolTable
 {
 public:
-    SymbolTable() : _nextId(0) {}
+    SymbolTable() : _nextId(0)
+    {
+    }
+
+
     ~SymbolTable() = default;
+
 
     static SymbolTablePtr New()
     {
         return std::make_shared<SymbolTable>();
     }
+
 
     // Just remember the block you created, you can only get it
     // via id later. :(
@@ -36,6 +42,7 @@ private:
     std::unordered_map<int, SymbolTableBlockSmartPtr> _blocks;
     int _nextId;
 };
+
 
 TOMIC_END
 

@@ -23,6 +23,7 @@ bool Contains(const char* str, int ch)
     return (ch != EOF) && (strchr(str, ch) != nullptr);
 }
 
+
 bool Equals(const char* str1, const char* str2)
 {
     // If both are nullptr, they are equal.
@@ -40,10 +41,12 @@ bool Equals(const char* str1, const char* str2)
     return strcmp(str1, str2) == 0;
 }
 
+
 bool IsNullOrEmpty(const char* str)
 {
     return !str || !*str;
 }
+
 
 bool BeginsWith(const char* str, const char* prefix)
 {
@@ -56,7 +59,6 @@ bool BeginsWith(const char* str, const char* prefix)
         return false;
     }
 
-    const char* original_str = str;
     while (*prefix && *str)
     {
         if (*prefix != *str)
@@ -69,6 +71,7 @@ bool BeginsWith(const char* str, const char* prefix)
 
     return !*prefix;
 }
+
 
 bool EndsWith(const char* str, const char* suffix)
 {
@@ -97,6 +100,7 @@ bool EndsWith(const char* str, const char* suffix)
     return suffix_end < suffix;
 }
 
+
 bool ToInt(const char* str, int* value)
 {
     if (str == nullptr)
@@ -104,13 +108,14 @@ bool ToInt(const char* str, int* value)
         return false;
     }
 
-    if (sscanf(str, "%d", value) == 1)
+    if (TOMIC_SSCANF(str, "%d", value) == 1)
     {
         return true;
     }
 
     return false;
 }
+
 
 bool ToBool(const char* str, bool* value)
 {
@@ -149,12 +154,14 @@ bool ToBool(const char* str, bool* value)
     return false;
 }
 
+
 const char* IntToString(int value)
 {
     static char buf[64];
     sprintf(buf, "%d", value);
     return buf;
 }
+
 
 const char* BoolToString(bool value)
 {

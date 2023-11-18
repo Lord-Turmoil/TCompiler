@@ -10,12 +10,13 @@
 
 TOMIC_BEGIN
 
-StandardAstPrinter::StandardAstPrinter(tomic::ISyntaxMapperPtr syntaxMapperPtr, tomic::ITokenMapperPtr tokenMapper)
-        : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper)
+StandardAstPrinter::StandardAstPrinter(ISyntaxMapperPtr syntaxMapperPtr, ITokenMapperPtr tokenMapper)
+    : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper)
 {
     TOMIC_ASSERT(_syntaxMapper);
     TOMIC_ASSERT(_tokenMapper);
 }
+
 
 void StandardAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
 {
@@ -27,11 +28,13 @@ void StandardAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
     tree->Accept(this);
 }
 
+
 bool StandardAstPrinter::VisitEnter(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
     return true;
 }
+
 
 bool StandardAstPrinter::VisitExit(SyntaxNodePtr node)
 {
@@ -42,6 +45,7 @@ bool StandardAstPrinter::VisitExit(SyntaxNodePtr node)
 
     return true;
 }
+
 
 bool StandardAstPrinter::Visit(SyntaxNodePtr node)
 {
@@ -55,6 +59,7 @@ bool StandardAstPrinter::Visit(SyntaxNodePtr node)
     return true;
 }
 
+
 void StandardAstPrinter::_VisitNonTerminal(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
@@ -66,6 +71,7 @@ void StandardAstPrinter::_VisitNonTerminal(SyntaxNodePtr node)
         _writer->WriteFormat("<%s>\n", descr);
     }
 }
+
 
 void StandardAstPrinter::_VisitTerminal(SyntaxNodePtr node)
 {
@@ -82,9 +88,10 @@ void StandardAstPrinter::_VisitTerminal(SyntaxNodePtr node)
     _writer->Write("\n");
 }
 
+
 void StandardAstPrinter::_VisitEpsilon(SyntaxNodePtr node)
 {
-    return;
 }
+
 
 TOMIC_END

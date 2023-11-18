@@ -64,6 +64,7 @@ enum class TokenType
     TK_RIGHT_BRACKET,       // ]
 };
 
+
 // For now, memory layout is not considered.
 struct Token
 {
@@ -75,25 +76,29 @@ struct Token
     int charNo; // The character number of the token.
 
     Token(TokenType type, std::string lexeme, int lineNo = 0, int charNo = 0)
-            : type(type), lexeme(lexeme), lineNo(lineNo), charNo(charNo)
+        : type(type), lexeme(lexeme), lineNo(lineNo), charNo(charNo)
     {
     }
+
 
     static std::shared_ptr<Token> New(TokenType type, std::string lexeme, int lineNo = 0, int charNo = 0)
     {
         return std::make_shared<Token>(type, std::move(lexeme), lineNo, charNo);
     }
 
+
     static std::shared_ptr<Token> New(TokenType type)
     {
         return std::make_shared<Token>(type, "", 0, 0);
     }
+
 
     static TokenType Type(const std::shared_ptr<Token>& token)
     {
         return token ? token->type : TokenType::TK_UNKNOWN;
     }
 };
+
 
 using TokenPtr = std::shared_ptr<Token>;
 

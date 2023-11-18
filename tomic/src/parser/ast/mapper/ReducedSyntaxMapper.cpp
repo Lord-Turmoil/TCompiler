@@ -13,6 +13,7 @@ ReducedSyntaxMapper::ReducedSyntaxMapper()
     _Init();
 }
 
+
 void ReducedSyntaxMapper::_Init()
 {
     // _typeToDescription[SyntaxType::ST_UNKNOWN] = "Unknown";
@@ -71,5 +72,6 @@ void ReducedSyntaxMapper::_Init()
     _typeToDescription[SyntaxType::ST_EQ_EXP] = "EqExp";
     _typeToDescription[SyntaxType::ST_REL_EXP] = "RelExp";
 }
+
 
 TOMIC_END

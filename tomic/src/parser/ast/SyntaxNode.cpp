@@ -12,18 +12,20 @@
 TOMIC_BEGIN
 
 SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type)
-        : _nodeType(nodeType), _type(type),
-          _tree(nullptr), _parent(nullptr), _prev(nullptr), _next(nullptr),
-          _firstChild(nullptr), _lastChild(nullptr)
+    : _tree(nullptr), _parent(nullptr),
+      _prev(nullptr), _next(nullptr), _firstChild(nullptr), _lastChild(nullptr),
+      _type(type), _nodeType(nodeType)
 {
 }
 
+
 SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type, TokenPtr token)
-        : _nodeType(nodeType), _type(type), _token(token),
-          _tree(nullptr), _parent(nullptr), _prev(nullptr), _next(nullptr),
-          _firstChild(nullptr), _lastChild(nullptr)
+    : _tree(nullptr), _parent(nullptr), _prev(nullptr),
+      _next(nullptr), _firstChild(nullptr), _lastChild(nullptr), _type(type),
+      _token(token), _nodeType(nodeType)
 {
 }
+
 
 SyntaxNodePtr SyntaxNode::Root() const
 {
@@ -34,6 +36,7 @@ SyntaxNodePtr SyntaxNode::Root() const
     }
     return node;
 }
+
 
 /*
  * ==================== AST Links ====================
@@ -89,6 +92,7 @@ SyntaxNodePtr SyntaxNode::InsertFirstChild(SyntaxNodePtr child)
     return child;
 }
 
+
 SyntaxNodePtr SyntaxNode::InsertAfterChild(SyntaxNodePtr child, SyntaxNodePtr after)
 {
     _InsertChildPreamble(child);
@@ -113,6 +117,7 @@ SyntaxNodePtr SyntaxNode::InsertAfterChild(SyntaxNodePtr child, SyntaxNodePtr af
     return child;
 }
 
+
 SyntaxNodePtr SyntaxNode::RemoveChild(SyntaxNodePtr child)
 {
     TOMIC_ASSERT(child);
@@ -121,6 +126,7 @@ SyntaxNodePtr SyntaxNode::RemoveChild(SyntaxNodePtr child)
 
     return _Unlink(child);
 }
+
 
 void SyntaxNode::_InsertChildPreamble(SyntaxNodePtr child)
 {
@@ -132,6 +138,7 @@ void SyntaxNode::_InsertChildPreamble(SyntaxNodePtr child)
         child->_parent->_Unlink(child);
     }
 }
+
 
 SyntaxNodePtr SyntaxNode::_Unlink(SyntaxNodePtr child)
 {
@@ -166,6 +173,7 @@ SyntaxNodePtr SyntaxNode::_Unlink(SyntaxNodePtr child)
     return ret;
 }
 
+
 /*
  * ==================== AST Attributes ====================
  */
@@ -174,6 +182,7 @@ bool SyntaxNode::HasAttribute(const char* name) const
 {
     return _attributes.find(name) != _attributes.end();
 }
+
 
 const char* SyntaxNode::Attribute(const char* name, const char* defaultValue) const
 {
@@ -184,6 +193,7 @@ const char* SyntaxNode::Attribute(const char* name, const char* defaultValue) co
     }
     return defaultValue;
 }
+
 
 int SyntaxNode::IntAttribute(const char* name, int defaultValue) const
 {
@@ -199,6 +209,7 @@ int SyntaxNode::IntAttribute(const char* name, int defaultValue) const
     return defaultValue;
 }
 
+
 bool SyntaxNode::BoolAttribute(const char* name, bool defaultValue) const
 {
     auto it = _attributes.find(name);
@@ -212,6 +223,7 @@ bool SyntaxNode::BoolAttribute(const char* name, bool defaultValue) const
     }
     return defaultValue;
 }
+
 
 bool SyntaxNode::QueryAttribute(const char* name, const char** value, const char* defaultValue) const
 {
@@ -231,6 +243,7 @@ bool SyntaxNode::QueryAttribute(const char* name, const char** value, const char
     }
     return false;
 }
+
 
 bool SyntaxNode::QueryIntAttribute(const char* name, int* value, int defaultValue) const
 {
@@ -256,6 +269,7 @@ bool SyntaxNode::QueryIntAttribute(const char* name, int* value, int defaultValu
     return false;
 }
 
+
 bool SyntaxNode::QueryBoolAttribute(const char* name, bool* value, bool defaultValue) const
 {
     const char* attr;
@@ -280,6 +294,7 @@ bool SyntaxNode::QueryBoolAttribute(const char* name, bool* value, bool defaultV
     return false;
 }
 
+
 SyntaxNodePtr SyntaxNode::SetAttribute(const char* name, const char* value)
 {
     std::map<std::string, std::string>::iterator it;
@@ -290,15 +305,18 @@ SyntaxNodePtr SyntaxNode::SetAttribute(const char* name, const char* value)
     return this;
 }
 
+
 SyntaxNodePtr SyntaxNode::SetIntAttribute(const char* name, int value)
 {
     return SetAttribute(name, StringUtil::IntToString(value));
 }
 
+
 SyntaxNodePtr SyntaxNode::SetBoolAttribute(const char* name, bool value)
 {
     return SetAttribute(name, StringUtil::BoolToString(value));
 }
+
 
 SyntaxNodePtr SyntaxNode::RemoveAttribute(const char* name)
 {
@@ -309,6 +327,7 @@ SyntaxNodePtr SyntaxNode::RemoveAttribute(const char* name)
     }
     return this;
 }
+
 
 bool SyntaxNode::_FindAttribute(const char* name, std::map<std::string, std::string>::iterator* attr)
 {
@@ -324,6 +343,7 @@ bool SyntaxNode::_FindAttribute(const char* name, std::map<std::string, std::str
 
     return false;
 }
+
 
 bool SyntaxNode::_FindOrCreateAttribute(const char* name, std::map<std::string, std::string>::iterator* attr)
 {
@@ -353,10 +373,11 @@ bool SyntaxNode::_FindOrCreateAttribute(const char* name, std::map<std::string, 
 /*
  * Non-terminal syntax node.
  */
-NonTerminalSyntaxNode::NonTerminalSyntaxNode(tomic::SyntaxType type)
-        : SyntaxNode(SyntaxNodeType::NON_TERMINAL, type)
+NonTerminalSyntaxNode::NonTerminalSyntaxNode(SyntaxType type)
+    : SyntaxNode(SyntaxNodeType::NON_TERMINAL, type)
 {
 }
+
 
 bool NonTerminalSyntaxNode::Accept(AstVisitorPtr visitor)
 {
@@ -376,13 +397,15 @@ bool NonTerminalSyntaxNode::Accept(AstVisitorPtr visitor)
     return visitor->VisitExit(this);
 }
 
+
 /*
  * Terminal syntax node.
  */
-TerminalSyntaxNode::TerminalSyntaxNode(tomic::TokenPtr token)
-        : SyntaxNode(SyntaxNodeType::TERMINAL, SyntaxType::ST_TERMINATOR, token)
+TerminalSyntaxNode::TerminalSyntaxNode(TokenPtr token)
+    : SyntaxNode(SyntaxNodeType::TERMINAL, SyntaxType::ST_TERMINATOR, token)
 {
 }
+
 
 bool TerminalSyntaxNode::Accept(AstVisitorPtr visitor)
 {
@@ -391,13 +414,15 @@ bool TerminalSyntaxNode::Accept(AstVisitorPtr visitor)
     return visitor->Visit(this);
 }
 
+
 /*
  * Epsilon syntax node.
  */
 EpsilonSyntaxNode::EpsilonSyntaxNode()
-        : SyntaxNode(SyntaxNodeType::EPSILON, SyntaxType::ST_EPSILON)
+    : SyntaxNode(SyntaxNodeType::EPSILON, SyntaxType::ST_EPSILON)
 {
 }
+
 
 bool EpsilonSyntaxNode::Accept(AstVisitorPtr visitor)
 {
@@ -405,5 +430,6 @@ bool EpsilonSyntaxNode::Accept(AstVisitorPtr visitor)
 
     return true;
 }
+
 
 TOMIC_END

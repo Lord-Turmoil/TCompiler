@@ -16,6 +16,7 @@ TOMIC_BEGIN
 class Config
 {
     friend class ToMiCompiler;
+
 public:
     enum class TargetType
     {
@@ -27,6 +28,7 @@ public:
         ASM,
         COUNT
     };
+
 
     Config();
     ~Config() = default;
@@ -58,6 +60,7 @@ public:
     bool EnableVerboseError;
     std::string ErrorOutput;
 };
+
 
 using ConfigPtr = std::shared_ptr<Config>;
 

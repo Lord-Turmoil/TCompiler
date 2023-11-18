@@ -50,6 +50,7 @@ private:
     std::list<InstructionPtr> _instructions;
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_BASIC_BLOCK_H_

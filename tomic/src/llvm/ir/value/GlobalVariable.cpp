@@ -11,14 +11,16 @@
 TOMIC_LLVM_BEGIN
 
 GlobalVariable::GlobalVariable(TypePtr type, bool isConstant, const std::string& name)
-        : GlobalValue(ValueType::GlobalVariableTy, type, name), _isConstant(isConstant), _initializer(nullptr)
+    : GlobalValue(ValueType::GlobalVariableTy, type, name), _isConstant(isConstant), _initializer(nullptr)
 {
 }
 
+
 GlobalVariable::GlobalVariable(TypePtr type, bool isConstant, const std::string& name, ConstantDataPtr initializer)
-        : GlobalValue(ValueType::GlobalVariableTy, type, name), _isConstant(isConstant), _initializer(initializer)
+    : GlobalValue(ValueType::GlobalVariableTy, type, name), _isConstant(isConstant), _initializer(initializer)
 {
 }
+
 
 GlobalVariablePtr GlobalVariable::New(TypePtr type, bool isConstant, const std::string& name)
 {
@@ -28,6 +30,7 @@ GlobalVariablePtr GlobalVariable::New(TypePtr type, bool isConstant, const std::
 
     return globalVariable.get();
 }
+
 
 GlobalVariablePtr GlobalVariable::New(TypePtr type,
                                       bool isConstant,
@@ -40,5 +43,6 @@ GlobalVariablePtr GlobalVariable::New(TypePtr type,
 
     return globalVariable.get();
 }
+
 
 TOMIC_LLVM_END

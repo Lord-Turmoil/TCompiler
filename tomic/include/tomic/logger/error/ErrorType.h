@@ -41,6 +41,7 @@ enum class ErrorType
     ERR_COUNT
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_ERROR_TYPE_H_

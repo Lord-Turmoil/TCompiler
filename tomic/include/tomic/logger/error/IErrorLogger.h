@@ -16,7 +16,10 @@ TOMIC_BEGIN
 class IErrorLogger
 {
 public:
-    virtual ~IErrorLogger() {}
+    virtual ~IErrorLogger()
+    {
+    }
+
 
     virtual void LogFormat(int line, int column, ErrorType type, const char* format, ...) = 0;
     virtual void LogVFormat(int line, int column, ErrorType type, const char* format, va_list args) = 0;
@@ -25,6 +28,7 @@ public:
 
     virtual int Count() = 0;
 };
+
 
 using IErrorLoggerPtr = std::shared_ptr<IErrorLogger>;
 

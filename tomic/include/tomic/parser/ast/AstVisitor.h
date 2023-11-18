@@ -27,6 +27,7 @@ public:
     virtual bool Visit(SyntaxNodePtr node) { return true; }
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_AST_VISITOR_H_

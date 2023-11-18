@@ -20,11 +20,13 @@ BasicBlockPtr BasicBlock::New(FunctionPtr parent)
     return block.get();
 }
 
+
 BasicBlock::BasicBlock(FunctionPtr parent)
-        : Value(ValueType::BasicBlockTy, parent->Context()->GetVoidTy()),
-          _parent(parent)
+    : Value(ValueType::BasicBlockTy, parent->Context()->GetVoidTy()),
+      _parent(parent)
 {
 }
+
 
 BasicBlockPtr BasicBlock::InsertInstruction(InstructionPtr inst)
 {
@@ -34,6 +36,7 @@ BasicBlockPtr BasicBlock::InsertInstruction(InstructionPtr inst)
     return this;
 }
 
+
 BasicBlockPtr BasicBlock::InsertInstruction(instruction_iterator iter, InstructionPtr inst)
 {
     inst->SetParent(this);
@@ -42,6 +45,7 @@ BasicBlockPtr BasicBlock::InsertInstruction(instruction_iterator iter, Instructi
     return this;
 }
 
+
 BasicBlockPtr BasicBlock::RemoveInstruction(InstructionPtr inst)
 {
     inst->SetParent(nullptr);
@@ -49,5 +53,6 @@ BasicBlockPtr BasicBlock::RemoveInstruction(InstructionPtr inst)
 
     return this;
 }
+
 
 TOMIC_LLVM_END

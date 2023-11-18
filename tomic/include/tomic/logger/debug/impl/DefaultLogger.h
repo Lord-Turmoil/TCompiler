@@ -15,6 +15,7 @@ TOMIC_BEGIN
 class DefaultLogger;
 using DefaultLoggerPtr = std::shared_ptr<DefaultLogger>;
 
+
 class DefaultLogger : public ILogger
 {
 public:
@@ -28,11 +29,13 @@ public:
 
     int Count(LogLevel level) override;
 
+
     DefaultLogger* SetLogLevel(LogLevel level) override
     {
         _level = level;
         return this;
     }
+
 
     DefaultLogger* SetWriter(twio::IWriterPtr writer) override
     {
@@ -43,8 +46,9 @@ public:
 private:
     twio::IWriterPtr _writer;
     LogLevel _level;
-    int _count[(int)LogLevel::COUNT];
+    int _count[static_cast<int>(LogLevel::COUNT)];
 };
+
 
 TOMIC_END
 

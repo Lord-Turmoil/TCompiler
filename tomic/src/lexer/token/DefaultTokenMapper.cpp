@@ -13,6 +13,7 @@ DefaultTokenMapper::DefaultTokenMapper()
     _Init();
 }
 
+
 TokenType DefaultTokenMapper::Type(const std::string& lexeme) const
 {
     auto iter = _lexemeToType.find(lexeme);
@@ -22,6 +23,7 @@ TokenType DefaultTokenMapper::Type(const std::string& lexeme) const
     }
     return iter->second;
 }
+
 
 const char* DefaultTokenMapper::Lexeme(TokenType type) const
 {
@@ -33,6 +35,7 @@ const char* DefaultTokenMapper::Lexeme(TokenType type) const
     return iter->second.c_str();
 }
 
+
 const char* DefaultTokenMapper::Description(TokenType type) const
 {
     auto iter = _typeToDescription.find(type);
@@ -42,6 +45,7 @@ const char* DefaultTokenMapper::Description(TokenType type) const
     }
     return iter->second.c_str();
 }
+
 
 bool DefaultTokenMapper::IsKeyword(const std::string& lexeme) const
 {
@@ -53,6 +57,7 @@ bool DefaultTokenMapper::IsKeyword(const std::string& lexeme) const
     return iter->second;
 }
 
+
 void DefaultTokenMapper::_Init()
 {
     _InitLexemeToType();
@@ -60,6 +65,7 @@ void DefaultTokenMapper::_Init()
     _InitTypeToDescription();
     _InitLexemeToIsKeyword();
 }
+
 
 void DefaultTokenMapper::_InitLexemeToType()
 {
@@ -106,6 +112,7 @@ void DefaultTokenMapper::_InitLexemeToType()
     _lexemeToType["]"] = TokenType::TK_RIGHT_BRACKET;
 }
 
+
 void DefaultTokenMapper::_InitTypeToLexeme()
 {
     for (auto& pair : _lexemeToType)
@@ -113,6 +120,7 @@ void DefaultTokenMapper::_InitTypeToLexeme()
         _typeToLexeme[pair.second] = pair.first;
     }
 }
+
 
 void DefaultTokenMapper::_InitTypeToDescription()
 {
@@ -163,6 +171,7 @@ void DefaultTokenMapper::_InitTypeToDescription()
     _typeToDescription[TokenType::TK_RIGHT_BRACKET] = "RBRACK";
 };
 
+
 void DefaultTokenMapper::_InitLexemeToIsKeyword()
 {
     _lexemeToIsKeyword["main"] = true;
@@ -181,5 +190,6 @@ void DefaultTokenMapper::_InitLexemeToIsKeyword()
     _lexemeToIsKeyword["int"] = true;
     _lexemeToIsKeyword["void"] = true;
 }
+
 
 TOMIC_END

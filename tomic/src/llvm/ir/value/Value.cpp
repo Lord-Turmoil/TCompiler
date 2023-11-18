@@ -16,12 +16,14 @@ LlvmContextPtr Value::Context() const
     return _type->Context();
 }
 
+
 void Value::AddUser(UserPtr user)
 {
     auto use = Use::New(user, this);
     AddUse(use);
     user->AddUse(use);
 }
+
 
 void Value::AddUse(UsePtr use)
 {

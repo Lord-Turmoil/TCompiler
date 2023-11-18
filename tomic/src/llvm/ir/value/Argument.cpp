@@ -19,10 +19,11 @@ ArgumentPtr Argument::New(TypePtr type, FunctionPtr parent, int argNo)
     return arg.get();
 }
 
-Argument::Argument(tomic::llvm::TypePtr type, tomic::llvm::FunctionPtr parent, int argNo)
-        : Value(ValueType::ArgumentTy, type), _parent(parent), _argNo(argNo)
+
+Argument::Argument(TypePtr type, FunctionPtr parent, int argNo)
+    : Value(ValueType::ArgumentTy, type), _parent(parent), _argNo(argNo)
 {
 }
 
-TOMIC_LLVM_END
 
+TOMIC_LLVM_END

@@ -56,6 +56,7 @@ public:
     ~LoadInst() override = default;
 
     static LoadInstPtr New(TypePtr type, ValuePtr address);
+
 private:
     LoadInst(TypePtr type, ValuePtr address);
 };

@@ -17,7 +17,7 @@ class User : public Value
 public:
     ~User() override = default;
 
-    virtual bool IsUser() const override { return true; }
+    bool IsUser() const override { return true; }
 
     // Get the number of operands.
     int OperandsCount() const { return _useList.size(); }
@@ -25,20 +25,30 @@ public:
 protected:
     // Prohibit direct construction of User.
     User(ValueType valueType, TypePtr type, UseListPtr useList)
-            : Value(valueType, type, useList) {}
+        : Value(valueType, type, useList)
+    {
+    }
+
+
     User(ValueType valueType, TypePtr type)
-            : Value(valueType, type) {}
+        : Value(valueType, type)
+    {
+    }
 
 protected:
     class value_iterator_impl : use_base_iterator_base
     {
     public:
-        value_iterator_impl(_use_iterator_raw iter) : use_base_iterator_base(iter) {}
+        value_iterator_impl(_use_iterator_raw iter) : use_base_iterator_base(iter)
+        {
+        }
+
 
         ValuePtr operator*() const
         {
             return (*_iter)->GetValue();
         }
+
 
         ValuePtr operator->() const
         {
@@ -55,6 +65,7 @@ public:
     ValuePtr OperandAt(int index) const { return _useList[index]->GetValue(); }
     void AddOperand(ValuePtr value);
 };
+
 
 TOMIC_LLVM_END
 

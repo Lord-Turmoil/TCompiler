@@ -69,6 +69,7 @@ enum class BinaryOpType
     Mod
 };
 
+
 class BinaryOperator final : public Instruction
 {
 public:
@@ -102,6 +103,7 @@ enum class PredicateType
     LessThanOrEqual
 };
 
+
 class CompareInstruction final : public Instruction
 {
 public:
@@ -119,6 +121,7 @@ protected:
 
     PredicateType _predicateType;
 };
+
 
 TOMIC_LLVM_END
 

@@ -26,10 +26,10 @@ class DefaultSyntacticParser : public ISyntacticParser
 {
 public:
     DefaultSyntacticParser(
-            ILexicalParserPtr lexicalParser,
-            ISyntaxMapperPtr syntaxMapper,
-            ITokenMapperPtr tokenMapper,
-            ILoggerPtr logger);
+        ILexicalParserPtr lexicalParser,
+        ISyntaxMapperPtr syntaxMapper,
+        ITokenMapperPtr tokenMapper,
+        ILoggerPtr logger);
     ~DefaultSyntacticParser() override = default;
 
     DefaultSyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) override;
@@ -142,6 +142,7 @@ private:
     SyntaxNodePtr _ParseRelExp();
     SyntaxNodePtr _ParseRelExpAux();
 };
+
 
 TOMIC_END
 

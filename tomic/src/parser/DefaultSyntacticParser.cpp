@@ -22,43 +22,43 @@ static char _logBuffer[1024];
  */
 
 static std::vector<TokenType> _declFirstSet = {
-        TokenType::TK_INT
+    TokenType::TK_INT
 };
 
 static std::vector<TokenType> _funcDefFirstSet = {
-        TokenType::TK_INT,
-        TokenType::TK_VOID
+    TokenType::TK_INT,
+    TokenType::TK_VOID
 };
 
 static std::vector<TokenType> _addExpAuxFirstSet = {
-        TokenType::TK_PLUS,
-        TokenType::TK_MINUS
+    TokenType::TK_PLUS,
+    TokenType::TK_MINUS
 };
 
 static std::vector<TokenType> _mulExpAuxFirstSet = {
-        TokenType::TK_MULTIPLY,
-        TokenType::TK_DIVIDE,
-        TokenType::TK_MOD
+    TokenType::TK_MULTIPLY,
+    TokenType::TK_DIVIDE,
+    TokenType::TK_MOD
 };
 
 static std::vector<TokenType> _andExpAuxFirstSet = {
-        TokenType::TK_AND
+    TokenType::TK_AND
 };
 
 static std::vector<TokenType> _orExpAuxFirstSet = {
-        TokenType::TK_OR
+    TokenType::TK_OR
 };
 
 static std::vector<TokenType> _eqExpAuxFirstSet = {
-        TokenType::TK_EQUAL,
-        TokenType::TK_NOT_EQUAL
+    TokenType::TK_EQUAL,
+    TokenType::TK_NOT_EQUAL
 };
 
 static std::vector<TokenType> _relExpAuxFirstSet = {
-        TokenType::TK_LESS,
-        TokenType::TK_LESS_EQUAL,
-        TokenType::TK_GREATER,
-        TokenType::TK_GREATER_EQUAL
+    TokenType::TK_LESS,
+    TokenType::TK_LESS_EQUAL,
+    TokenType::TK_GREATER,
+    TokenType::TK_GREATER_EQUAL
 };
 
 
@@ -67,22 +67,24 @@ static std::vector<TokenType> _relExpAuxFirstSet = {
  */
 
 DefaultSyntacticParser::DefaultSyntacticParser(
-        ILexicalParserPtr lexicalParser,
-        ISyntaxMapperPtr syntaxMapper,
-        ITokenMapperPtr tokenMapper,
-        ILoggerPtr logger)
-        : _lexicalParser(lexicalParser),
-          _syntaxMapper(syntaxMapper),
-          _tokenMapper(tokenMapper),
-          _logger(logger)
+    ILexicalParserPtr lexicalParser,
+    ISyntaxMapperPtr syntaxMapper,
+    ITokenMapperPtr tokenMapper,
+    ILoggerPtr logger)
+    : _lexicalParser(lexicalParser),
+      _syntaxMapper(syntaxMapper),
+      _tokenMapper(tokenMapper),
+      _logger(logger)
 {
 }
+
 
 DefaultSyntacticParser* DefaultSyntacticParser::SetReader(twio::IAdvancedReaderPtr reader)
 {
     _lexicalParser->SetReader(reader);
     return this;
 }
+
 
 TokenPtr DefaultSyntacticParser::_Current()
 {
@@ -96,10 +98,12 @@ TokenPtr DefaultSyntacticParser::_Current()
     return current;
 }
 
+
 TokenPtr DefaultSyntacticParser::_Next()
 {
     return _lexicalParser->Next();
 }
+
 
 TokenPtr DefaultSyntacticParser::_Lookahead(int n)
 {
@@ -128,10 +132,12 @@ TokenPtr DefaultSyntacticParser::_Lookahead(int n)
     return token;
 }
 
+
 bool DefaultSyntacticParser::_Match(TokenType type, TokenPtr token)
 {
     return Token::Type(token) == type;
 }
+
 
 bool DefaultSyntacticParser::_MatchAny(const std::vector<TokenType>& types, TokenPtr token)
 {
@@ -145,6 +151,7 @@ bool DefaultSyntacticParser::_MatchAny(const std::vector<TokenType>& types, Toke
     return false;
 }
 
+
 void DefaultSyntacticParser::_PostParseError(int checkpoint, SyntaxNodePtr node)
 {
     if (checkpoint >= 0)
@@ -156,6 +163,7 @@ void DefaultSyntacticParser::_PostParseError(int checkpoint, SyntaxNodePtr node)
         _tree->DeleteNode(node);
     }
 }
+
 
 void DefaultSyntacticParser::_SetTryParse(bool tryParse)
 {
@@ -170,6 +178,7 @@ void DefaultSyntacticParser::_SetTryParse(bool tryParse)
     }
 }
 
+
 void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, ...)
 {
     va_list args;
@@ -177,6 +186,7 @@ void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char*
     _Log(level, position, format, args);
     va_end(args);
 }
+
 
 void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, va_list argv)
 {
@@ -186,7 +196,7 @@ void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char*
         return;
     }
 
-    vsprintf(_logBuffer, format, argv);
+    TOMIC_VSPRINTF(_logBuffer, format, argv);
 
     auto token = position;
     int lineNo = token ? token->lineNo : 1;
@@ -195,6 +205,7 @@ void DefaultSyntacticParser::_Log(LogLevel level, TokenPtr position, const char*
     _logger->LogFormat(level, "(%d:%d) %s", lineNo, charNo, _logBuffer);
 }
 
+
 void DefaultSyntacticParser::_Log(LogLevel level, const char* format, ...)
 {
     va_list args;
@@ -202,6 +213,7 @@ void DefaultSyntacticParser::_Log(LogLevel level, const char* format, ...)
     _Log(level, _Current(), format, args);
     va_end(args);
 }
+
 
 void DefaultSyntacticParser::_LogFailedToParse(SyntaxType type, LogLevel level)
 {
@@ -213,6 +225,7 @@ void DefaultSyntacticParser::_LogFailedToParse(SyntaxType type, LogLevel level)
     // Since it is the result of other parsing, it is not an error.
     _Log(level, "Failed to parse <%s>", descr);
 }
+
 
 void DefaultSyntacticParser::_LogExpect(TokenType expected, LogLevel level)
 {
@@ -238,6 +251,7 @@ void DefaultSyntacticParser::_LogExpect(TokenType expected, LogLevel level)
     }
 }
 
+
 void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected, LogLevel level)
 {
     std::stringstream stream;
@@ -255,6 +269,7 @@ void DefaultSyntacticParser::_LogExpect(const std::vector<TokenType>& expected, 
     _Log(level, "Expect one of %s, but got %s", stream.str().c_str(), _Current()->lexeme.c_str());
 }
 
+
 void DefaultSyntacticParser::_LogExpectAfter(TokenType expected, LogLevel level)
 {
     auto current = _Current();
@@ -266,6 +281,7 @@ void DefaultSyntacticParser::_LogExpectAfter(TokenType expected, LogLevel level)
 
     _Log(level, current, "Expect %s after %s", expectedDescr, current->lexeme.c_str());
 }
+
 
 /*
  * ========== Parse ==========
@@ -289,6 +305,7 @@ SyntaxTreePtr DefaultSyntacticParser::Parse()
 
     return _tree;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
 {
@@ -334,6 +351,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCompUnit()
     return root;
 }
 
+
 bool DefaultSyntacticParser::_MatchDecl()
 {
     // const ...
@@ -352,6 +370,7 @@ bool DefaultSyntacticParser::_MatchDecl()
     return false;
 }
 
+
 bool DefaultSyntacticParser::_MatchFuncDef()
 {
     if (!_MatchAny(_funcDefFirstSet, _Lookahead()))
@@ -360,8 +379,9 @@ bool DefaultSyntacticParser::_MatchFuncDef()
     }
 
     return _Match(TokenType::TK_IDENTIFIER, _Lookahead(2)) &&
-           _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
+            _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
 }
+
 
 /*
  * ==================== Decl ====================
@@ -400,6 +420,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseDecl()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseBType()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -420,6 +441,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBType()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
 {
@@ -481,6 +503,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDecl()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseConstDef()
 {
@@ -545,6 +568,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstDef()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
 {
@@ -614,6 +638,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstInitVal()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseVarDecl()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -665,6 +690,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDecl()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
 {
@@ -729,6 +755,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseVarDef()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
 {
@@ -797,6 +824,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInitVal()
 
     return root;
 }
+
 
 /*
  * ==================== FuncDef ====================
@@ -870,6 +898,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncDef()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseFuncType()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -888,6 +917,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncType()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParams()
 {
@@ -918,6 +948,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParams()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
 {
@@ -992,6 +1023,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncFParam()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseFuncAParams()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1021,6 +1053,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncAParams()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseBlock()
 {
@@ -1069,6 +1102,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBlock()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseBlockItem()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1111,6 +1145,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBlockItem()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
 {
@@ -1165,6 +1200,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMainFuncDef()
 
     return root;
 }
+
 
 /*
  * ==================== Stmt ====================
@@ -1255,6 +1291,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmt()
     return root;
 }
 
+
 /*
  * Try parse ambiguous ExpStmt, AssignmentStmt and InStmt.
  */
@@ -1285,6 +1322,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseStmtAux()
 
     return nullptr;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseAssignmentStmt()
 {
@@ -1332,6 +1370,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAssignmentStmt()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseLVal()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1375,6 +1414,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseLVal()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseCond()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1391,6 +1431,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseCond()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
 {
@@ -1461,6 +1502,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseIfStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
 {
@@ -1564,6 +1606,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStmt()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseForInitStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1600,6 +1643,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForInitStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseForStepStmt()
 {
@@ -1638,6 +1682,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseForStepStmt()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseExpStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1668,6 +1713,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseExpStmt()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseBreakStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1694,6 +1740,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseBreakStmt()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseContinueStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1719,6 +1766,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseContinueStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseReturnStmt()
 {
@@ -1758,6 +1806,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseReturnStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
 {
@@ -1821,6 +1870,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseInStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
 {
@@ -1891,6 +1941,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOutStmt()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1908,6 +1959,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseExp()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseConstExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1924,6 +1976,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseConstExp()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseAddExp()
 {
@@ -1954,6 +2007,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAddExp()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseAddExpAux()
 {
@@ -1996,6 +2050,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAddExpAux()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseMulExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2025,6 +2080,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMulExp()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseMulExpAux()
 {
@@ -2066,6 +2122,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseMulExpAux()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
 {
@@ -2115,6 +2172,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryOp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2146,6 +2204,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryOp()
 
     return nullptr;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParsePrimaryExp()
 {
@@ -2208,6 +2267,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParsePrimaryExp()
     return nullptr;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseFuncCall()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2256,6 +2316,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseFuncCall()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseNumber()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2272,6 +2333,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseNumber()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseOrExp()
 {
@@ -2302,6 +2364,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOrExp()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseOrExpAux()
 {
@@ -2344,6 +2407,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseOrExpAux()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseAndExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2373,6 +2437,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAndExp()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseAndExpAux()
 {
@@ -2415,6 +2480,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseAndExpAux()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseEqExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2444,6 +2510,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseEqExp()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseEqExpAux()
 {
@@ -2486,6 +2553,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseEqExpAux()
     return root;
 }
 
+
 SyntaxNodePtr DefaultSyntacticParser::_ParseRelExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2515,6 +2583,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseRelExp()
 
     return root;
 }
+
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseRelExpAux()
 {
@@ -2556,5 +2625,6 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseRelExpAux()
 
     return root;
 }
+
 
 TOMIC_END

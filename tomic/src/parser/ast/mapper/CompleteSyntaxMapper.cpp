@@ -13,6 +13,7 @@ CompleteSyntaxMapper::CompleteSyntaxMapper()
     _Init();
 }
 
+
 const char* CompleteSyntaxMapper::Description(SyntaxType type) const
 {
     auto iter = _typeToDescription.find(type);
@@ -22,6 +23,7 @@ const char* CompleteSyntaxMapper::Description(SyntaxType type) const
     }
     return iter->second;
 }
+
 
 void CompleteSyntaxMapper::_Init()
 {
@@ -81,5 +83,6 @@ void CompleteSyntaxMapper::_Init()
     _typeToDescription[SyntaxType::ST_EQ_EXP] = "EqExp";
     _typeToDescription[SyntaxType::ST_REL_EXP] = "RelExp";
 }
+
 
 TOMIC_END

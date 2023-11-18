@@ -28,6 +28,7 @@ private:
     ILoggerPtr _logger;
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_DEFAULT_SEMANTIC_PARSER_H_

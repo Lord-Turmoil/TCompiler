@@ -23,8 +23,11 @@ public:
 
 protected:
     Constant(ValueType valueType, TypePtr type, UseListPtr operands)
-            : User(valueType, type, operands) {}
+        : User(valueType, type, operands)
+    {
+    }
 };
+
 
 TOMIC_LLVM_END
 

@@ -21,6 +21,7 @@ public:
     virtual SymbolTablePtr Parse(SyntaxTreePtr tree) = 0;
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_SEMANTIC_PARSER_H_

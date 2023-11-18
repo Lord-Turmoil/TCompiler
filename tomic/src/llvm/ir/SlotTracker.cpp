@@ -44,6 +44,7 @@ void SlotTracker::Trace(FunctionPtr function)
     }
 }
 
+
 int SlotTracker::Slot(ValuePtr value)
 {
     auto iter = _slot.find(value);
@@ -56,5 +57,6 @@ int SlotTracker::Slot(ValuePtr value)
 
     return 0;
 }
+
 
 TOMIC_LLVM_END

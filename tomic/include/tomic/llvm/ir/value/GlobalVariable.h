@@ -19,7 +19,8 @@ public:
     ~GlobalVariable() override = default;
 
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name);
-    static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name, ConstantDataPtr initializer);
+    static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name,
+                                 ConstantDataPtr initializer);
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
@@ -33,6 +34,7 @@ private:
     bool _isConstant;
     ConstantDataPtr _initializer;
 };
+
 
 TOMIC_LLVM_END
 

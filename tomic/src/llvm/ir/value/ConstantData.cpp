@@ -21,6 +21,7 @@ ConstantDataPtr ConstantData::New(TypePtr type, int value)
     return data.get();
 }
 
+
 ConstantDataPtr ConstantData::New(std::vector<ConstantDataPtr> values)
 {
     // Temporarily do not support an empty initializer list.
@@ -33,14 +34,16 @@ ConstantDataPtr ConstantData::New(std::vector<ConstantDataPtr> values)
     return data.get();
 }
 
+
 ConstantData::ConstantData(TypePtr type, int value)
-        : Constant(ValueType::ConstantDataTy, type, nullptr), _value(value), _isAllZero(value == 0)
+    : Constant(ValueType::ConstantDataTy, type, nullptr), _isAllZero(value == 0), _value(value)
 {
 
 }
 
+
 ConstantData::ConstantData(TypePtr type, std::vector<ConstantDataPtr> values)
-        : Constant(ValueType::ConstantDataTy, type, nullptr), _values(std::move(values))
+    : Constant(ValueType::ConstantDataTy, type, nullptr), _values(std::move(values))
 {
     _isAllZero = true;
     for (auto& value : _values)
@@ -52,5 +55,6 @@ ConstantData::ConstantData(TypePtr type, std::vector<ConstantDataPtr> values)
         }
     }
 }
+
 
 TOMIC_LLVM_END

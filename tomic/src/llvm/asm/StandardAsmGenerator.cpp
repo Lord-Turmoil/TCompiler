@@ -31,14 +31,15 @@
 TOMIC_LLVM_BEGIN
 
 StandardAsmGenerator::StandardAsmGenerator()
-        : _currentFunction(nullptr), _currentBlock(nullptr)
+    : _currentFunction(nullptr), _currentBlock(nullptr)
 {
 }
 
+
 ModuleSmartPtr StandardAsmGenerator::Generate(
-        SyntaxTreePtr syntaxTree,
-        SymbolTablePtr symbolTable,
-        const char* name)
+    SyntaxTreePtr syntaxTree,
+    SymbolTablePtr symbolTable,
+    const char* name)
 {
     _syntaxTree = syntaxTree;
     _symbolTable = symbolTable;
@@ -89,6 +90,7 @@ void StandardAsmGenerator::_ParseGlobalDecl(SyntaxNodePtr node)
     }
 }
 
+
 GlobalVariablePtr StandardAsmGenerator::_ParseGlobalVarDef(SyntaxNodePtr node)
 {
     // Get variable name.
@@ -115,6 +117,7 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalVarDef(SyntaxNodePtr node)
     return value;
 }
 
+
 GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstantDef(SyntaxNodePtr node)
 {
     // Get constant name.
@@ -132,6 +135,7 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstantDef(SyntaxNodePtr no
     else
     {
         TOMIC_PANIC("Constant must have init value");
+        return nullptr;
     }
 
     // Add the value to the symbol table and module.
@@ -140,6 +144,7 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstantDef(SyntaxNodePtr no
 
     return value;
 }
+
 
 // node is a InitVal or ConstInitVal.
 ConstantDataPtr StandardAsmGenerator::_ParseGlobalInitValue(SyntaxNodePtr node)
@@ -196,6 +201,7 @@ void StandardAsmGenerator::_ParseVariableDecl(SyntaxNodePtr node)
     }
 }
 
+
 AllocaInstPtr StandardAsmGenerator::_ParseVariableDef(SyntaxNodePtr node)
 {
     // Get variable name.
@@ -219,9 +225,11 @@ AllocaInstPtr StandardAsmGenerator::_ParseVariableDef(SyntaxNodePtr node)
     return value;
 }
 
+
 AllocaInstPtr StandardAsmGenerator::_ParseArrayDef(SyntaxNodePtr node)
 {
     TOMIC_PANIC("Not implemented yet");
+    return nullptr;
 }
 
 
@@ -253,6 +261,7 @@ ReturnInstPtr StandardAsmGenerator::_ParseReturnStatement(SyntaxNodePtr node)
 
     return inst;
 }
+
 
 ValuePtr StandardAsmGenerator::_ParseExpression(SyntaxNodePtr node)
 {

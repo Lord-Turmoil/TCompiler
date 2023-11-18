@@ -5,6 +5,10 @@
  */
 
 #include <tomic/logger/error/impl/VerboseErrorLogger.h>
+#ifndef _CRT_SECURE_NO_WARNINGS
+
+#endif
+
 #include <string>
 #include <algorithm>
 
@@ -30,6 +34,7 @@ public:
     }
 };
 
+
 bool DefaultErrorEntryPred(const VerboseErrorEntry& lhs, const VerboseErrorEntry& rhs)
 {
     if (lhs._line == rhs._line && lhs._column == rhs._column && lhs._type == rhs._type)
@@ -40,10 +45,12 @@ bool DefaultErrorEntryPred(const VerboseErrorEntry& lhs, const VerboseErrorEntry
     return false;
 }
 
+
 VerboseErrorLogger::VerboseErrorLogger(IErrorMapperPtr mapper)
-        : _mapper(mapper)
+    : _mapper(mapper)
 {
 }
+
 
 void VerboseErrorLogger::LogFormat(int line, int column, ErrorType type, const char* format, ...)
 {
@@ -53,13 +60,14 @@ void VerboseErrorLogger::LogFormat(int line, int column, ErrorType type, const c
     va_end(args);
 }
 
+
 void VerboseErrorLogger::LogVFormat(int line, int column, ErrorType type, const char* format, va_list args)
 {
     static char buffer[1024];
 
     if (format)
     {
-        vsprintf(buffer, format, args);
+        TOMIC_VSPRINTF(buffer, format, args);
     }
     else
     {
@@ -68,6 +76,7 @@ void VerboseErrorLogger::LogVFormat(int line, int column, ErrorType type, const 
 
     _entries.emplace_back(VerboseErrorEntry(line, column, type, buffer));
 }
+
 
 void VerboseErrorLogger::Dumps(twio::IWriterPtr writer)
 {
@@ -85,9 +94,11 @@ void VerboseErrorLogger::Dumps(twio::IWriterPtr writer)
     }
 }
 
+
 int VerboseErrorLogger::Count()
 {
     return _entries.size();
 }
+
 
 TOMIC_END

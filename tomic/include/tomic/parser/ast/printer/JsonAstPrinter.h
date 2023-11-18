@@ -46,6 +46,7 @@ private:
     int _indent;
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_JSON_AST_PRINTER_H_

@@ -19,6 +19,7 @@ public:
     virtual const char* Description(SyntaxType type) const = 0;
 };
 
+
 using ISyntaxMapperPtr = std::shared_ptr<ISyntaxMapper>;
 
 TOMIC_END

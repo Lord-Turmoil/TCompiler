@@ -14,7 +14,7 @@ TOMIC_LLVM_BEGIN
  */
 
 UnaryInstruction::UnaryInstruction(ValueType valueType, TypePtr type, ValuePtr operand)
-        : Instruction(valueType, type)
+    : Instruction(valueType, type)
 {
     AddOperand(operand);
 }
@@ -25,9 +25,10 @@ UnaryInstruction::UnaryInstruction(ValueType valueType, TypePtr type, ValuePtr o
  */
 
 UnaryOperator::UnaryOperator(TypePtr type, ValuePtr operand, UnaryOpType opType)
-        : UnaryInstruction(ValueType::UnaryOperatorTy, type, operand), _opType(opType)
+    : UnaryInstruction(ValueType::UnaryOperatorTy, type, operand), _opType(opType)
 {
 }
+
 
 UnaryOperatorPtr UnaryOperator::New(UnaryOpType opType, ValuePtr operand)
 {
@@ -45,11 +46,12 @@ UnaryOperatorPtr UnaryOperator::New(UnaryOpType opType, ValuePtr operand)
  */
 
 BinaryOperator::BinaryOperator(TypePtr type, ValuePtr lhs, ValuePtr rhs, BinaryOpType opType)
-        : Instruction(ValueType::BinaryOperatorTy, type), _opType(opType)
+    : Instruction(ValueType::BinaryOperatorTy, type), _opType(opType)
 {
     AddOperand(lhs);
     AddOperand(rhs);
 }
+
 
 BinaryOperatorPtr BinaryOperator::New(BinaryOpType opType, ValuePtr lhs, ValuePtr rhs)
 {
@@ -67,11 +69,12 @@ BinaryOperatorPtr BinaryOperator::New(BinaryOpType opType, ValuePtr lhs, ValuePt
  */
 
 CompareInstruction::CompareInstruction(TypePtr type, ValuePtr lhs, ValuePtr rhs, PredicateType predicateType)
-        : Instruction(ValueType::CompareInstTy, type), _predicateType(predicateType)
+    : Instruction(ValueType::CompareInstTy, type), _predicateType(predicateType)
 {
     AddOperand(lhs);
     AddOperand(rhs);
 }
+
 
 CompareInstructionPtr CompareInstruction::New(PredicateType predicateType, ValuePtr lhs, ValuePtr rhs)
 {
@@ -82,5 +85,6 @@ CompareInstructionPtr CompareInstruction::New(PredicateType predicateType, Value
 
     return inst.get();
 }
+
 
 TOMIC_LLVM_END

@@ -31,9 +31,9 @@ public:
     ~StandardAsmGenerator() override = default;
 
     ModuleSmartPtr Generate(
-            SyntaxTreePtr syntaxTree,
-            SymbolTablePtr symbolTable,
-            const char* name) override;
+        SyntaxTreePtr syntaxTree,
+        SymbolTablePtr symbolTable,
+        const char* name) override;
 
 private:
     SyntaxTreePtr _syntaxTree;
@@ -104,6 +104,7 @@ private:
     ReturnInstPtr _ParseReturnStatement(SyntaxNodePtr node);
     ValuePtr _ParseExpression(SyntaxNodePtr node);
 };
+
 
 TOMIC_LLVM_END
 

@@ -21,6 +21,7 @@ void StandardAsmPrinter::Print(ModulePtr module, twio::IWriterPtr writer)
     _PrintFooter(asmWriter);
 }
 
+
 /*
  * ; Tony's Mini Compiler (ToMiC) [Version {version}]
  * ; (C) Copyright Tony's Studio 2018 - {2023. All rights reserved.
@@ -50,6 +51,7 @@ void StandardAsmPrinter::_PrintHeader(IAsmWriterPtr writer)
     writer->PushNewLine();
 }
 
+
 /*
  * ; End of LLVM IR
  */
@@ -58,6 +60,7 @@ void StandardAsmPrinter::_PrintFooter(IAsmWriterPtr writer)
     writer->PushNewLine();
     writer->PushComment("End of LLVM IR");
 }
+
 
 /*
  * ; LLVM IR Module: {module-name}
@@ -104,14 +107,17 @@ void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
     writer->PushNewLine();
 }
 
+
 void StandardAsmPrinter::_PrintGlobalVariable(IAsmWriterPtr writer, GlobalVariablePtr globalVariable)
 {
     globalVariable->PrintAsm(writer);
 }
 
+
 void StandardAsmPrinter::_PrintFunction(IAsmWriterPtr writer, FunctionPtr function)
 {
     function->PrintAsm(writer);
 }
+
 
 TOMIC_LLVM_END

@@ -39,10 +39,11 @@ public:
     virtual ~IAsmGenerator() = default;
 
     virtual ModuleSmartPtr Generate(
-            SyntaxTreePtr syntaxTree,
-            SymbolTablePtr symbolTable,
-            const char* name) = 0;
+        SyntaxTreePtr syntaxTree,
+        SymbolTablePtr symbolTable,
+        const char* name) = 0;
 };
+
 
 TOMIC_LLVM_END
 

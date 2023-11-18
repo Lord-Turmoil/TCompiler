@@ -24,6 +24,7 @@ private:
     const char* _descriptions[static_cast<int>(ErrorType::ERR_COUNT)];
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_VERBOSE_ERROR_MAPPER_H_

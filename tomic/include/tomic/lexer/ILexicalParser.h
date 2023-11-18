@@ -31,6 +31,7 @@ public:
     virtual void Rollback(int checkpoint) = 0;
 };
 
+
 using ILexicalParserPtr = std::shared_ptr<ILexicalParser>;
 
 TOMIC_END

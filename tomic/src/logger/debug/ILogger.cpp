@@ -27,4 +27,5 @@ const char* LogLevelToString(LogLevel level)
     }
 }
 
+
 TOMIC_END

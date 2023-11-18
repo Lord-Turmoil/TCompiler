@@ -28,6 +28,7 @@ public:
     virtual void Print(SyntaxTreePtr tree, twio::IWriterPtr writer) = 0;
 };
 
+
 using IAstPrinterPtr = std::shared_ptr<IAstPrinter>;
 
 TOMIC_END

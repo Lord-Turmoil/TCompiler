@@ -46,6 +46,7 @@ private:
     std::unordered_map<std::string, bool> _lexemeToIsKeyword;
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_DEFAULT_TOKEN_MAPPER_H_

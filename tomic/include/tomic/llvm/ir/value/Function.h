@@ -78,6 +78,7 @@ private:
     SlotTracker _slotTracker;
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_FUNCTION_H_

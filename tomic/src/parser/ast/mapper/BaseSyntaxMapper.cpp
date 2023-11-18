@@ -18,4 +18,5 @@ const char* BaseSyntaxMapper::Description(SyntaxType type) const
     return iter->second;
 }
 
+
 TOMIC_END

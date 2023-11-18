@@ -13,6 +13,7 @@ DefaultPreprocessor::DefaultPreprocessor() : _state({ StateType::ANY, 0 })
 {
 }
 
+
 void DefaultPreprocessor::Process()
 {
     TOMIC_ASSERT(_reader);
@@ -28,14 +29,17 @@ void DefaultPreprocessor::Process()
             continue;
         }
         _Process(ch);
-    } while (ch != EOF);
+    }
+    while (ch != EOF);
 }
+
 
 DefaultPreprocessor* DefaultPreprocessor::SetReader(twio::IReaderPtr reader)
 {
     _reader = std::move(reader);
     return this;
 }
+
 
 DefaultPreprocessor* DefaultPreprocessor::SetWriter(twio::IWriterPtr writer)
 {
@@ -71,6 +75,7 @@ void DefaultPreprocessor::_Process(int ch)
     }
 }
 
+
 void DefaultPreprocessor::_ProcessAny(int ch)
 {
     switch (ch)
@@ -91,6 +96,7 @@ void DefaultPreprocessor::_ProcessAny(int ch)
         break;
     }
 }
+
 
 void DefaultPreprocessor::_ProcessSlash(int ch)
 {
@@ -125,6 +131,7 @@ void DefaultPreprocessor::_ProcessSlash(int ch)
     }
 }
 
+
 void DefaultPreprocessor::_ProcessLineComment(int ch)
 {
     switch (ch)
@@ -140,6 +147,7 @@ void DefaultPreprocessor::_ProcessLineComment(int ch)
         break;
     }
 }
+
 
 void DefaultPreprocessor::_ProcessBlockCommentLeft(int ch)
 {
@@ -157,6 +165,7 @@ void DefaultPreprocessor::_ProcessBlockCommentLeft(int ch)
         _writer->Write(FILLING);
     }
 }
+
 
 void DefaultPreprocessor::_ProcessBlockCommentRight(int ch)
 {
@@ -189,6 +198,7 @@ void DefaultPreprocessor::_ProcessBlockCommentRight(int ch)
     }
 }
 
+
 void DefaultPreprocessor::_ProcessQuote(int ch)
 {
     if (ch == EOF)
@@ -212,5 +222,6 @@ void DefaultPreprocessor::_ProcessQuote(int ch)
 
     _writer->Write(ch);
 }
+
 
 TOMIC_END

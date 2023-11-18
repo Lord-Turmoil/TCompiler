@@ -9,11 +9,12 @@
 TOMIC_BEGIN
 
 DefaultSemanticParser::DefaultSemanticParser(ISemanticAnalyzerPtr analyzer, ILoggerPtr logger)
-        : _analyzer(analyzer), _logger(logger)
+    : _analyzer(analyzer), _logger(logger)
 {
     TOMIC_ASSERT(_analyzer);
     TOMIC_ASSERT(_logger);
 }
+
 
 SymbolTablePtr DefaultSemanticParser::Parse(SyntaxTreePtr tree)
 {
@@ -23,5 +24,6 @@ SymbolTablePtr DefaultSemanticParser::Parse(SyntaxTreePtr tree)
 
     return table;
 }
+
 
 TOMIC_END

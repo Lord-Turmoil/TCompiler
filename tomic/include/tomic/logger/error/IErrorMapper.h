@@ -21,6 +21,7 @@ public:
     virtual const char* Description(ErrorType type) = 0;
 };
 
+
 using IErrorMapperPtr = std::shared_ptr<IErrorMapper>;
 
 TOMIC_END

@@ -35,9 +35,11 @@ VerboseErrorMapper::VerboseErrorMapper()
     _descriptions[static_cast<int>(ErrorType::ERR_ILLEGAL_CONTINUE)] = "Illegal continue";
 }
 
+
 const char* VerboseErrorMapper::Description(ErrorType type)
 {
     return _descriptions[static_cast<int>(type)];
 }
+
 
 TOMIC_END

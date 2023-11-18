@@ -15,6 +15,7 @@ DefaultSemanticAnalyzerActionMapper::DefaultSemanticAnalyzerActionMapper()
     _Init();
 }
 
+
 EnterAction DefaultSemanticAnalyzerActionMapper::GetEnterAction(SyntaxType type) const
 {
     auto it = _enterActions.find(type);
@@ -25,6 +26,7 @@ EnterAction DefaultSemanticAnalyzerActionMapper::GetEnterAction(SyntaxType type)
     return _defaultEnter;
 }
 
+
 ExitAction DefaultSemanticAnalyzerActionMapper::GetExitAction(SyntaxType type) const
 {
     auto it = _exitActions.find(type);
@@ -34,6 +36,7 @@ ExitAction DefaultSemanticAnalyzerActionMapper::GetExitAction(SyntaxType type) c
     }
     return _defaultExit;
 }
+
 
 void DefaultSemanticAnalyzerActionMapper::_Init()
 {
@@ -175,5 +178,6 @@ void DefaultSemanticAnalyzerActionMapper::_Init()
     _enterActions[SyntaxType::ST_REL_EXP] = &DefaultSemanticAnalyzer::_DefaultEnter;
     _exitActions[SyntaxType::ST_REL_EXP] = &DefaultSemanticAnalyzer::_DefaultExitExp;
 }
+
 
 TOMIC_END

@@ -37,6 +37,7 @@ private:
     std::vector<ConstantDataPtr> _values;
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_IR_CONSTANT_DATA_H_

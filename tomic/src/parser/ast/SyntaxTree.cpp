@@ -16,10 +16,12 @@ SyntaxTree::~SyntaxTree()
     _ClearUp();
 }
 
+
 std::shared_ptr<SyntaxTree> SyntaxTree::New()
 {
     return std::make_shared<SyntaxTree>();
 }
+
 
 SyntaxNodePtr SyntaxTree::NewTerminalNode(TokenPtr token)
 {
@@ -30,6 +32,7 @@ SyntaxNodePtr SyntaxTree::NewTerminalNode(TokenPtr token)
     return node;
 }
 
+
 SyntaxNodePtr SyntaxTree::NewNonTerminalNode(SyntaxType type)
 {
     auto node = new NonTerminalSyntaxNode(type);
@@ -39,6 +42,7 @@ SyntaxNodePtr SyntaxTree::NewNonTerminalNode(SyntaxType type)
     return node;
 }
 
+
 SyntaxNodePtr SyntaxTree::NewEpsilonNode()
 {
     auto node = new EpsilonSyntaxNode();
@@ -47,6 +51,7 @@ SyntaxNodePtr SyntaxTree::NewEpsilonNode()
 
     return node;
 }
+
 
 void SyntaxTree::DeleteNode(SyntaxNodePtr node)
 {
@@ -68,9 +73,10 @@ void SyntaxTree::DeleteNode(SyntaxNodePtr node)
         DeleteNode(node->FirstChild());
     }
 
-    auto it = _nodes.erase(node);
+    _nodes.erase(node);
     delete node;
 }
+
 
 SyntaxNodePtr SyntaxTree::SetRoot(SyntaxNodePtr root)
 {
@@ -84,6 +90,7 @@ SyntaxNodePtr SyntaxTree::SetRoot(SyntaxNodePtr root)
     return root;
 }
 
+
 bool SyntaxTree::Accept(AstVisitorPtr visitor)
 {
     TOMIC_ASSERT(visitor);
@@ -91,6 +98,7 @@ bool SyntaxTree::Accept(AstVisitorPtr visitor)
 
     return _root->Accept(visitor);
 }
+
 
 void SyntaxTree::_ClearUp()
 {
@@ -101,5 +109,6 @@ void SyntaxTree::_ClearUp()
     _nodes.clear();
     _root = nullptr;
 }
+
 
 TOMIC_END

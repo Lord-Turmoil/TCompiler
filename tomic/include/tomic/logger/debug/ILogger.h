@@ -22,6 +22,7 @@ enum class LogLevel
     COUNT
 };
 
+
 class ILogger
 {
 public:
@@ -37,6 +38,7 @@ public:
     virtual ILogger* SetLogLevel(LogLevel level) = 0;
     virtual ILogger* SetWriter(twio::IWriterPtr writer) = 0;
 };
+
 
 using ILoggerPtr = std::shared_ptr<ILogger>;
 

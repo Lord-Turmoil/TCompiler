@@ -45,6 +45,7 @@ enum class ValueType
     GlobalVariableTy,
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_VALUE_TYPE_H_

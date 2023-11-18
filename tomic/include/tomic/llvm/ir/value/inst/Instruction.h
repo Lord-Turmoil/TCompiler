@@ -35,6 +35,7 @@ private:
     BasicBlockPtr _parent;
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_INSTRUCTION_H_

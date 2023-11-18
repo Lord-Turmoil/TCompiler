@@ -36,9 +36,11 @@ StandardErrorMapper::StandardErrorMapper()
     _descriptions[static_cast<int>(ErrorType::ERR_ILLEGAL_CONTINUE)] = "m";
 }
 
+
 const char* StandardErrorMapper::Description(ErrorType type)
 {
     return _descriptions[static_cast<int>(type)];
 }
+
 
 TOMIC_END

@@ -17,4 +17,5 @@ UsePtr Use::New(UserPtr user, ValuePtr value)
     return user->Context()->StoreUse(use);
 }
 
+
 TOMIC_LLVM_END

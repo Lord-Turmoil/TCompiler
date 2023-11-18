@@ -10,12 +10,13 @@
 
 TOMIC_BEGIN
 
-XmlAstPrinter::XmlAstPrinter(tomic::ISyntaxMapperPtr syntaxMapperPtr, tomic::ITokenMapperPtr tokenMapper)
-        : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper), _depth(0), _indent(2)
+XmlAstPrinter::XmlAstPrinter(ISyntaxMapperPtr syntaxMapperPtr, ITokenMapperPtr tokenMapper)
+    : _syntaxMapper(syntaxMapperPtr), _tokenMapper(tokenMapper), _depth(0), _indent(2)
 {
     TOMIC_ASSERT(_syntaxMapper);
     TOMIC_ASSERT(_tokenMapper);
 }
+
 
 void XmlAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
 {
@@ -29,6 +30,7 @@ void XmlAstPrinter::Print(SyntaxTreePtr tree, twio::IWriterPtr writer)
 
     tree->Accept(this);
 }
+
 
 bool XmlAstPrinter::VisitEnter(SyntaxNodePtr node)
 {
@@ -51,7 +53,8 @@ bool XmlAstPrinter::VisitEnter(SyntaxNodePtr node)
     return true;
 }
 
-bool XmlAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
+
+bool XmlAstPrinter::VisitExit(SyntaxNodePtr node)
 {
     auto descr = _syntaxMapper->Description(node->Type());
 
@@ -65,7 +68,8 @@ bool XmlAstPrinter::VisitExit(tomic::SyntaxNodePtr node)
     return true;
 }
 
-bool XmlAstPrinter::Visit(tomic::SyntaxNodePtr node)
+
+bool XmlAstPrinter::Visit(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node);
 
@@ -93,7 +97,8 @@ bool XmlAstPrinter::Visit(tomic::SyntaxNodePtr node)
     return true;
 }
 
-void XmlAstPrinter::_VisitNonTerminal(tomic::SyntaxNodePtr node)
+
+void XmlAstPrinter::_VisitNonTerminal(SyntaxNodePtr node)
 {
     auto descr = _syntaxMapper->Description(node->Type());
 
@@ -111,7 +116,8 @@ void XmlAstPrinter::_VisitNonTerminal(tomic::SyntaxNodePtr node)
     // Visit will not recurse into children.
 }
 
-void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
+
+void XmlAstPrinter::_VisitTerminal(SyntaxNodePtr node)
 {
     auto syntacticDescr = _syntaxMapper->Description(node->Type());
 
@@ -159,7 +165,8 @@ void XmlAstPrinter::_VisitTerminal(tomic::SyntaxNodePtr node)
     _writer->Write(" />\n");
 }
 
-void XmlAstPrinter::_VisitEpsilon(tomic::SyntaxNodePtr node)
+
+void XmlAstPrinter::_VisitEpsilon(SyntaxNodePtr node)
 {
     auto descr = _syntaxMapper->Description(node->Type());
     if (descr)
@@ -169,6 +176,7 @@ void XmlAstPrinter::_VisitEpsilon(tomic::SyntaxNodePtr node)
     }
 }
 
+
 void XmlAstPrinter::_PrintIndent(int depth)
 {
     for (int i = 0; i < depth * _indent; i++)
@@ -176,5 +184,6 @@ void XmlAstPrinter::_PrintIndent(int depth)
         _writer->Write(" ");
     }
 }
+
 
 TOMIC_END

@@ -61,6 +61,7 @@ private:
     std::unordered_set<SyntaxNodePtr> _nodes;
 };
 
+
 using SyntaxTreePtr = std::shared_ptr<SyntaxTree>;
 
 TOMIC_END

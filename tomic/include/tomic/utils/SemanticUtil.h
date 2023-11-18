@@ -25,15 +25,15 @@ namespace SemanticUtil
 {
 
 // Count the number of direct child nodes of a specific type.
-int CountDirectChildNode(const SyntaxNodePtr node, SyntaxType type);
-int CountDirectTerminalNode(const SyntaxNodePtr node, TokenType type);
+int CountDirectChildNode(SyntaxNodePtr node, SyntaxType type);
+int CountDirectTerminalNode(SyntaxNodePtr node, TokenType type);
 
-SyntaxNodePtr GetDirectChildNode(const SyntaxNodePtr node, SyntaxType type, int index = 1);
-bool GetDirectChildNodes(const SyntaxNodePtr node, SyntaxType type, std::vector<SyntaxNodePtr>& list);
+SyntaxNodePtr GetDirectChildNode(SyntaxNodePtr node, SyntaxType type, int index = 1);
+bool GetDirectChildNodes(SyntaxNodePtr node, SyntaxType type, std::vector<SyntaxNodePtr>& list);
 
-SyntaxNodePtr GetChildNode(const SyntaxNodePtr node, SyntaxType type, int index = 1);
+SyntaxNodePtr GetChildNode(SyntaxNodePtr node, SyntaxType type, int index = 1);
 
-bool HasParent(const SyntaxNodePtr node, SyntaxType type);
+bool HasParent(SyntaxNodePtr node, SyntaxType type);
 
 /*
  * ==================== Attributes ====================
@@ -42,27 +42,27 @@ bool HasParent(const SyntaxNodePtr node, SyntaxType type);
  */
 
 // Get attribute of node itself.
-bool HasAttribute(const SyntaxNodePtr node, const char* name);
-const char* GetAttribute(const SyntaxNodePtr node, const char* name, const char* defaultValue = nullptr);
-int GetIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue = 0);
-bool GetBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultValue = false);
+bool HasAttribute(SyntaxNodePtr node, const char* name);
+const char* GetAttribute(SyntaxNodePtr node, const char* name, const char* defaultValue = nullptr);
+int GetIntAttribute(SyntaxNodePtr node, const char* name, int defaultValue = 0);
+bool GetBoolAttribute(SyntaxNodePtr node, const char* name, bool defaultValue = false);
 
-bool QueryAttribute(const SyntaxNodePtr node, const char* name, const char** value, const char* defaultValue = nullptr);
-bool QueryIntAttribute(const SyntaxNodePtr node, const char* name, int* value, int defaultValue = 0);
-bool QueryBoolAttribute(const SyntaxNodePtr node, const char* name, bool* value, bool defaultValue = false);
+bool QueryAttribute(SyntaxNodePtr node, const char* name, const char** value, const char* defaultValue = nullptr);
+bool QueryIntAttribute(SyntaxNodePtr node, const char* name, int* value, int defaultValue = 0);
+bool QueryBoolAttribute(SyntaxNodePtr node, const char* name, bool* value, bool defaultValue = false);
 
 // Get Inherited Attribute value
-bool HasInheritedAttribute(const SyntaxNodePtr node, const char* name);
-const char* GetInheritedAttribute(const SyntaxNodePtr node, const char* name, const char* defaultValue = nullptr);
-int GetInheritedIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue = 0);
-bool GetInheritedBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultValue = false);
+bool HasInheritedAttribute(SyntaxNodePtr node, const char* name);
+const char* GetInheritedAttribute(SyntaxNodePtr node, const char* name, const char* defaultValue = nullptr);
+int GetInheritedIntAttribute(SyntaxNodePtr node, const char* name, int defaultValue = 0);
+bool GetInheritedBoolAttribute(SyntaxNodePtr node, const char* name, bool defaultValue = false);
 
 // Get Synthesized Attribute value
 // Synthesized attributes comes from nodes in front of the current node.
-bool HasSynthesizedAttribute(const SyntaxNodePtr node, const char* name);
-const char* GetSynthesizedAttribute(const SyntaxNodePtr node, const char* name, const char* defaultValue = nullptr);
-int GetSynthesizedIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue = 0);
-bool GetSynthesizedBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultValue = false);
+bool HasSynthesizedAttribute(SyntaxNodePtr node, const char* name);
+const char* GetSynthesizedAttribute(SyntaxNodePtr node, const char* name, const char* defaultValue = nullptr);
+int GetSynthesizedIntAttribute(SyntaxNodePtr node, const char* name, int defaultValue = 0);
+bool GetSynthesizedBoolAttribute(SyntaxNodePtr node, const char* name, bool defaultValue = false);
 
 // Array serialization
 // The format is like this:
@@ -77,9 +77,9 @@ int GetFormatStringArgCount(const char* format);
 int EvaluateBinary(const char* op, int left, int right);
 int EvaluateUnary(const char* op, int value);
 
-int EvaluateNumber(const SyntaxNodePtr node);
+int EvaluateNumber(SyntaxNodePtr node);
 
-bool TryEvaluateLVal(const SyntaxNodePtr node, SymbolTableBlockPtr block, int* value);
+bool TryEvaluateLVal(SyntaxNodePtr node, SymbolTableBlockPtr block, int* value);
 
 
 }

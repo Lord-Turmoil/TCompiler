@@ -27,6 +27,7 @@ TOMIC_LLVM_BEGIN
 class IntegerType : public Type
 {
     friend class LlvmContext;
+
 public:
     ~IntegerType() override = default;
 
@@ -38,11 +39,14 @@ public:
 
 protected:
     IntegerType(LlvmContextPtr context, unsigned bitWidth)
-            : Type(context, IntegerTyID), _bitWidth(bitWidth) {}
+        : Type(context, IntegerTyID), _bitWidth(bitWidth)
+    {
+    }
 
 private:
     unsigned _bitWidth;
 };
+
 
 using IntegerTypePtr = IntegerType*;
 
@@ -53,9 +57,11 @@ class FunctionType;
 using FunctionTypePtr = FunctionType*;
 using FunctionTypeSmartPtr = std::shared_ptr<FunctionType>;
 
+
 class FunctionType : public Type
 {
     friend class LlvmContext;
+
 public:
     ~FunctionType() override = default;
 
@@ -89,11 +95,17 @@ class ArrayType;
 using ArrayTypePtr = ArrayType*;
 using ArrayTypeSmartPtr = std::shared_ptr<ArrayType>;
 
+
 class ArrayType : public Type
 {
     friend class LlvmContext;
+
 public:
-    ArrayType() : _elementType(nullptr), _elementCount(0) {}
+    ArrayType() : _elementType(nullptr), _elementCount(0)
+    {
+    }
+
+
     ~ArrayType() override = default;
 
     void PrintAsm(IAsmWriterPtr writer) override;
@@ -116,11 +128,17 @@ class PointerType;
 using PointerTypePtr = PointerType*;
 using PointerTypeSmartPtr = std::shared_ptr<PointerType>;
 
+
 class PointerType : public Type
 {
     friend class LlvmContext;
+
 public:
-    PointerType() : _elementType(nullptr) {}
+    PointerType() : _elementType(nullptr)
+    {
+    }
+
+
     ~PointerType() override = default;
 
     void PrintAsm(IAsmWriterPtr writer) override;
@@ -134,6 +152,7 @@ private:
 
     TypePtr _elementType;
 };
+
 
 TOMIC_LLVM_END
 

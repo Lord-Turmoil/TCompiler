@@ -8,14 +8,16 @@
 
 TOMIC_BEGIN
 
-DefaultLogger::DefaultLogger() : _count{ 0 }, _level(LogLevel::DEBUG)
+DefaultLogger::DefaultLogger() : _level(LogLevel::DEBUG), _count { 0 }
 {
 }
+
 
 DefaultLoggerPtr DefaultLogger::New()
 {
     return std::make_shared<DefaultLogger>();
 }
+
 
 void DefaultLogger::LogFormat(LogLevel level, const char* format, ...)
 {
@@ -25,9 +27,10 @@ void DefaultLogger::LogFormat(LogLevel level, const char* format, ...)
     va_end(args);
 }
 
+
 void DefaultLogger::LogVFormat(LogLevel level, const char* format, va_list args)
 {
-    _count[(int)level]++;
+    _count[static_cast<int>(level)]++;
 
     if (_writer == nullptr || (level < _level))
     {
@@ -40,9 +43,11 @@ void DefaultLogger::LogVFormat(LogLevel level, const char* format, va_list args)
     _writer->Write("\n");
 }
 
+
 int DefaultLogger::Count(LogLevel level)
 {
-    return _count[(int)level];
+    return _count[static_cast<int>(level)];
 }
+
 
 TOMIC_END

@@ -18,13 +18,15 @@ class StandardErrorEntry
 {
 public:
     StandardErrorEntry(int line, ErrorType type)
-            : _line(line), _type(type)
+        : _line(line), _type(type)
     {
     }
+
 
     int _line;
     ErrorType _type;
 };
+
 
 class StandardErrorLogger : public IErrorLogger
 {
@@ -32,17 +34,18 @@ public:
     StandardErrorLogger(IErrorMapperPtr mapper);
     ~StandardErrorLogger() override = default;
 
-    virtual void LogFormat(int line, int column, ErrorType type, const char* format, ...) override;
-    virtual void LogVFormat(int line, int column, ErrorType type, const char* format, va_list args) override;
+    void LogFormat(int line, int column, ErrorType type, const char* format, ...) override;
+    void LogVFormat(int line, int column, ErrorType type, const char* format, va_list args) override;
 
-    virtual void Dumps(twio::IWriterPtr writer) override;
+    void Dumps(twio::IWriterPtr writer) override;
 
-    virtual int Count() override;
+    int Count() override;
 
 private:
     IErrorMapperPtr _mapper;
     std::vector<StandardErrorEntry> _entries;
 };
+
 
 TOMIC_END
 

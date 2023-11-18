@@ -44,6 +44,7 @@ private:
 
     static const char FILLING = ' ';
 
+
     enum class StateType
     {
         ANY,                    // any state
@@ -53,6 +54,7 @@ private:
         BLOCK_COMMENT_RIGHT,    // '*' (waiting for '/')
         QUOTE                   // ' or ", with value set
     };
+
 
     struct State
     {

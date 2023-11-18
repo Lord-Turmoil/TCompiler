@@ -24,11 +24,11 @@ class ResilientSyntacticParser : public ISyntacticParser
 {
 public:
     ResilientSyntacticParser(
-            ILexicalParserPtr lexicalParser,
-            ISyntaxMapperPtr syntaxMapper,
-            ITokenMapperPtr tokenMapper,
-            IErrorLoggerPtr errorLogger,
-            ILoggerPtr logger);
+        ILexicalParserPtr lexicalParser,
+        ISyntaxMapperPtr syntaxMapper,
+        ITokenMapperPtr tokenMapper,
+        IErrorLoggerPtr errorLogger,
+        ILoggerPtr logger);
     ~ResilientSyntacticParser() override = default;
 
     ResilientSyntacticParser* SetReader(twio::IAdvancedReaderPtr reader) override;
@@ -150,6 +150,7 @@ private:
     SyntaxNodePtr _ParseRelExp();
     SyntaxNodePtr _ParseRelExpAux();
 };
+
 
 TOMIC_END
 

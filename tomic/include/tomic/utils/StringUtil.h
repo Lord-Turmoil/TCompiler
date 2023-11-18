@@ -8,7 +8,6 @@
 #define _TOMIC_STRING_UTIL_H_
 
 #include <tomic/Shared.h>
-#include <string>
 
 TOMIC_BEGIN
 

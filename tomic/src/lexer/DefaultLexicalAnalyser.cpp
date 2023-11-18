@@ -17,8 +17,9 @@ static const char _WHITESPACES[] = " \t\r\n\v\f";
 static const char _OPERATORS[] = "+-*/%&|!<>=";
 static const char _DELIMITERS[] = ",;()[]{}";
 
+
 DefaultLexicalAnalyzer::DefaultLexicalAnalyzer(ITokenMapperPtr mapper)
-        : _mapper(mapper)
+    : _mapper(mapper)
 {
     TOMIC_ASSERT(mapper);
     _InitTasks();
@@ -31,6 +32,7 @@ DefaultLexicalAnalyzer* DefaultLexicalAnalyzer::SetReader(twio::IAdvancedReaderP
     return this;
 }
 
+
 TokenPtr DefaultLexicalAnalyzer::Next()
 {
     TokenPtr token;
@@ -42,10 +44,12 @@ TokenPtr DefaultLexicalAnalyzer::Next()
     do
     {
         token = _Next();
-    } while (!token);
+    }
+    while (!token);
 
     return token;
 }
+
 
 void DefaultLexicalAnalyzer::_InitTasks()
 {
@@ -58,6 +62,7 @@ void DefaultLexicalAnalyzer::_InitTasks()
     _tasks.emplace_back(std::make_shared<UnknownLexicalTask>(_mapper));
 }
 
+
 TokenPtr DefaultLexicalAnalyzer::_Next()
 {
     // Read the first character to determine which task to perform.
@@ -66,7 +71,8 @@ TokenPtr DefaultLexicalAnalyzer::_Next()
     do
     {
         lookahead = _reader->Read();
-    } while (StringUtil::Contains(_WHITESPACES, lookahead));
+    }
+    while (StringUtil::Contains(_WHITESPACES, lookahead));
 
     // If end of file is reached, return a terminator token.
     if (lookahead == EOF)
@@ -107,14 +113,16 @@ bool NumberLexicalTask::BeginsWith(int begin) const
     return StringUtil::Contains(_DIGITS, begin);
 }
 
+
 bool NumberLexicalTask::EndsWith(int end) const
 {
     // blank, or delimiter, or operator
     return (end == EOF) ||
-           StringUtil::Contains(_WHITESPACES, end) ||
-           StringUtil::Contains(_DELIMITERS, end) ||
-           StringUtil::Contains(_OPERATORS, end);
+            StringUtil::Contains(_WHITESPACES, end) ||
+            StringUtil::Contains(_DELIMITERS, end) ||
+            StringUtil::Contains(_OPERATORS, end);
 }
+
 
 TokenPtr NumberLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 {
@@ -160,14 +168,16 @@ bool IdentifierLexicalTask::BeginsWith(int begin) const
     return std::isalpha(begin) || begin == '_';
 }
 
+
 bool IdentifierLexicalTask::EndsWith(int end) const
 {
     // blank, or delimiter, or operator
     return (end == EOF) ||
-           StringUtil::Contains(_WHITESPACES, end) ||
-           StringUtil::Contains(_DELIMITERS, end) ||
-           StringUtil::Contains(_OPERATORS, end);
+            StringUtil::Contains(_WHITESPACES, end) ||
+            StringUtil::Contains(_DELIMITERS, end) ||
+            StringUtil::Contains(_OPERATORS, end);
 }
+
 
 TokenPtr IdentifierLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 {
@@ -219,10 +229,12 @@ bool StringLexicalTask::BeginsWith(int begin) const
     return begin == '"';
 }
 
+
 bool StringLexicalTask::EndsWith(int end) const
 {
     return end == '"';
 }
+
 
 TokenPtr StringLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 {
@@ -280,10 +292,12 @@ TokenPtr StringLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
     return Token::New(TokenType::TK_FORMAT, lexeme, lineNo, charNo);
 }
 
+
 bool StringLexicalTask::_IsNormalChar(int ch) const
 {
     return (ch == 32) || (ch == 33) || (40 <= ch && ch < 92) || (92 < ch && ch <= 126);
 }
+
 
 bool StringLexicalTask::_IsNewLineChar(int ch, const twio::IAdvancedReaderPtr& reader) const
 {
@@ -305,6 +319,7 @@ bool StringLexicalTask::_IsNewLineChar(int ch, const twio::IAdvancedReaderPtr& r
 
     return ret;
 }
+
 
 bool StringLexicalTask::_IsFormatChar(int ch, const twio::IAdvancedReaderPtr& reader) const
 {
@@ -334,10 +349,12 @@ bool SingleOpLexicalTask::BeginsWith(int begin) const
     return StringUtil::Contains("+-*/%", begin);
 }
 
+
 bool SingleOpLexicalTask::EndsWith(int end) const
 {
     return true;
 }
+
 
 TokenPtr SingleOpLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 {
@@ -359,10 +376,12 @@ bool DoubleOpLexicalTask::BeginsWith(int begin) const
     return StringUtil::Contains("&|=<>!", begin);
 }
 
+
 bool DoubleOpLexicalTask::EndsWith(int end) const
 {
     return true;
 }
+
 
 TokenPtr DoubleOpLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 {
@@ -426,10 +445,12 @@ bool DelimiterLexicalTask::BeginsWith(int begin) const
     return StringUtil::Contains(_DELIMITERS, begin);
 }
 
+
 bool DelimiterLexicalTask::EndsWith(int end) const
 {
     return true;
 }
+
 
 TokenPtr DelimiterLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 {
@@ -451,10 +472,12 @@ bool UnknownLexicalTask::BeginsWith(int begin) const
     return true;
 }
 
+
 bool UnknownLexicalTask::EndsWith(int end) const
 {
     return true;
 }
+
 
 TokenPtr UnknownLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 {
@@ -467,5 +490,6 @@ TokenPtr UnknownLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
 
     return Token::New(TokenType::TK_UNKNOWN, lexeme, lineNo, charNo);
 }
+
 
 TOMIC_END

@@ -10,32 +10,34 @@
 #include <cstdio>
 #include <cstdarg>
 #include <string>
-#include <iostream>
 #include <sstream>
 
 TOMIC_BEGIN
 
 static char _logBuffer[1024];
 
+
 ResilientSyntacticParser::ResilientSyntacticParser(
-        ILexicalParserPtr lexicalParser,
-        ISyntaxMapperPtr syntaxMapper,
-        ITokenMapperPtr tokenMapper,
-        IErrorLoggerPtr errorLogger,
-        ILoggerPtr logger)
-        : _lexicalParser(lexicalParser),
-          _syntaxMapper(syntaxMapper),
-          _tokenMapper(tokenMapper),
-          _errorLogger(errorLogger),
-          _logger(logger)
+    ILexicalParserPtr lexicalParser,
+    ISyntaxMapperPtr syntaxMapper,
+    ITokenMapperPtr tokenMapper,
+    IErrorLoggerPtr errorLogger,
+    ILoggerPtr logger)
+    : _lexicalParser(lexicalParser),
+      _syntaxMapper(syntaxMapper),
+      _tokenMapper(tokenMapper),
+      _errorLogger(errorLogger),
+      _logger(logger)
 {
 }
+
 
 ResilientSyntacticParser* ResilientSyntacticParser::SetReader(twio::IAdvancedReaderPtr reader)
 {
     _lexicalParser->SetReader(reader);
     return this;
 }
+
 
 TokenPtr ResilientSyntacticParser::_Current()
 {
@@ -49,10 +51,12 @@ TokenPtr ResilientSyntacticParser::_Current()
     return current;
 }
 
+
 TokenPtr ResilientSyntacticParser::_Next()
 {
     return _lexicalParser->Next();
 }
+
 
 TokenPtr ResilientSyntacticParser::_Lookahead(int n)
 {
@@ -81,10 +85,12 @@ TokenPtr ResilientSyntacticParser::_Lookahead(int n)
     return token;
 }
 
+
 bool ResilientSyntacticParser::_Match(TokenType type, TokenPtr token)
 {
     return Token::Type(token) == type;
 }
+
 
 bool ResilientSyntacticParser::_MatchAny(const std::vector<TokenType>& types, TokenPtr token)
 {
@@ -98,6 +104,7 @@ bool ResilientSyntacticParser::_MatchAny(const std::vector<TokenType>& types, To
     return false;
 }
 
+
 void ResilientSyntacticParser::_PostParseError(int checkpoint, SyntaxNodePtr node)
 {
     if (checkpoint >= 0)
@@ -109,6 +116,7 @@ void ResilientSyntacticParser::_PostParseError(int checkpoint, SyntaxNodePtr nod
         _tree->DeleteNode(node);
     }
 }
+
 
 void ResilientSyntacticParser::_SetTryParse(bool tryParse)
 {
@@ -123,6 +131,7 @@ void ResilientSyntacticParser::_SetTryParse(bool tryParse)
     }
 }
 
+
 void ResilientSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, ...)
 {
     va_list args;
@@ -130,6 +139,7 @@ void ResilientSyntacticParser::_Log(LogLevel level, TokenPtr position, const cha
     _Log(level, position, format, args);
     va_end(args);
 }
+
 
 void ResilientSyntacticParser::_Log(LogLevel level, TokenPtr position, const char* format, va_list argv)
 {
@@ -139,7 +149,7 @@ void ResilientSyntacticParser::_Log(LogLevel level, TokenPtr position, const cha
         return;
     }
 
-    vsprintf(_logBuffer, format, argv);
+    TOMIC_VSPRINTF(_logBuffer, format, argv);
 
     auto token = position;
     int lineNo = token ? token->lineNo : 1;
@@ -148,6 +158,7 @@ void ResilientSyntacticParser::_Log(LogLevel level, TokenPtr position, const cha
     _logger->LogFormat(level, "(%d:%d) %s", lineNo, charNo, _logBuffer);
 }
 
+
 void ResilientSyntacticParser::_Log(LogLevel level, const char* format, ...)
 {
     va_list args;
@@ -155,6 +166,7 @@ void ResilientSyntacticParser::_Log(LogLevel level, const char* format, ...)
     _Log(level, _Current(), format, args);
     va_end(args);
 }
+
 
 void ResilientSyntacticParser::_LogFailedToParse(SyntaxType type, LogLevel level)
 {
@@ -166,6 +178,7 @@ void ResilientSyntacticParser::_LogFailedToParse(SyntaxType type, LogLevel level
     // Since it is the result of other parsing, it is not an error.
     _Log(level, "Failed to parse <%s>", descr);
 }
+
 
 void ResilientSyntacticParser::_LogExpect(TokenType expected, LogLevel level)
 {
@@ -191,6 +204,7 @@ void ResilientSyntacticParser::_LogExpect(TokenType expected, LogLevel level)
     }
 }
 
+
 void ResilientSyntacticParser::_LogExpect(const std::vector<TokenType>& expected, LogLevel level)
 {
     std::stringstream stream;
@@ -208,6 +222,7 @@ void ResilientSyntacticParser::_LogExpect(const std::vector<TokenType>& expected
     _Log(level, "Expect one of %s, but got %s", stream.str().c_str(), _Current()->lexeme.c_str());
 }
 
+
 void ResilientSyntacticParser::_LogExpectAfter(TokenType expected, LogLevel level)
 {
     auto current = _Current();
@@ -219,6 +234,7 @@ void ResilientSyntacticParser::_LogExpectAfter(TokenType expected, LogLevel leve
 
     _Log(level, current, "Expect %s after %s", expectedDescr, current->lexeme.c_str());
 }
+
 
 void ResilientSyntacticParser::_RecoverFromMissingToken(SyntaxNodePtr node, TokenType expected)
 {
@@ -246,26 +262,28 @@ void ResilientSyntacticParser::_RecoverFromMissingToken(SyntaxNodePtr node, Toke
     if (current)
     {
         _errorLogger->LogFormat(
-                current->lineNo, current->charNo, type,
-                "Missing %s after %s",
-                _tokenMapper->Lexeme(expected), current->lexeme.c_str());
+            current->lineNo, current->charNo, type,
+            "Missing %s after %s",
+            _tokenMapper->Lexeme(expected), current->lexeme.c_str());
     }
     else
     {
         _errorLogger->LogFormat(
-                1, 1, type,
-                "Missing %s at the beginning of file",
-                _tokenMapper->Lexeme(expected));
+            1, 1, type,
+            "Missing %s at the beginning of file",
+            _tokenMapper->Lexeme(expected));
     }
 
     // Insert a pseudo token.
     node->InsertEndChild(_tree->NewTerminalNode(Token::New(expected)));
 }
 
+
 void ResilientSyntacticParser::_MarkCorrupted(SyntaxNodePtr node)
 {
     node->SetBoolAttribute("corrupted", true);
 }
+
 
 /*
  * ========== Parse ==========
@@ -289,6 +307,7 @@ SyntaxTreePtr ResilientSyntacticParser::Parse()
 
     return _tree;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseCompUnit()
 {
@@ -334,6 +353,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseCompUnit()
     return root;
 }
 
+
 bool ResilientSyntacticParser::_MatchDecl()
 {
     // const ...
@@ -352,10 +372,12 @@ bool ResilientSyntacticParser::_MatchDecl()
     return false;
 }
 
+
 static std::vector<TokenType> _funcDefFirstSet = {
-        TokenType::TK_INT,
-        TokenType::TK_VOID
+    TokenType::TK_INT,
+    TokenType::TK_VOID
 };
+
 
 bool ResilientSyntacticParser::_MatchFuncDef()
 {
@@ -365,8 +387,9 @@ bool ResilientSyntacticParser::_MatchFuncDef()
     }
 
     return _Match(TokenType::TK_IDENTIFIER, _Lookahead(2)) &&
-           _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
+            _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
 }
+
 
 /*
  * ==================== Decl ====================
@@ -405,6 +428,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseDecl()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseBType()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -425,6 +449,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseBType()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseConstDecl()
 {
@@ -488,6 +513,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseConstDecl()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseConstDef()
 {
@@ -553,6 +579,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseConstDef()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseConstInitVal()
 {
@@ -624,6 +651,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseConstInitVal()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseVarDecl()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -677,6 +705,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseVarDecl()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseVarDef()
 {
@@ -742,6 +771,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseVarDef()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseInitVal()
 {
@@ -813,6 +843,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseInitVal()
     return root;
 }
 
+
 /*
  * ==================== FuncDef ====================
  */
@@ -844,6 +875,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncDef()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseFuncDecl()
 {
@@ -907,6 +939,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncDecl()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseFuncType()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -925,6 +958,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncType()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseFuncFParams()
 {
@@ -955,6 +989,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncFParams()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseFuncFParam()
 {
@@ -1027,6 +1062,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncFParam()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseFuncAParams()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1057,6 +1093,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncAParams()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseFuncAParam()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1073,6 +1110,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncAParam()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseBlock()
 {
@@ -1123,6 +1161,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseBlock()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseBlockItem()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1165,6 +1204,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseBlockItem()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseMainFuncDef()
 {
@@ -1221,6 +1261,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseMainFuncDef()
 
     return root;
 }
+
 
 /*
  * ==================== Stmt ====================
@@ -1311,6 +1352,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseStmt()
     return root;
 }
 
+
 /*
  * Try parse ambiguous ExpStmt, AssignmentStmt and InStmt.
  */
@@ -1341,6 +1383,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseStmtAux()
 
     return nullptr;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseAssignmentStmt()
 {
@@ -1390,6 +1433,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseAssignmentStmt()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseLVal()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1435,6 +1479,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseLVal()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseCond()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1451,6 +1496,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseCond()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseIfStmt()
 {
@@ -1523,6 +1569,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseIfStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseForStmt()
 {
@@ -1632,6 +1679,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseForStmt()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseForInitStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1668,6 +1716,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseForInitStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseForStepStmt()
 {
@@ -1706,6 +1755,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseForStepStmt()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseExpStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1743,6 +1793,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseExpStmt()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseBreakStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1771,6 +1822,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseBreakStmt()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseContinueStmt()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -1798,6 +1850,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseContinueStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseReturnStmt()
 {
@@ -1841,6 +1894,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseReturnStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseInStmt()
 {
@@ -1908,6 +1962,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseInStmt()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseOutStmt()
 {
@@ -1984,6 +2039,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseOutStmt()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2001,6 +2057,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseExp()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseConstExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2017,6 +2074,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseConstExp()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseAddExp()
 {
@@ -2048,10 +2106,12 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseAddExp()
     return root;
 }
 
+
 static std::vector<TokenType> _addExpAuxFirstSet = {
-        TokenType::TK_PLUS,
-        TokenType::TK_MINUS
+    TokenType::TK_PLUS,
+    TokenType::TK_MINUS
 };
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseAddExpAux()
 {
@@ -2094,6 +2154,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseAddExpAux()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseMulExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2124,11 +2185,13 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseMulExp()
     return root;
 }
 
+
 static std::vector<TokenType> _mulExpAuxFirstSet = {
-        TokenType::TK_MULTIPLY,
-        TokenType::TK_DIVIDE,
-        TokenType::TK_MOD
+    TokenType::TK_MULTIPLY,
+    TokenType::TK_DIVIDE,
+    TokenType::TK_MOD
 };
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseMulExpAux()
 {
@@ -2170,6 +2233,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseMulExpAux()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseUnaryExp()
 {
@@ -2219,6 +2283,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseUnaryExp()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseUnaryOp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2250,6 +2315,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseUnaryOp()
 
     return nullptr;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParsePrimaryExp()
 {
@@ -2314,6 +2380,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParsePrimaryExp()
     return nullptr;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseFuncCall()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2367,6 +2434,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseFuncCall()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseNumber()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2383,6 +2451,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseNumber()
 
     return root;
 }
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseOrExp()
 {
@@ -2414,9 +2483,11 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseOrExp()
     return root;
 }
 
+
 static std::vector<TokenType> _orExpAuxFirstSet = {
-        TokenType::TK_OR
+    TokenType::TK_OR
 };
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseOrExpAux()
 {
@@ -2459,6 +2530,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseOrExpAux()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseAndExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2489,9 +2561,11 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseAndExp()
     return root;
 }
 
+
 static std::vector<TokenType> _andExpAuxFirstSet = {
-        TokenType::TK_AND
+    TokenType::TK_AND
 };
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseAndExpAux()
 {
@@ -2534,6 +2608,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseAndExpAux()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseEqExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2564,10 +2639,12 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseEqExp()
     return root;
 }
 
+
 static std::vector<TokenType> _eqExpAuxFirstSet = {
-        TokenType::TK_EQUAL,
-        TokenType::TK_NOT_EQUAL
+    TokenType::TK_EQUAL,
+    TokenType::TK_NOT_EQUAL
 };
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseEqExpAux()
 {
@@ -2610,6 +2687,7 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseEqExpAux()
     return root;
 }
 
+
 SyntaxNodePtr ResilientSyntacticParser::_ParseRelExp()
 {
     auto checkpoint = _lexicalParser->SetCheckPoint();
@@ -2640,12 +2718,14 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseRelExp()
     return root;
 }
 
+
 static std::vector<TokenType> _relExpAuxFirstSet = {
-        TokenType::TK_LESS,
-        TokenType::TK_LESS_EQUAL,
-        TokenType::TK_GREATER,
-        TokenType::TK_GREATER_EQUAL
+    TokenType::TK_LESS,
+    TokenType::TK_LESS_EQUAL,
+    TokenType::TK_GREATER,
+    TokenType::TK_GREATER_EQUAL
 };
+
 
 SyntaxNodePtr ResilientSyntacticParser::_ParseRelExpAux()
 {
@@ -2687,5 +2767,6 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseRelExpAux()
 
     return root;
 }
+
 
 TOMIC_END

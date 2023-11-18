@@ -25,6 +25,7 @@ enum class SymbolTableEntryType
     ET_COUNT
 };
 
+
 enum class SymbolValueType
 {
     VT_ANY,
@@ -36,6 +37,7 @@ enum class SymbolValueType
 
     VT_COUNT
 };
+
 
 class SymbolTableEntry
 {
@@ -51,7 +53,10 @@ public:
 protected:
     // So it cannot be instantiated directly.
     SymbolTableEntry(const std::string& name, SymbolTableEntryType type)
-            : _name(name), _type(type) {}
+        : _type(type), _name(name)
+    {
+    }
+
 
     SymbolTableEntryType _type;
     std::string _name;
@@ -63,6 +68,7 @@ protected:
  */
 const int MAX_ARRAY_DIMENSION = 2;
 
+
 struct VariableEntryProperty
 {
     SymbolValueType type;
@@ -71,13 +77,18 @@ struct VariableEntryProperty
     int dimension;
     int size[MAX_ARRAY_DIMENSION];
 
+
     VariableEntryProperty()
-            : type(SymbolValueType::VT_INT), dimension(0), size{ 0 } {}
+        : type(SymbolValueType::VT_INT), dimension(0), size { 0 }
+    {
+    }
 };
+
 
 class VariableEntry final : public SymbolTableEntry
 {
     friend class VariableEntryBuilder;
+
 public:
     ~VariableEntry() override = default;
 
@@ -85,6 +96,7 @@ public:
     SymbolValueType Type() const { return _props.type; }
 
     int Dimension() const { return _props.dimension; }
+
 
     int ArraySize(int dimension) const
     {
@@ -94,29 +106,41 @@ public:
 
 private:
     VariableEntry(const std::string& name)
-            : SymbolTableEntry(name, SymbolTableEntryType::ET_VARIABLE) {}
+        : SymbolTableEntry(name, SymbolTableEntryType::ET_VARIABLE)
+    {
+    }
+
 
     static std::shared_ptr<VariableEntry> New(const std::string& name)
     {
         return std::shared_ptr<VariableEntry>(new VariableEntry(name));
     }
 
+
     VariableEntryProperty _props;
 };
 
+
 using VariableEntryPtr = std::shared_ptr<VariableEntry>;
+
 
 class VariableEntryBuilder
 {
 public:
-    VariableEntryBuilder(const std::string& name) : _name(name) {}
+    VariableEntryBuilder(const std::string& name) : _name(name)
+    {
+    }
+
+
     ~VariableEntryBuilder() = default;
+
 
     VariableEntryBuilder* Type(SymbolValueType type)
     {
         _props.type = type;
         return this;
     }
+
 
     VariableEntryBuilder* Size(int n)
     {
@@ -125,6 +149,7 @@ public:
         return this;
     }
 
+
     VariableEntryBuilder* Size(int n, int m)
     {
         _props.dimension = 2;
@@ -132,6 +157,7 @@ public:
         _props.size[1] = m;
         return this;
     }
+
 
     VariableEntryPtr Build()
     {
@@ -144,6 +170,7 @@ private:
     std::string _name;
     VariableEntryProperty _props;
 };
+
 
 /*
  * ==================== Symbol Table Constant Entry ====================
@@ -159,13 +186,18 @@ struct ConstantEntryProperty
 
     std::vector<std::vector<int>> values;
 
+
     ConstantEntryProperty()
-            : type(SymbolValueType::VT_INT), dimension(0), size{ 0 } {}
+        : type(SymbolValueType::VT_INT), dimension(0), size { 0 }
+    {
+    }
 };
+
 
 class ConstantEntry final : public SymbolTableEntry
 {
     friend class ConstantEntryBuilder;
+
 public:
     ~ConstantEntry() override = default;
 
@@ -181,29 +213,41 @@ public:
 
 private:
     ConstantEntry(const std::string& name)
-            : SymbolTableEntry(name, SymbolTableEntryType::ET_CONSTANT) {}
+        : SymbolTableEntry(name, SymbolTableEntryType::ET_CONSTANT)
+    {
+    }
+
 
     static std::shared_ptr<ConstantEntry> New(const std::string& name)
     {
         return std::shared_ptr<ConstantEntry>(new ConstantEntry(name));
     }
 
+
     ConstantEntryProperty _props;
 };
 
+
 using ConstantEntryPtr = std::shared_ptr<ConstantEntry>;
+
 
 class ConstantEntryBuilder
 {
 public:
-    ConstantEntryBuilder(const std::string& name) : _name(name) {}
+    ConstantEntryBuilder(const std::string& name) : _name(name)
+    {
+    }
+
+
     ~ConstantEntryBuilder() = default;
+
 
     ConstantEntryBuilder* Type(SymbolValueType type)
     {
         _props.type = type;
         return this;
     }
+
 
     ConstantEntryBuilder* Size(int n)
     {
@@ -212,6 +256,7 @@ public:
         _props.values.resize(1, std::vector<int>(n, 0));
         return this;
     }
+
 
     // a[n][m]
     ConstantEntryBuilder* Size(int n, int m)
@@ -223,11 +268,13 @@ public:
         return this;
     }
 
+
     ConstantEntryBuilder* Value(int value)
     {
         _props.value = value;
         return this;
     }
+
 
     ConstantEntryBuilder* Value(int index, int value)
     {
@@ -235,11 +282,13 @@ public:
         return this;
     }
 
+
     ConstantEntryBuilder* Value(int index1, int index2, int value)
     {
         _props.values[index1][index2] = value;
         return this;
     }
+
 
     ConstantEntryBuilder* Values(const std::vector<std::vector<int>>& values)
     {
@@ -247,6 +296,7 @@ public:
         _props.values = values;
         return this;
     }
+
 
     ConstantEntryPtr Build()
     {
@@ -273,16 +323,19 @@ struct FunctionParamProperty
     int dimension;
     int size[MAX_ARRAY_DIMENSION];
 
+
     FunctionParamProperty(SymbolValueType _type, std::string _name, int _dimension, int _size1, int _size2)
-            : type(_type), name(_name), dimension(_dimension), size{ _size1, _size2 }
+        : type(_type), name(_name), dimension(_dimension), size { _size1, _size2 }
     {
         TOMIC_ASSERT(_dimension >= 0);
         TOMIC_ASSERT(_dimension <= MAX_ARRAY_DIMENSION);
     }
 };
 
+
 using FunctionParamPropertyPtr = FunctionParamProperty*;
 using FunctionParamPropertySmartPtr = std::shared_ptr<FunctionParamProperty>;
+
 
 struct FunctionEntryProperty
 {
@@ -292,15 +345,18 @@ struct FunctionEntryProperty
     int ArgsCount() const { return params.size(); }
 };
 
+
 class FunctionEntry final : public SymbolTableEntry
 {
     friend class FunctionEntryBuilder;
+
 public:
     ~FunctionEntry() override = default;
 
     SymbolValueType Type() const { return _props.type; }
 
     int ArgsCount() const { return _props.ArgsCount(); }
+
 
     FunctionParamPropertyPtr Param(int index) const
     {
@@ -310,24 +366,34 @@ public:
 
 private:
     FunctionEntry(const std::string& name)
-            : SymbolTableEntry(name, SymbolTableEntryType::ET_FUNCTION) {}
+        : SymbolTableEntry(name, SymbolTableEntryType::ET_FUNCTION)
+    {
+    }
+
 
     static std::shared_ptr<FunctionEntry> New(const std::string& name)
     {
         return std::shared_ptr<FunctionEntry>(new FunctionEntry(name));
     }
 
+
     FunctionEntryProperty _props;
 };
 
+
 using FunctionEntryPtr = std::shared_ptr<FunctionEntry>;
+
 
 class FunctionEntryBuilder
 {
 public:
-    FunctionEntryBuilder(const std::string& name) : _name(name) {}
+    FunctionEntryBuilder(const std::string& name) : _name(name)
+    {
+    }
+
 
     ~FunctionEntryBuilder() = default;
+
 
     FunctionEntryBuilder* Type(SymbolValueType type)
     {
@@ -335,11 +401,13 @@ public:
         return this;
     }
 
+
     FunctionEntryBuilder* AddParam(SymbolValueType type, std::string name, int dimension, int size)
     {
         _props.params.emplace_back(std::make_shared<FunctionParamProperty>(type, name, dimension, 0, size));
         return this;
     }
+
 
     FunctionEntryPtr Build()
     {
@@ -352,6 +420,7 @@ private:
     std::string _name;
     FunctionEntryProperty _props;
 };
+
 
 TOMIC_END
 

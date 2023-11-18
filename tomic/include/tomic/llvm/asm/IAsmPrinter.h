@@ -27,6 +27,7 @@ public:
     virtual void Print(ModulePtr module, twio::IWriterPtr writer) = 0;
 };
 
+
 using IAsmPrinterPtr = std::shared_ptr<IAsmPrinter>;
 
 TOMIC_LLVM_END

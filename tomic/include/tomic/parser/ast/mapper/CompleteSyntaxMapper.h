@@ -24,6 +24,7 @@ private:
     void _Init();
 };
 
+
 using CompleteSyntaxMapperPtr = std::shared_ptr<CompleteSyntaxMapper>;
 
 TOMIC_END

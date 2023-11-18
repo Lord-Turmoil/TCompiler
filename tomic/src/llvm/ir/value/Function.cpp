@@ -20,10 +20,12 @@ FunctionPtr Function::New(TypePtr type, const std::string& name)
     return func.get();
 }
 
+
 Function::Function(TypePtr type, const std::string& name)
-        : GlobalValue(ValueType::FunctionTy, type, name)
+    : GlobalValue(ValueType::FunctionTy, type, name)
 {
 }
+
 
 // Insert a basic block at the end of the function.
 FunctionPtr Function::InsertBasicBlock(BasicBlockPtr block)
@@ -33,6 +35,7 @@ FunctionPtr Function::InsertBasicBlock(BasicBlockPtr block)
     return this;
 }
 
+
 FunctionPtr Function::InsertBasicBlock(block_iterator iter, BasicBlockPtr block)
 {
     block->SetParent(this);
@@ -40,11 +43,13 @@ FunctionPtr Function::InsertBasicBlock(block_iterator iter, BasicBlockPtr block)
     return this;
 }
 
+
 FunctionPtr Function::RemoveBasicBlock(BasicBlockPtr block)
 {
     block->SetParent(nullptr);
     _basicBlocks.remove(block);
     return this;
 }
+
 
 TOMIC_LLVM_END

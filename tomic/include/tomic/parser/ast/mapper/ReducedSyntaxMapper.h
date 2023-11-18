@@ -22,6 +22,7 @@ private:
     void _Init();
 };
 
+
 using ReducedSyntaxMapperPtr = std::shared_ptr<ReducedSyntaxMapper>;
 
 TOMIC_END

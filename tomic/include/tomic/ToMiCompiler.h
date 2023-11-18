@@ -19,6 +19,7 @@ TOMIC_BEGIN
  */
 class ToMiCompilerImpl;
 
+
 class ToMiCompiler
 {
 public:
@@ -39,6 +40,7 @@ public:
 private:
     ToMiCompilerImpl* _impl;
 };
+
 
 TOMIC_END
 

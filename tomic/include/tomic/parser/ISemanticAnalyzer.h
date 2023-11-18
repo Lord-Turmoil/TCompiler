@@ -22,6 +22,7 @@ public:
     virtual SymbolTablePtr Analyze(SyntaxTreePtr tree) = 0;
 };
 
+
 using ISemanticAnalyzerPtr = std::shared_ptr<ISemanticAnalyzer>;
 
 TOMIC_END

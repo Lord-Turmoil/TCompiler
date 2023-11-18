@@ -23,6 +23,7 @@ std::string GetUniqueName()
     return std::string("#") + std::to_string(counter++);
 }
 
+
 void BuildParamVariableEntries(SyntaxNodePtr funcParams,
                                std::vector<std::pair<SyntaxNodePtr, VariableEntryPtr>>& list)
 {

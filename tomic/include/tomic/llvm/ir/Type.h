@@ -23,14 +23,20 @@ TOMIC_LLVM_BEGIN
 class Type
 {
     friend class LlvmContext;
+
 public:
-    Type() : _typeId(VoidTyID) {}
+    Type() : _typeId(VoidTyID)
+    {
+    }
+
+
     virtual ~Type() = default;
 
     /*
      * All implementations will be placed under llvm/asm.
      */
     virtual void PrintAsm(IAsmWriterPtr writer);
+
 
     enum TypeID
     {
@@ -44,6 +50,7 @@ public:
         ArrayTyID,
         PointerTyID
     };
+
 
     TypeID TypeId() const { return _typeId; }
     LlvmContextPtr Context() const { return _context; }
@@ -65,7 +72,10 @@ public:
 
 protected:
     // Prohibit direct instantiation.
-    Type(LlvmContextPtr context, TypeID typeId) : _context(context), _typeId(typeId) {}
+    Type(LlvmContextPtr context, TypeID typeId) : _typeId(typeId), _context(context)
+    {
+    }
+
 
     int _ContainedTypeCount() const { return _containedTypes.size(); }
     void _AddContainedType(TypePtr type) { _containedTypes.push_back(type); }
@@ -80,6 +90,7 @@ private:
     TypeID _typeId;
     LlvmContextPtr _context;
 };
+
 
 TOMIC_LLVM_END
 

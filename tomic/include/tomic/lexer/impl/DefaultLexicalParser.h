@@ -21,7 +21,7 @@ class DefaultLexicalParser : public ILexicalParser
 {
 public:
     DefaultLexicalParser(ILexicalAnalyzerPtr analyzer, IErrorLoggerPtr errorLogger, ILoggerPtr logger);
-    virtual ~DefaultLexicalParser() = default;
+    ~DefaultLexicalParser() override = default;
 
     DefaultLexicalParser* SetReader(twio::IAdvancedReaderPtr reader) override;
 
@@ -44,6 +44,7 @@ private:
     std::vector<TokenPtr> _tokens;
     std::vector<TokenPtr>::iterator _current;
 };
+
 
 TOMIC_END
 

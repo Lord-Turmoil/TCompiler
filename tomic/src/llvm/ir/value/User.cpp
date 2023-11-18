@@ -16,4 +16,5 @@ void User::AddOperand(ValuePtr value)
     value->AddUse(use);
 }
 
+
 TOMIC_LLVM_END

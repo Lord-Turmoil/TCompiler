@@ -26,6 +26,7 @@ public:
     virtual twio::IWriterPtr GetWriter() const = 0;
 };
 
+
 using IPreprocessorPtr = std::shared_ptr<IPreprocessor>;
 
 TOMIC_END

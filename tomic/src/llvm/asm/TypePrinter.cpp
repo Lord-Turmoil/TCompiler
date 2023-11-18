@@ -26,10 +26,10 @@ void Type::PrintAsm(IAsmWriterPtr writer)
 {
     switch (_typeId)
     {
-    case TypeID::VoidTyID:
+    case VoidTyID:
         writer->Push("void");
         break;
-    case TypeID::LabelTyID:
+    case LabelTyID:
         // Nothing for a label, I guess?
         break;
     default:
@@ -81,5 +81,6 @@ void PointerType::PrintAsm(IAsmWriterPtr writer)
     ElementType()->PrintAsm(writer);
     writer->Push('*');
 }
+
 
 TOMIC_LLVM_END

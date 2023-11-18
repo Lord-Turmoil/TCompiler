@@ -46,6 +46,7 @@ bool StandardAsmGenerator::VisitEnter(SyntaxNodePtr node)
     return true;
 }
 
+
 bool StandardAsmGenerator::_ParseCompilationUnit()
 {
     auto root = _syntaxTree->Root();
@@ -84,6 +85,7 @@ bool StandardAsmGenerator::_ParseCompilationUnit()
     return true;
 }
 
+
 FunctionPtr StandardAsmGenerator::_ParseMainFunction(SyntaxNodePtr node)
 {
     auto context = _module->Context();
@@ -105,6 +107,7 @@ FunctionPtr StandardAsmGenerator::_ParseMainFunction(SyntaxNodePtr node)
 
     return function;
 }
+
 
 // Here, node is a BlockItem.
 bool StandardAsmGenerator::_ParseInstructions(SyntaxNodePtr node)
@@ -141,6 +144,7 @@ bool StandardAsmGenerator::_ParseInstructions(SyntaxNodePtr node)
     return false;
 }
 
+
 // Here the node is a specific statement.
 void StandardAsmGenerator::_ParseStatement(SyntaxNodePtr node)
 {
@@ -167,11 +171,13 @@ SymbolTableBlockPtr StandardAsmGenerator::_GetSymbolTableBlock(SyntaxNodePtr nod
     return block;
 }
 
+
 void StandardAsmGenerator::_AddValue(SymbolTableEntryPtr entry, ValuePtr value)
 {
     TOMIC_ASSERT(entry && value);
     _valueMap[entry] = value;
 }
+
 
 ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntryPtr entry)
 {
@@ -185,7 +191,10 @@ ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntryPtr entry)
     }
 
     TOMIC_PANIC("Value not found");
+
+    return nullptr;
 }
+
 
 /*
  * SymbolTableEntry to LLVM type.
@@ -195,6 +204,7 @@ static TypePtr _GetVariableEntryType(LlvmContextPtr context, VariableEntryPtr en
 static TypePtr _GetConstantEntryType(LlvmContextPtr context, ConstantEntryPtr entry);
 static TypePtr _GetFunctionEntryType(LlvmContextPtr context, FunctionEntryPtr entry);
 static TypePtr _GetFunctionParamType(LlvmContextPtr context, FunctionParamPropertyPtr param);
+
 
 TypePtr StandardAsmGenerator::_GetEntryType(SymbolTableEntryPtr entry)
 {
@@ -211,7 +221,10 @@ TypePtr StandardAsmGenerator::_GetEntryType(SymbolTableEntryPtr entry)
     default:
         TOMIC_PANIC("Not implemented yet");
     }
+
+    return nullptr;
 }
+
 
 static TypePtr _GetVariableEntryType(LlvmContextPtr context, VariableEntryPtr entry)
 {
@@ -223,12 +236,15 @@ static TypePtr _GetVariableEntryType(LlvmContextPtr context, VariableEntryPtr en
         return ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(0));
     case 2:
         return ArrayType::Get(
-                ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(1)),
-                entry->ArraySize(0));
+            ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(1)),
+            entry->ArraySize(0));
     default:
         TOMIC_PANIC("Not implemented yet.");
     }
+
+    return nullptr;
 }
+
 
 static TypePtr _GetConstantEntryType(LlvmContextPtr context, ConstantEntryPtr entry)
 {
@@ -240,12 +256,15 @@ static TypePtr _GetConstantEntryType(LlvmContextPtr context, ConstantEntryPtr en
         return ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(0));
     case 2:
         return ArrayType::Get(
-                ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(1)),
-                entry->ArraySize(0));
+            ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(1)),
+            entry->ArraySize(0));
     default:
         TOMIC_PANIC("Not implemented yet.");
     }
+
+    return nullptr;
 }
+
 
 static TypePtr _GetFunctionEntryType(LlvmContextPtr context, FunctionEntryPtr entry)
 {
@@ -271,6 +290,7 @@ static TypePtr _GetFunctionEntryType(LlvmContextPtr context, FunctionEntryPtr en
     return FunctionType::Get(returnType, paramTypes);
 }
 
+
 static TypePtr _GetFunctionParamType(LlvmContextPtr context, FunctionParamPropertyPtr param)
 {
     switch (param->dimension)
@@ -281,11 +301,13 @@ static TypePtr _GetFunctionParamType(LlvmContextPtr context, FunctionParamProper
         return ArrayType::Get(context->GetInt32Ty(), param->size[0]);
     case 2:
         return ArrayType::Get(
-                ArrayType::Get(context->GetInt32Ty(), param->size[1]),
-                param->size[0]);
+            ArrayType::Get(context->GetInt32Ty(), param->size[1]),
+            param->size[0]);
     default:
         TOMIC_PANIC("Not implemented yet");
     }
+
+    return nullptr;
 }
 
 
@@ -299,6 +321,7 @@ FunctionPtr StandardAsmGenerator::_SetCurrentFunction(FunctionPtr function)
     return old;
 }
 
+
 BasicBlockPtr StandardAsmGenerator::_SetCurrentBasicBlock(BasicBlockPtr block)
 {
     TOMIC_ASSERT(_currentFunction && "Missing current function");
@@ -311,6 +334,7 @@ BasicBlockPtr StandardAsmGenerator::_SetCurrentBasicBlock(BasicBlockPtr block)
 
     return old;
 }
+
 
 InstructionPtr StandardAsmGenerator::_InsertInstruction(InstructionPtr instruction)
 {

@@ -26,10 +26,12 @@ void Value::PrintAsm(IAsmWriterPtr writer)
     TOMIC_PANIC("Not implemented!");
 }
 
+
 void Value::PrintUse(IAsmWriterPtr writer)
 {
     TOMIC_PANIC("Not implemented!");
 }
+
 
 void Value::PrintName(IAsmWriterPtr writer)
 {
@@ -77,6 +79,7 @@ void ConstantData::PrintAsm(IAsmWriterPtr writer)
     }
 }
 
+
 void ConstantData::PrintUse(IAsmWriterPtr writer)
 {
     GetType()->PrintAsm(writer);
@@ -99,6 +102,7 @@ void ConstantData::PrintUse(IAsmWriterPtr writer)
     }
 }
 
+
 /*
  * =========================== GlobalValue ===========================
  */
@@ -109,12 +113,14 @@ void GlobalValue::PrintName(IAsmWriterPtr writer)
     writer->Push(GetName());
 }
 
+
 void GlobalValue::PrintUse(IAsmWriterPtr writer)
 {
     GetType()->PrintAsm(writer);
     writer->PushSpace();
     PrintName(writer);
 }
+
 
 void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
 {
@@ -148,6 +154,7 @@ void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
 
     writer->PushNewLine();
 }
+
 
 /*
  * ============================ Function =============================
@@ -231,6 +238,7 @@ void Argument::PrintAsm(IAsmWriterPtr writer)
     writer->Push(StringUtil::IntToString(parent->GetSlotTracker()->Slot(this)));
 }
 
+
 void Argument::PrintUse(IAsmWriterPtr writer)
 {
     PrintAsm(writer);
@@ -262,12 +270,14 @@ void BasicBlock::PrintAsm(IAsmWriterPtr writer)
 
 }
 
+
 void BasicBlock::PrintUse(IAsmWriterPtr writer)
 {
     writer->Push("label");
     writer->PushSpace();
     PrintName(writer);
 }
+
 
 void BasicBlock::PrintName(IAsmWriterPtr writer)
 {
@@ -288,6 +298,7 @@ void Instruction::PrintName(IAsmWriterPtr writer)
     writer->Push(StringUtil::IntToString(ParentFunction()->GetSlotTracker()->Slot(this)));
 }
 
+
 void Instruction::PrintUse(IAsmWriterPtr writer)
 {
     TOMIC_ASSERT(!(GetType()->IsVoidTy()));
@@ -296,6 +307,7 @@ void Instruction::PrintUse(IAsmWriterPtr writer)
     writer->PushNext('%');
     writer->Push(StringUtil::IntToString(ParentFunction()->GetSlotTracker()->Slot(this)));
 }
+
 
 // %1 = alloca i32[, align 4]
 void AllocaInst::PrintAsm(IAsmWriterPtr writer)
@@ -309,6 +321,7 @@ void AllocaInst::PrintAsm(IAsmWriterPtr writer)
     writer->PushNewLine();
 }
 
+
 // store i32 1, i32* %3[, align 4]
 void StoreInst::PrintAsm(IAsmWriterPtr writer)
 {
@@ -321,6 +334,7 @@ void StoreInst::PrintAsm(IAsmWriterPtr writer)
 
     writer->PushNewLine();
 }
+
 
 /*
  * ========================== ReturnInst =============================
@@ -336,5 +350,6 @@ void ReturnInst::PrintAsm(IAsmWriterPtr writer)
     }
     writer->PushNewLine();
 }
+
 
 TOMIC_LLVM_END

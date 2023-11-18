@@ -19,13 +19,15 @@ Module::~Module()
     }
 }
 
+
 ModuleSmartPtr Module::New(const char* name)
 {
     return std::shared_ptr<Module>(new Module(name));
 }
 
+
 Module::Module(const char* name)
-        : _context(new LlvmContext()), _mainFunction(nullptr)
+    : _context(new LlvmContext()), _mainFunction(nullptr)
 {
     if (name)
     {
@@ -37,17 +39,20 @@ Module::Module(const char* name)
     }
 }
 
+
 void Module::AddGlobalVariable(GlobalVariablePtr globalVariable)
 {
     globalVariable->SetParent(this);
     _globalVariables.push_back(globalVariable);
 }
 
+
 void Module::AddFunction(FunctionPtr function)
 {
     function->SetParent(this);
     _functions.push_back(function);
 }
+
 
 void Module::SetMainFunction(FunctionPtr mainFunction)
 {

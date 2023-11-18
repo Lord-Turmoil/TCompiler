@@ -15,6 +15,7 @@ TOMIC_LLVM_BEGIN
 class StandardAsmWriter;
 using StandardAsmWriterPtr = std::shared_ptr<StandardAsmWriter>;
 
+
 class StandardAsmWriter : public IAsmWriter
 {
 public:
@@ -42,7 +43,7 @@ private:
     twio::IWriterPtr _writer;
 };
 
+
 TOMIC_LLVM_END
 
 #endif // _TOMIC_LLVM_STANDARD_ASM_WRITER_H_
-
