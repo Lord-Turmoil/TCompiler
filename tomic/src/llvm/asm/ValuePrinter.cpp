@@ -163,6 +163,48 @@ void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
     writer->PushNewLine();
 }
 
+// @.str.1 = private unnamed_addr constant [3 x i8] c".\0A\00", align 1
+void GlobalString::PrintAsm(IAsmWriterPtr writer)
+{
+    PrintName(writer);
+
+    writer->PushNext('=');
+    writer->PushNext("private unnamed_addr constant ");
+
+    GetType()->PrintAsm(writer);
+    writer->PushSpace();
+
+    // Here, we have to format the value with escape characters.
+    writer->Push('c');
+    writer->Push('"');
+    for (auto ch : _value)
+    {
+        switch (ch)
+        {
+        case '\n':
+            writer->Push("\\0A");
+            break;
+        case '\t':
+            writer->Push("\\09");
+            break;
+        case '\r':
+            writer->Push("\\0D");
+            break;
+        default:
+            writer->Push(ch);
+            break;
+        }
+    }
+    writer->Push("\\00");
+    writer->Push('"');
+
+    // Well, at least we are sure the alignment is 1 here.
+    writer->Push(", align 1");
+
+    writer->PushNewLine();
+}
+
+
 
 /*
  * ============================ Function =============================

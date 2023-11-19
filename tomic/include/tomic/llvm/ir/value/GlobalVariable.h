@@ -21,7 +21,7 @@ public:
 
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name);
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name,
-                                 ConstantDataPtr initializer);
+        ConstantDataPtr initializer);
 
     static bool classof(const ValueType type) { return type == ValueType::GlobalVariableTy; }
 
@@ -41,20 +41,29 @@ private:
 
 /*
  * It is used for private string literals used in the program.
+ * We will automatically generate an unique name for each string literal.
  */
 class GlobalString : public GlobalValue
 {
 public:
     ~GlobalString() override = default;
 
-    static GlobalStringPtr New(const std::string& value, const std::string& name);
+    static GlobalStringPtr New(LlvmContextPtr context, const std::string& value);
 
     static bool classof(const ValueType type) { return type == ValueType::GlobalStringTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
-    void PrintUse(IAsmWriterPtr writer) override;
+
+    const char* GetValue() const { return _value.c_str(); }
 
 private:
+    /*
+     * Since the type is not that easy to get, we delegate this tough
+     * work to the static method.
+     */
+    GlobalString(TypePtr type, std::string value, const std::string& name);
+
+    std::string _value;
 };
 
 
