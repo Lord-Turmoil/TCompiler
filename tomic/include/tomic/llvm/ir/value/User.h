@@ -41,6 +41,7 @@ protected:
     class value_iterator_impl : public use_base_iterator_base
     {
         friend class User;
+
     public:
         value_iterator_impl(_use_iterator_raw iter) : use_base_iterator_base(iter)
         {

@@ -14,9 +14,11 @@ TypePtr Type::GetVoidTy(LlvmContextPtr context)
     return context->GetVoidTy();
 }
 
+
 TypePtr Type::GetLabelTy(LlvmContextPtr context)
 {
     return context->GetLabelTy();
 }
+
 
 TOMIC_LLVM_END

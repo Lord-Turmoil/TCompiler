@@ -21,7 +21,7 @@ public:
 
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name);
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name,
-        ConstantDataPtr initializer);
+                                 ConstantDataPtr initializer);
 
     static bool classof(const ValueType type) { return type == ValueType::GlobalVariableTy; }
 

@@ -51,6 +51,7 @@ public:
         PointerTyID
     };
 
+
     static TypePtr GetVoidTy(LlvmContextPtr context);
     static TypePtr GetLabelTy(LlvmContextPtr context);
 

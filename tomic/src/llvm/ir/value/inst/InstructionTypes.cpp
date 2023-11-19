@@ -27,7 +27,7 @@ UnaryInstruction::UnaryInstruction(ValueType valueType, TypePtr type, ValuePtr o
 
 UnaryOperator::UnaryOperator(TypePtr type, ValuePtr operand, UnaryOpType opType)
     : UnaryInstruction(ValueType::UnaryOperatorTy, type, operand),
-    _opType(opType)
+      _opType(opType)
 {
 }
 
@@ -49,9 +49,9 @@ UnaryOperatorPtr UnaryOperator::New(UnaryOpType opType, ValuePtr operand)
 
 BinaryOperator::BinaryOperator(TypePtr type, ValuePtr lhs, ValuePtr rhs, BinaryOpType opType)
     : Instruction(ValueType::BinaryOperatorTy, type),
-    _opType(opType),
-    _leftOperand(lhs),
-    _rightOperand(rhs)
+      _opType(opType),
+      _leftOperand(lhs),
+      _rightOperand(rhs)
 {
     AddOperand(lhs);
     AddOperand(rhs);

@@ -40,7 +40,7 @@ AllocaInstPtr AllocaInst::New(TypePtr type, int alignment)
 
 LoadInst::LoadInst(TypePtr type, ValuePtr address)
     : UnaryInstruction(ValueType::LoadInstTy, type, address),
-    _address(address)
+      _address(address)
 {
 }
 
@@ -104,7 +104,7 @@ ReturnInst::ReturnInst(TypePtr type) :
 
 ReturnInst::ReturnInst(TypePtr type, ValuePtr value)
     : Instruction(ValueType::ReturnInstTy, type),
-    _value(value)
+      _value(value)
 {
     if (!value->GetType()->IsVoidTy())
     {
@@ -141,7 +141,7 @@ ReturnInstPtr ReturnInst::New(LlvmContextPtr context, ValuePtr value)
 
 CallInst::CallInst(FunctionPtr function)
     : Instruction(ValueType::CallInstTy, function->GetType()->As<FunctionType>()->ReturnType()),
-    _function(function)
+      _function(function)
 {
     AddOperand(_function);
 }
@@ -149,7 +149,7 @@ CallInst::CallInst(FunctionPtr function)
 
 CallInst::CallInst(FunctionPtr function, std::vector<ValuePtr> parameters)
     : Instruction(ValueType::CallInstTy, function->GetType()->As<FunctionType>()->ReturnType()),
-    _function(function), _parameters(std::move(parameters))
+      _function(function), _parameters(std::move(parameters))
 {
     AddOperand(_function);
     for (auto param : _parameters)

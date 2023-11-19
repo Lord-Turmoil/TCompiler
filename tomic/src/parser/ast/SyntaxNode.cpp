@@ -13,16 +13,16 @@ TOMIC_BEGIN
 
 SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type)
     : _tree(nullptr), _parent(nullptr),
-    _prev(nullptr), _next(nullptr), _firstChild(nullptr), _lastChild(nullptr),
-    _type(type), _nodeType(nodeType)
+      _prev(nullptr), _next(nullptr), _firstChild(nullptr), _lastChild(nullptr),
+      _type(type), _nodeType(nodeType)
 {
 }
 
 
 SyntaxNode::SyntaxNode(SyntaxNodeType nodeType, SyntaxType type, TokenPtr token)
     : _tree(nullptr), _parent(nullptr), _prev(nullptr),
-    _next(nullptr), _firstChild(nullptr), _lastChild(nullptr), _type(type),
-    _token(token), _nodeType(nodeType)
+      _next(nullptr), _firstChild(nullptr), _lastChild(nullptr), _type(type),
+      _token(token), _nodeType(nodeType)
 {
 }
 
@@ -127,6 +127,7 @@ SyntaxNodePtr SyntaxNode::RemoveChild(SyntaxNodePtr child)
     return _Unlink(child);
 }
 
+
 SyntaxNodePtr SyntaxNode::ChildAt(int index) const
 {
     auto node = _firstChild;
@@ -139,6 +140,7 @@ SyntaxNodePtr SyntaxNode::ChildAt(int index) const
 
     return node;
 }
+
 
 void SyntaxNode::_InsertChildPreamble(SyntaxNodePtr child)
 {

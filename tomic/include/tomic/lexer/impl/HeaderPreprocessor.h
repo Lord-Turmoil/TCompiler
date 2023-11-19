@@ -66,6 +66,7 @@ private:
     } _state;
 };
 
+
 TOMIC_END
 
 #endif // _TOMIC_HEADER_PREPROCESSOR_H_

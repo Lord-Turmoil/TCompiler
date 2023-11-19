@@ -22,10 +22,12 @@ class UnaryInstruction : public Instruction
 public:
     ~UnaryInstruction() override = default;
 
+
     static bool classof(const ValueType type)
     {
         return type == ValueType::LoadInstTy || type == ValueType::UnaryOperatorTy;
     }
+
 
     ValuePtr Operand() const { return _operand; }
 

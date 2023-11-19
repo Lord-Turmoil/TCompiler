@@ -124,7 +124,8 @@ void ToMiCompiler::Compile()
 
     // Configure all components.
     auto config = _impl->_config;
-    _impl->Configure([=](mioc::ServiceContainerPtr container) {
+    _impl->Configure([=](mioc::ServiceContainerPtr container)
+    {
         // Logger
         if (config->EnableLog)
         {
@@ -148,70 +149,76 @@ void ToMiCompiler::Compile()
         {
             container->AddSingleton<ILogger, DumbLogger>();
         }
-        })->Configure([=](mioc::ServiceContainerPtr container) {
-            // Error logger
-            if (config->EnableVerboseError)
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
+        // Error logger
+        if (config->EnableVerboseError)
+        {
+            container->AddSingleton<IErrorMapper, VerboseErrorMapper>()
+                     ->AddSingleton<IErrorLogger, VerboseErrorLogger, IErrorMapper>();
+        }
+        else
+        {
+            container->AddSingleton<IErrorMapper, StandardErrorMapper>()
+                     ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
+        }
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
+        // Lexical
+        container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
+                 ->AddTransient<IPreprocessor, HeaderPreprocessor>()
+                 //->AddTransient<IPreprocessor, DefaultPreprocessor>()
+                 ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
+                 ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
+        // Syntactic
+        if (config->EnableCompleteAst)
+        {
+            container->AddSingleton<ISyntaxMapper, CompleteSyntaxMapper>();
+        }
+        else
+        {
+            container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
+        }
+        container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper,
+                                IErrorLogger, ILogger>();
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
+        // Semantic
+        container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger, ILogger>();
+        container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
+        // Ast printer
+        if (config->EmitAst)
+        {
+            if (config->AstOutput.empty())
             {
-                container->AddSingleton<IErrorMapper, VerboseErrorMapper>()
-                    ->AddSingleton<IErrorLogger, VerboseErrorLogger, IErrorMapper>();
+                config->AstOutput = "ast.xml";
+            }
+            const char* astFilename = config->AstOutput.c_str();
+            if (StringUtil::EndsWith(astFilename, ".xml"))
+            {
+                container->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
+            }
+            else if (StringUtil::EndsWith(astFilename, ".json"))
+            {
+                container->AddTransient<IAstPrinter, JsonAstPrinter, ISyntaxMapper, ITokenMapper>();
             }
             else
             {
-                container->AddSingleton<IErrorMapper, StandardErrorMapper>()
-                    ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
+                container->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
             }
-            })->Configure([=](mioc::ServiceContainerPtr container) {
-                // Lexical
-                container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
-                    ->AddTransient<IPreprocessor, HeaderPreprocessor>()
-                    //->AddTransient<IPreprocessor, DefaultPreprocessor>()
-                    ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
-                    ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
-                })->Configure([=](mioc::ServiceContainerPtr container) {
-                    // Syntactic
-                    if (config->EnableCompleteAst)
-                    {
-                        container->AddSingleton<ISyntaxMapper, CompleteSyntaxMapper>();
-                    }
-                    else
-                    {
-                        container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
-                    }
-                    container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper,
-                        IErrorLogger, ILogger>();
-                    })->Configure([=](mioc::ServiceContainerPtr container) {
-                        // Semantic
-                        container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger, ILogger>();
-                        container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
-                        })->Configure([=](mioc::ServiceContainerPtr container) {
-                            // Ast printer
-                            if (config->EmitAst)
-                            {
-                                if (config->AstOutput.empty())
-                                {
-                                    config->AstOutput = "ast.xml";
-                                }
-                                const char* astFilename = config->AstOutput.c_str();
-                                if (StringUtil::EndsWith(astFilename, ".xml"))
-                                {
-                                    container->AddTransient<IAstPrinter, XmlAstPrinter, ISyntaxMapper, ITokenMapper>();
-                                }
-                                else if (StringUtil::EndsWith(astFilename, ".json"))
-                                {
-                                    container->AddTransient<IAstPrinter, JsonAstPrinter, ISyntaxMapper, ITokenMapper>();
-                                }
-                                else
-                                {
-                                    container->AddTransient<IAstPrinter, StandardAstPrinter, ISyntaxMapper, ITokenMapper>();
-                                }
-                            }
-                            })->Configure([=](mioc::ServiceContainerPtr container) {
-                                // LLVM
-                                container->AddTransient<llvm::IAsmGenerator, llvm::StandardAsmGenerator>();
-                                container->AddTransient<llvm::IAsmPrinter, llvm::StandardAsmPrinter>();
-                                });
+        }
+    })->Configure([=](mioc::ServiceContainerPtr container)
+    {
+        // LLVM
+        container->AddTransient<llvm::IAsmGenerator, llvm::StandardAsmGenerator>();
+        container->AddTransient<llvm::IAsmPrinter, llvm::StandardAsmPrinter>();
+    });
 
-                            _impl->Compile();
+    _impl->Compile();
 }
 
 
@@ -424,8 +431,8 @@ void ToMiCompilerImpl::_LogError()
     if (errorLogger->Count() > 0)
     {
         logger->LogFormat(LogLevel::FATAL,
-            "Compilation completed with %d errors",
-            errorLogger->Count());
+                          "Compilation completed with %d errors",
+                          errorLogger->Count());
     }
 }
 

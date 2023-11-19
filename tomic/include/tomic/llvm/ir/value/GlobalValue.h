@@ -20,10 +20,12 @@ class GlobalValue : public Constant
 public:
     ~GlobalValue() override = default;
 
+
     static bool classof(const ValueType type)
     {
         return type >= ValueType::GlobalValueTy;
     }
+
 
     void PrintUse(IAsmWriterPtr writer) override;
     void PrintName(IAsmWriterPtr writer) override;

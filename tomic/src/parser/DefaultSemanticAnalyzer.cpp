@@ -18,7 +18,7 @@ TOMIC_BEGIN
 
 DefaultSemanticAnalyzer::DefaultSemanticAnalyzer(IErrorLoggerPtr errorLogger, ILoggerPtr logger)
     : _errorLogger(errorLogger), _logger(logger),
-    _currentBlock(nullptr), _errorCandidate(nullptr)
+      _currentBlock(nullptr), _errorCandidate(nullptr)
 {
     TOMIC_ASSERT(_errorLogger);
     TOMIC_ASSERT(_logger);
@@ -292,7 +292,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-            ->Size(size);
+               ->Size(size);
     }
     else if (dim == 2)
     {
@@ -300,7 +300,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
         builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-            ->Size(size1, size2);
+               ->Size(size1, size2);
     }
     else
     {
@@ -437,14 +437,14 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
     if (dim == 0)
     {
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-            ->Build();
+                       ->Build();
     }
     else if (dim == 1)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-            ->Size(size)
-            ->Build();
+                       ->Size(size)
+                       ->Build();
     }
     else if (dim == 2)
     {
@@ -452,8 +452,8 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-            ->Size(size1, size2)
-            ->Build();
+                       ->Size(size1, size2)
+                       ->Build();
     }
     else
     {
@@ -1042,8 +1042,8 @@ bool DefaultSemanticAnalyzer::_ExitOutStmt(SyntaxNodePtr node)
         {
             _Log(LogLevel::ERROR, "Invalid argument type in OutStmt: %d", static_cast<int>(type));
             _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
-                "Invalid argument type in OutStmt: %d",
-                static_cast<int>(type));
+                      "Invalid argument type in OutStmt: %d",
+                      static_cast<int>(type));
         }
     }
 
@@ -1067,11 +1067,11 @@ bool DefaultSemanticAnalyzer::_DefaultExitExp(SyntaxNodePtr node)
         if (leftType != rightType)
         {
             _Log(LogLevel::ERROR, "Arithmetic type mismatch: %d != %d",
-                static_cast<int>(leftType),
-                static_cast<int>(rightType));
+                 static_cast<int>(leftType),
+                 static_cast<int>(rightType));
             _LogError(ErrorType::ERR_UNKNOWN, "Arithmetic type mismatch: %d != %d",
-                static_cast<int>(leftType),
-                static_cast<int>(rightType));
+                      static_cast<int>(leftType),
+                      static_cast<int>(rightType));
         }
         else
         {
@@ -1317,7 +1317,7 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(SyntaxNodePtr node)
     {
         _Log(LogLevel::ERROR, "Argument count mismatch: %d != %d", argc, entry->ArgsCount());
         _LogError(ErrorType::ERR_ARGUMENT_COUNT_MISMATCH, "Argument count mismatch: %d != %d", argc,
-            entry->ArgsCount());
+                  entry->ArgsCount());
     }
 
     // Check argument type.
@@ -1334,13 +1334,13 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(SyntaxNodePtr node)
             if ((argType != param->type) && (argType != SymbolValueType::VT_ANY))
             {
                 _Log(LogLevel::ERROR,
-                    "Argument type mismatch: %d != %d",
-                    static_cast<int>(argType),
-                    static_cast<int>(param->type));
+                     "Argument type mismatch: %d != %d",
+                     static_cast<int>(argType),
+                     static_cast<int>(param->type));
                 _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
-                    "Argument type mismatch: %d != %d",
-                    static_cast<int>(argType),
-                    static_cast<int>(param->type));
+                          "Argument type mismatch: %d != %d",
+                          static_cast<int>(argType),
+                          static_cast<int>(param->type));
                 continue;
             }
             if (argType == SymbolValueType::VT_ARRAY)
@@ -1348,13 +1348,13 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(SyntaxNodePtr node)
                 if (args[i]->IntAttribute("dim") != param->dimension)
                 {
                     _Log(LogLevel::ERROR,
-                        "Argument dimension mismatch: %d != %d",
-                        args[i]->IntAttribute("dim"),
-                        param->dimension);
+                         "Argument dimension mismatch: %d != %d",
+                         args[i]->IntAttribute("dim"),
+                         param->dimension);
                     _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
-                        "Argument dimension mismatch: %d != %d",
-                        args[i]->IntAttribute("dim"),
-                        param->dimension);
+                              "Argument dimension mismatch: %d != %d",
+                              args[i]->IntAttribute("dim"),
+                              param->dimension);
                     continue;
                 }
                 if (param->dimension == 2)
@@ -1362,13 +1362,13 @@ bool DefaultSemanticAnalyzer::_ExitFuncCall(SyntaxNodePtr node)
                     if (args[i]->IntAttribute("size") != param->size[1])
                     {
                         _Log(LogLevel::ERROR,
-                            "Argument size mismatch: %d != %d",
-                            args[i]->IntAttribute("size"),
-                            param->size[1]);
+                             "Argument size mismatch: %d != %d",
+                             args[i]->IntAttribute("size"),
+                             param->size[1]);
                         _LogError(ErrorType::ERR_ARGUMENT_TYPE_MISMATCH,
-                            "Argument size mismatch: %d != %d",
-                            args[i]->IntAttribute("size"),
-                            param->size[1]);
+                                  "Argument size mismatch: %d != %d",
+                                  args[i]->IntAttribute("size"),
+                                  param->size[1]);
                         continue;
                     }
                 }

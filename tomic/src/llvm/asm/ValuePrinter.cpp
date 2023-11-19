@@ -163,6 +163,7 @@ void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
     writer->PushNewLine();
 }
 
+
 // @.str.1 = private unnamed_addr constant [3 x i8] c".\0A\00", align 1
 void GlobalString::PrintAsm(IAsmWriterPtr writer)
 {
@@ -203,7 +204,6 @@ void GlobalString::PrintAsm(IAsmWriterPtr writer)
 
     writer->PushNewLine();
 }
-
 
 
 /*

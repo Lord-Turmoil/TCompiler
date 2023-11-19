@@ -84,9 +84,9 @@ void VerboseErrorLogger::Dumps(twio::IWriterPtr writer)
     for (auto entry = _entries.begin(); entry != last; entry++)
     {
         writer->WriteFormat("Line %d, Column %d: %s\n",
-            entry->_line,
-            entry->_column,
-            _mapper->Description(entry->_type));
+                            entry->_line,
+                            entry->_column,
+                            _mapper->Description(entry->_type));
         writer->WriteFormat("    %s\n", entry->_msg.c_str());
     }
 }

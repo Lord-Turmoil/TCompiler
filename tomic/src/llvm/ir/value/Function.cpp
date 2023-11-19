@@ -20,6 +20,7 @@ FunctionPtr Function::New(TypePtr returnType, const std::string& name)
     return func.get();
 }
 
+
 FunctionPtr Function::New(TypePtr returnType, const std::string& name, std::vector<ArgumentPtr> args)
 {
     std::vector<TypePtr> argTypes;
@@ -35,6 +36,7 @@ FunctionPtr Function::New(TypePtr returnType, const std::string& name, std::vect
     return func.get();
 }
 
+
 BasicBlockPtr Function::NewBasicBlock()
 {
     auto block = BasicBlock::New(this);
@@ -42,15 +44,18 @@ BasicBlockPtr Function::NewBasicBlock()
     return block;
 }
 
+
 TypePtr Function::ReturnType() const
 {
     return GetType()->As<FunctionType>()->ReturnType();
 }
 
+
 Function::Function(TypePtr type, const std::string& name)
     : GlobalValue(ValueType::FunctionTy, type, name)
 {
 }
+
 
 Function::Function(TypePtr type, const std::string& name, std::vector<ArgumentPtr> args)
     : GlobalValue(ValueType::FunctionTy, type, name), _args(std::move(args))
