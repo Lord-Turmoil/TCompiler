@@ -60,6 +60,9 @@ using GlobalValuePtr = GlobalValue*;
 class GlobalVariable;
 using GlobalVariablePtr = GlobalVariable*;
 
+class GlobalString;
+using GlobalStringPtr = GlobalString*;
+
 class Function;
 using FunctionPtr = Function*;
 

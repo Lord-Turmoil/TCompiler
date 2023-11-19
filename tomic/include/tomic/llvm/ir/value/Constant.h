@@ -22,10 +22,7 @@ class Constant : public User
 public:
     ~Constant() override = default;
 
-    static bool classof(const ValueType type)
-    {
-        return type >= ValueType::ConstantTy;
-    }
+    static bool classof(const ValueType type) { return type >= ValueType::ConstantTy; }
 
 protected:
     Constant(ValueType valueType, TypePtr type, UseListPtr operands)

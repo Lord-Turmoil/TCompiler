@@ -20,10 +20,7 @@ public:
 
     static ArgumentPtr New(TypePtr type, const std::string& name, int argNo);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::ArgumentTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::ArgumentTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
     void PrintUse(IAsmWriterPtr writer) override;

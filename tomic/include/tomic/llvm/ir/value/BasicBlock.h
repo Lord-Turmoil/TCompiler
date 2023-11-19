@@ -21,10 +21,7 @@ public:
 
     static BasicBlockPtr New(FunctionPtr parent = nullptr);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::BasicBlockTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::BasicBlockTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
     void PrintUse(IAsmWriterPtr writer) override;

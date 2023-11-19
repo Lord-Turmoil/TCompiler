@@ -20,10 +20,7 @@ public:
     static ConstantDataPtr New(TypePtr type, int value);
     static ConstantDataPtr New(std::vector<ConstantDataPtr> values);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::ConstantDataTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::ConstantDataTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
     /*

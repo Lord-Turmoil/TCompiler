@@ -44,10 +44,7 @@ public:
     static FunctionPtr New(TypePtr returnType, const std::string& name);
     static FunctionPtr New(TypePtr returnType, const std::string& name, std::vector<ArgumentPtr> args);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::FunctionTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::FunctionTy; }
 
     BasicBlockPtr NewBasicBlock();
 

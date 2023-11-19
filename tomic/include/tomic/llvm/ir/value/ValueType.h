@@ -44,6 +44,7 @@ enum class ValueType
     GlobalValueTy,
     FunctionTy,
     GlobalVariableTy,
+    GlobalStringTy,
 };
 
 

@@ -30,10 +30,7 @@ public:
     virtual ~Value() = default;
 
 
-    static bool classof(ValueType type)
-    {
-        return true;
-    }
+    static bool classof(ValueType type) { return true; }
 
 
     /*

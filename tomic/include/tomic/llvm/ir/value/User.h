@@ -17,10 +17,7 @@ class User : public Value
 public:
     ~User() override = default;
 
-    static bool classof(ValueType type)
-    {
-        return type >= ValueType::BinaryOperatorTy;
-    }
+    static bool classof(ValueType type) { return type >= ValueType::BinaryOperatorTy; }
 
     bool IsUser() const override { return true; }
 

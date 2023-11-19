@@ -34,10 +34,7 @@ public:
 
     static AllocaInstPtr New(TypePtr type, int alignment = 0);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::AllocaInstTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::AllocaInstTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
     bool IsAlloca() const override { return true; }
@@ -68,10 +65,7 @@ public:
     // Auto resolve type.
     static LoadInstPtr New(ValuePtr address);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::LoadInstTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::LoadInstTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
@@ -106,10 +100,7 @@ public:
 
     static StoreInstPtr New(ValuePtr value, ValuePtr address);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::StoreInstTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::StoreInstTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
@@ -137,10 +128,7 @@ public:
     static ReturnInstPtr New(LlvmContextPtr context, ValuePtr value);
     static ReturnInstPtr New(LlvmContextPtr context);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::ReturnInstTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::ReturnInstTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
@@ -170,10 +158,7 @@ public:
     static CallInstPtr New(FunctionPtr function);
     static CallInstPtr New(FunctionPtr function, std::vector<ValuePtr> parameters);
 
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::CallInstTy;
-    }
+    static bool classof(const ValueType type) { return type == ValueType::CallInstTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
