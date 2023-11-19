@@ -51,6 +51,8 @@ public:
         PointerTyID
     };
 
+    static TypePtr GetVoidTy(LlvmContextPtr context);
+    static TypePtr GetLabelTy(LlvmContextPtr context);
 
     TypeID TypeId() const { return _typeId; }
     LlvmContextPtr Context() const { return _context; }

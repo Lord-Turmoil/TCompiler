@@ -30,7 +30,7 @@ void Type::PrintAsm(IAsmWriterPtr writer)
         writer->Push("void");
         break;
     case LabelTyID:
-        // Nothing for a label, I guess?
+        writer->Push("label");
         break;
     default:
         TOMIC_PANIC("Should not reach here!");

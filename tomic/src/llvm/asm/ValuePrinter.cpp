@@ -21,8 +21,8 @@ TOMIC_LLVM_BEGIN
 /*
  * ============================== Value ==============================
  */
-
-    void Value::PrintAsm(IAsmWriterPtr writer)
+//
+void Value::PrintAsm(IAsmWriterPtr writer)
 {
     TOMIC_PANIC("Not implemented!");
 }
@@ -279,7 +279,7 @@ void BasicBlock::PrintAsm(IAsmWriterPtr writer)
 
 void BasicBlock::PrintUse(IAsmWriterPtr writer)
 {
-    writer->Push("label");
+    GetType()->PrintAsm(writer);
     writer->PushSpace();
     PrintName(writer);
 }
