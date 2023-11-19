@@ -278,7 +278,7 @@ ValuePtr StandardAsmGenerator::_ParseExpression(SyntaxNodePtr node)
     if (node->BoolAttribute("det"))
     {
         int value = node->IntAttribute("value");
-        auto type = context->GetInt32Ty();
+        auto type = IntegerType::Get(context, 32);
         return ConstantData::New(type, value);
     }
 
@@ -293,7 +293,7 @@ ValuePtr StandardAsmGenerator::_ParseAddExp(SyntaxNodePtr node)
     if (node->BoolAttribute("det"))
     {
         int value = node->IntAttribute("value");
-        auto type = context->GetInt32Ty();
+        auto type = IntegerType::Get(context, 32);
         return ConstantData::New(type, value);
     }
 
@@ -327,7 +327,7 @@ ValuePtr StandardAsmGenerator::_ParseMulExp(SyntaxNodePtr node)
     if (node->BoolAttribute("det"))
     {
         int value = node->IntAttribute("value");
-        auto type = context->GetInt32Ty();
+        auto type = IntegerType::Get(context, 32);
         return ConstantData::New(type, value);
     }
 
@@ -417,7 +417,7 @@ ValuePtr StandardAsmGenerator::_ParseLVal(SyntaxNodePtr node)
         return nullptr;
     }
 
-    return _InsertInstruction(LoadInst::New(_GetLValValue(node)));
+     return _InsertInstruction(LoadInst::New(_GetLValValue(node)));
 }
 
 

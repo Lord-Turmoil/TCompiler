@@ -31,7 +31,7 @@ TOMIC_LLVM_BEGIN
  *      \- BasicBlock
  *          \- Instruction
  */
-
+//
 class Function final : public GlobalValue
 {
 public:
@@ -40,7 +40,10 @@ public:
 
     ~Function() override = default;
 
-    static FunctionPtr New(TypePtr type, const std::string& name);
+    static FunctionPtr New(TypePtr returnType, const std::string& name);
+    static FunctionPtr New(TypePtr returnType, const std::string& name, std::vector<ArgumentPtr> args);
+
+    BasicBlockPtr NewBasicBlock();
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
@@ -68,6 +71,7 @@ public:
 
 private:
     Function(TypePtr type, const std::string& name);
+    Function(TypePtr type, const std::string& name, std::vector<ArgumentPtr> args);
 
 private:
     // We can generate arguments via its type.

@@ -11,19 +11,47 @@
 
 TOMIC_LLVM_BEGIN
 
-FunctionPtr Function::New(TypePtr type, const std::string& name)
+FunctionPtr Function::New(TypePtr returnType, const std::string& name)
 {
-    auto func = std::shared_ptr<Function>(new Function(type, name));
+    auto func = std::shared_ptr<Function>(new Function(FunctionType::Get(returnType), name));
 
-    type->Context()->StoreValue(func);
+    returnType->Context()->StoreValue(func);
 
     return func.get();
 }
 
+FunctionPtr Function::New(TypePtr returnType, const std::string& name, std::vector<ArgumentPtr> args)
+{
+    std::vector<TypePtr> argTypes;
+    for (auto arg : args)
+    {
+        argTypes.push_back(arg->GetType());
+    }
+
+    auto func = std::shared_ptr<Function>(new Function(FunctionType::Get(returnType, argTypes), name, std::move(args)));
+
+    returnType->Context()->StoreValue(func);
+
+    return func.get();
+}
+
+BasicBlockPtr Function::NewBasicBlock()
+{
+    return BasicBlock::New(this);
+}
 
 Function::Function(TypePtr type, const std::string& name)
     : GlobalValue(ValueType::FunctionTy, type, name)
 {
+}
+
+Function::Function(TypePtr type, const std::string& name, std::vector<ArgumentPtr> args)
+    : GlobalValue(ValueType::FunctionTy, type, name), _args(std::move(args))
+{
+    for (auto arg : _args)
+    {
+        arg->SetParent(this);
+    }
 }
 
 

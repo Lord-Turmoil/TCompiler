@@ -62,6 +62,7 @@ private:
     ValuePtr _GetLValValue(SyntaxNodePtr node);
 
     TypePtr _GetEntryType(SymbolTableEntryPtr entry);
+    TypePtr _GetNodeType(SyntaxNodePtr node);
 
     /*
      * Set the current function and basic block.
@@ -83,7 +84,9 @@ private:
     bool _ParseCompilationUnit();
 
     FunctionPtr _ParseMainFunction(SyntaxNodePtr node);
-    // FunctionPtr _GenerateFunction(SyntaxNodePtr node);
+    FunctionPtr _ParseFunction(SyntaxNodePtr node);
+    ArgumentPtr _ParseArgument(SyntaxNodePtr node, int argNo, SymbolTableBlockPtr block);
+    BasicBlockPtr _InitFunctionParams(FunctionPtr function, SymbolTableBlockPtr block);
 
     /*
      * Parent entrance for generating instructions. Basic blocks will be

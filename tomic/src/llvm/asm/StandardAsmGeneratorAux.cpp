@@ -4,6 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
+#include <charconv>
 #include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
 #include <tomic/llvm/ir/Module.h>
 #include <tomic/llvm/ir/LlvmContext.h>
@@ -27,6 +28,8 @@
 
 #include <tomic/utils/SymbolTableUtil.h>
 #include <tomic/utils/SemanticUtil.h>
+
+#include <vector>
 
 TOMIC_LLVM_BEGIN
 
@@ -62,19 +65,11 @@ bool StandardAsmGenerator::_ParseCompilationUnit()
         }
         else if (it->Type() == SyntaxType::ST_FUNC_DEF)
         {
-            TOMIC_PANIC("Not implemented yet");
+            _ParseFunction(it);
         }
         else if (it->Type() == SyntaxType::ST_MAIN_FUNC_DEF)
         {
-            auto mainFunc = _ParseMainFunction(it);
-
-            // TODO: Error handling.
-            if (!mainFunc)
-            {
-                return false;
-            }
-
-            _module->SetMainFunction(mainFunc);
+            _ParseMainFunction(it);
         }
         else
         {
@@ -91,23 +86,101 @@ FunctionPtr StandardAsmGenerator::_ParseMainFunction(SyntaxNodePtr node)
     auto context = _module->Context();
 
     // Generate the main function.
-    TypePtr returnType = IntegerType::Get(context, 32);
-    TypePtr funcType = FunctionType::Get(returnType);
-    FunctionPtr function = Function::New(funcType, "main");
-
-    // Generate the first basic block.
-    BasicBlockPtr block = BasicBlock::New(function);
+    FunctionPtr function = Function::New(IntegerType::Get(context, 32), "main");
 
     // Set the current function and basic block as parents.
     _SetCurrentFunction(function);
-    _SetCurrentBasicBlock(block);
+    _SetCurrentBasicBlock(function->NewBasicBlock());
 
     // Generate all instructions in the main function.
     node->Accept(this);
 
+    _module->SetMainFunction(function);
+
     return function;
 }
 
+
+// node is a FuncDef
+FunctionPtr StandardAsmGenerator::_ParseFunction(SyntaxNodePtr node)
+{
+    // Get return type.
+    auto decl = node->FirstChild();
+    TypePtr returnType = _GetNodeType(decl);
+
+    /*
+     * Since arguments are in symbol table of body, so we have to
+     * get them from the symbol table of the body.
+     */
+    auto block = _GetSymbolTableBlock(node->LastChild());
+    std::vector<ArgumentPtr> args;
+    auto params = SemanticUtil::GetChildNode(decl, SyntaxType::ST_FUNC_FPARAMS);
+    if (params && params->HasChildren())
+    {
+        int argNo = 0;
+        for (auto param = params->FirstChild(); param; param = param->NextSibling())
+        {
+            if (param->Type() == SyntaxType::ST_FUNC_FPARAM)
+            {
+                args.push_back(_ParseArgument(param, argNo++, block));
+            }
+        }
+    }
+
+    // Get function.
+    const std::string& name = decl->ChildAt(1)->Token()->lexeme;
+    auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
+    FunctionPtr function = Function::New(returnType, name, args);
+    auto body = _InitFunctionParams(function, block);
+
+    // Set the current function and basic block as parents.
+    _SetCurrentFunction(function);
+    _SetCurrentBasicBlock(body);
+
+    // Before we continue, we should add function to our value map.
+    _AddValue(entry, function);
+
+    // Generate all instructions in the main function.
+    node->Accept(this);
+
+    _module->AddFunction(function);
+
+    return function;
+}
+
+
+ArgumentPtr StandardAsmGenerator::_ParseArgument(SyntaxNodePtr node, int argNo, SymbolTableBlockPtr block)
+{
+    std::string name = node->Attribute("name");
+    auto entry = block->FindEntry(name);
+    TOMIC_ASSERT(entry);
+    return Argument::New(_GetEntryType(entry), name, argNo);
+}
+
+
+BasicBlockPtr StandardAsmGenerator::_InitFunctionParams(FunctionPtr function, SymbolTableBlockPtr block)
+{
+    auto body = BasicBlock::New(function);
+
+    std::vector<ValuePtr> allocas;
+
+    for (auto it = function->ArgBegin(); it != function->ArgEnd(); ++it)
+    {
+        auto alloca = AllocaInst::New((*it)->GetType());
+        auto entry = block->FindEntry((*it)->GetName());
+        body->InsertInstruction(alloca);
+        allocas.push_back(alloca);
+        _AddValue(entry, alloca);
+    }
+    for (auto it = function->ArgBegin(); it != function->ArgEnd(); ++it)
+    {
+        body->InsertInstruction(StoreInst::New(*it, allocas[it - function->ArgBegin()]));
+    }
+
+    function->InsertBasicBlock(body);
+
+    return body;
+}
 
 // Here, node is a BlockItem.
 bool StandardAsmGenerator::_ParseInstructions(SyntaxNodePtr node)
@@ -150,7 +223,7 @@ void StandardAsmGenerator::_ParseStatement(SyntaxNodePtr node)
 {
     switch (node->Type())
     {
-    case  SyntaxType::ST_RETURN_STMT:
+    case SyntaxType::ST_RETURN_STMT:
         _ParseReturnStatement(node);
         break;
     case SyntaxType::ST_ASSIGNMENT_STMT:
@@ -202,6 +275,7 @@ ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntryPtr entry)
     return nullptr;
 }
 
+
 // node is a LVal
 ValuePtr StandardAsmGenerator::_GetLValValue(SyntaxNodePtr node)
 {
@@ -209,6 +283,7 @@ ValuePtr StandardAsmGenerator::_GetLValValue(SyntaxNodePtr node)
     auto entry = block->FindEntry(node->FirstChild()->Token()->lexeme);
     return _GetValue(entry);
 }
+
 
 /*
  * SymbolTableEntry to LLVM type.
@@ -240,17 +315,35 @@ TypePtr StandardAsmGenerator::_GetEntryType(SymbolTableEntryPtr entry)
 }
 
 
+TypePtr StandardAsmGenerator::_GetNodeType(SyntaxNodePtr node)
+{
+    TOMIC_ASSERT(node->HasAttribute("type"));
+
+    switch (static_cast<SymbolValueType>(node->IntAttribute("type")))
+    {
+    case SymbolValueType::VT_INT:
+        return IntegerType::Get(_module->Context(), 32);
+    case SymbolValueType::VT_VOID:
+        return Type::GetVoidTy(_module->Context());
+    default:
+        TOMIC_PANIC("Type not supported");
+    }
+
+    return nullptr;
+}
+
+
 static TypePtr _GetVariableEntryType(LlvmContextPtr context, VariableEntryPtr entry)
 {
     switch (entry->Dimension())
     {
     case 0:
-        return context->GetInt32Ty();
+        return IntegerType::Get(context, 32);
     case 1:
-        return ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(0));
+        return ArrayType::Get(IntegerType::Get(context, 32), entry->ArraySize(0));
     case 2:
         return ArrayType::Get(
-            ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(1)),
+            ArrayType::Get(IntegerType::Get(context, 32), entry->ArraySize(1)),
             entry->ArraySize(0));
     default:
         TOMIC_PANIC("Not implemented yet.");
@@ -265,12 +358,12 @@ static TypePtr _GetConstantEntryType(LlvmContextPtr context, ConstantEntryPtr en
     switch (entry->Dimension())
     {
     case 0:
-        return context->GetInt32Ty();
+        return IntegerType::Get(context, 32);
     case 1:
-        return ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(0));
+        return ArrayType::Get(IntegerType::Get(context, 32), entry->ArraySize(0));
     case 2:
         return ArrayType::Get(
-            ArrayType::Get(context->GetInt32Ty(), entry->ArraySize(1)),
+            ArrayType::Get(IntegerType::Get(context, 32), entry->ArraySize(1)),
             entry->ArraySize(0));
     default:
         TOMIC_PANIC("Not implemented yet.");
@@ -286,10 +379,10 @@ static TypePtr _GetFunctionEntryType(LlvmContextPtr context, FunctionEntryPtr en
     switch (entry->Type())
     {
     case SymbolValueType::VT_INT:
-        returnType = context->GetInt32Ty();
+        returnType = IntegerType::Get(context, 32);
         break;
     case SymbolValueType::VT_VOID:
-        returnType = context->GetVoidTy();
+        returnType = Type::GetVoidTy(context);
         break;
     default:
         TOMIC_PANIC("Not implemented yet");
@@ -310,12 +403,12 @@ static TypePtr _GetFunctionParamType(LlvmContextPtr context, FunctionParamProper
     switch (param->dimension)
     {
     case 0:
-        return context->GetInt32Ty();
+        return IntegerType::Get(context, 32);
     case 1:
-        return ArrayType::Get(context->GetInt32Ty(), param->size[0]);
+        return ArrayType::Get(IntegerType::Get(context, 32), param->size[0]);
     case 2:
         return ArrayType::Get(
-            ArrayType::Get(context->GetInt32Ty(), param->size[1]),
+            ArrayType::Get(IntegerType::Get(context, 32), param->size[1]),
             param->size[0]);
     default:
         TOMIC_PANIC("Not implemented yet");
@@ -343,8 +436,15 @@ BasicBlockPtr StandardAsmGenerator::_SetCurrentBasicBlock(BasicBlockPtr block)
     auto old = _currentBlock;
     _currentBlock = block;
 
-    // Add the basic block to the function.
-    _currentFunction->InsertBasicBlock(block);
+    /*
+     * 2023/11/19 TS:
+     * Add the basic block to the function if necessary.
+     * The block may already be in the function!
+     */
+    if (block->Parent() != _currentFunction)
+    {
+        _currentFunction->InsertBasicBlock(block);
+    }
 
     return old;
 }

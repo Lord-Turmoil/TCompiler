@@ -211,7 +211,7 @@ void Function::PrintAsm(IAsmWriterPtr writer)
         arg->GetType()->PrintAsm(writer);
 
         writer->PushNext('%');
-        writer->Push(GetSlotTracker()->Slot(arg));
+        writer->Push(StringUtil::IntToString(GetSlotTracker()->Slot(arg)));
     }
     writer->Push(')');
 
@@ -227,6 +227,8 @@ void Function::PrintAsm(IAsmWriterPtr writer)
 
     // End of function.
     writer->Push('}');
+
+    writer->PushNewLine();
 }
 
 

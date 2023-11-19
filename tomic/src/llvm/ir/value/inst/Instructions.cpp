@@ -107,7 +107,7 @@ ReturnInst::ReturnInst(TypePtr type, ValuePtr value)
 
 ReturnInstPtr ReturnInst::New(LlvmContextPtr context)
 {
-    auto type = context->GetVoidTy();
+    auto type = Type::GetVoidTy(context);
     auto inst = std::shared_ptr<ReturnInst>(new ReturnInst(type));
 
     context->StoreValue(inst);
@@ -118,7 +118,7 @@ ReturnInstPtr ReturnInst::New(LlvmContextPtr context)
 
 ReturnInstPtr ReturnInst::New(LlvmContextPtr context, ValuePtr value)
 {
-    auto type = context->GetVoidTy();
+    auto type = Type::GetVoidTy(context);
     auto inst = std::shared_ptr<ReturnInst>(new ReturnInst(type, value));
 
     context->StoreValue(inst);

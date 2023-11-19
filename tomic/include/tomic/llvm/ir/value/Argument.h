@@ -18,18 +18,19 @@ class Argument final : public Value
 public:
     ~Argument() override = default;
 
-    static ArgumentPtr New(TypePtr type, FunctionPtr parent, int argNo);
+    static ArgumentPtr New(TypePtr type, const std::string& name, int argNo);
 
     void PrintAsm(IAsmWriterPtr writer) override;
     void PrintUse(IAsmWriterPtr writer) override;
 
     bool IsArgument() const override { return true; }
 
+    void SetParent(FunctionPtr parent) { _parent = parent; }
     FunctionPtr Parent() const { return _parent; }
     int ArgNo() const { return _argNo; }
 
 private:
-    Argument(TypePtr type, FunctionPtr parent, int argNo);
+    Argument(TypePtr type, const std::string& name, int argNo);
 
     FunctionPtr _parent;
     int _argNo;

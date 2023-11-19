@@ -10,9 +10,9 @@
 
 TOMIC_LLVM_BEGIN
 
-ArgumentPtr Argument::New(TypePtr type, FunctionPtr parent, int argNo)
+ArgumentPtr Argument::New(TypePtr type, const std::string& name, int argNo)
 {
-    auto arg = std::shared_ptr<Argument>(new Argument(type, parent, argNo));
+    auto arg = std::shared_ptr<Argument>(new Argument(type, name, argNo));
 
     type->Context()->StoreValue(arg);
 
@@ -20,9 +20,10 @@ ArgumentPtr Argument::New(TypePtr type, FunctionPtr parent, int argNo)
 }
 
 
-Argument::Argument(TypePtr type, FunctionPtr parent, int argNo)
-    : Value(ValueType::ArgumentTy, type), _parent(parent), _argNo(argNo)
+Argument::Argument(TypePtr type, const std::string& name, int argNo)
+    : Value(ValueType::ArgumentTy, type), _parent(nullptr), _argNo(argNo)
 {
+    SetName(name);
 }
 
 
