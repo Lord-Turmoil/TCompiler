@@ -26,12 +26,12 @@ public:
     SymbolTableBlockPtr Parent() const { return _parent; }
 
     // Warning: Add entry do not check legality.
-    SymbolTableBlockPtr AddEntry(SymbolTableEntrySmartPtr entry);
+    SymbolTableBlockPtr AddEntry(SymbolTableEntryPtr entry);
 
     // Find entry in this block and its ancestors.
-    SymbolTableEntrySmartPtr FindEntry(const std::string& name) const;
+    SymbolTableEntryPtr FindEntry(const std::string& name) const;
     // Find entry in this block only.
-    SymbolTableEntrySmartPtr FindLocalEntry(const std::string& name) const;
+    SymbolTableEntryPtr FindLocalEntry(const std::string& name) const;
 
 private:
     SymbolTableBlock(int id, SymbolTable* table, SymbolTableBlockPtr parent)
@@ -52,7 +52,7 @@ private:
     SymbolTable* _table;
     SymbolTableBlockPtr _parent;
 
-    std::vector<SymbolTableEntrySmartPtr> _entries;
+    std::vector<SymbolTableEntryPtr> _entries;
 };
 
 

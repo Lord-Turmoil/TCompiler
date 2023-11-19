@@ -179,18 +179,18 @@ SymbolTableBlockPtr StandardAsmGenerator::_GetSymbolTableBlock(SyntaxNodePtr nod
 }
 
 
-void StandardAsmGenerator::_AddValue(SymbolTableEntrySmartPtr entry, ValuePtr value)
+void StandardAsmGenerator::_AddValue(SymbolTableEntryPtr entry, ValuePtr value)
 {
     TOMIC_ASSERT(entry && value);
-    _valueMap[entry.get()] = value;
+    _valueMap[entry] = value;
 }
 
 
-ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntrySmartPtr entry)
+ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntryPtr entry)
 {
     TOMIC_ASSERT(entry);
 
-    auto it = _valueMap.find(entry.get());
+    auto it = _valueMap.find(entry);
 
     if (it != _valueMap.end())
     {
@@ -220,7 +220,7 @@ static TypePtr _GetFunctionEntryType(LlvmContextPtr context, FunctionEntryPtr en
 static TypePtr _GetFunctionParamType(LlvmContextPtr context, FunctionParamPropertyPtr param);
 
 
-TypePtr StandardAsmGenerator::_GetEntryType(SymbolTableEntrySmartPtr entry)
+TypePtr StandardAsmGenerator::_GetEntryType(SymbolTableEntryPtr entry)
 {
     auto context = _module->Context();
 

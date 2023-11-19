@@ -350,6 +350,11 @@ bool QueryBoolAttribute(const SyntaxNodePtr node, const char* name, bool* value,
 // Get Inherited Attribute value
 bool HasInheritedAttribute(const SyntaxNodePtr node, const char* name)
 {
+    if (node->HasAttribute(name))
+    {
+        return true;
+    }
+
     SyntaxNodePtr parent = node->Parent();
     while (parent)
     {
@@ -366,6 +371,11 @@ bool HasInheritedAttribute(const SyntaxNodePtr node, const char* name)
 
 const char* GetInheritedAttribute(const SyntaxNodePtr node, const char* name, const char* defaultValue)
 {
+    if (node->HasAttribute(name))
+    {
+        return node->Attribute(name, defaultValue);
+    }
+
     SyntaxNodePtr parent = node->Parent();
     while (parent)
     {
@@ -382,6 +392,11 @@ const char* GetInheritedAttribute(const SyntaxNodePtr node, const char* name, co
 
 int GetInheritedIntAttribute(const SyntaxNodePtr node, const char* name, int defaultValue)
 {
+    if (node->HasAttribute(name))
+    {
+        return node->IntAttribute(name, defaultValue);
+    }
+
     SyntaxNodePtr parent = node->Parent();
     while (parent)
     {
@@ -398,6 +413,11 @@ int GetInheritedIntAttribute(const SyntaxNodePtr node, const char* name, int def
 
 bool GetInheritedBoolAttribute(const SyntaxNodePtr node, const char* name, bool defaultValue)
 {
+    if (node->HasAttribute(name))
+    {
+        return node->BoolAttribute(name, defaultValue);
+    }
+
     SyntaxNodePtr parent = node->Parent();
     while (parent)
     {

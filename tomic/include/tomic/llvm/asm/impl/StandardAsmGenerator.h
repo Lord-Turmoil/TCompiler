@@ -57,11 +57,11 @@ private:
 private:
     SymbolTableBlockPtr _GetSymbolTableBlock(SyntaxNodePtr node) const;
 
-    void _AddValue(SymbolTableEntrySmartPtr entry, ValuePtr value);
-    ValuePtr _GetValue(SymbolTableEntrySmartPtr entry);
+    void _AddValue(SymbolTableEntryPtr entry, ValuePtr value);
+    ValuePtr _GetValue(SymbolTableEntryPtr entry);
     ValuePtr _GetLValValue(SyntaxNodePtr node);
 
-    TypePtr _GetEntryType(SymbolTableEntrySmartPtr entry);
+    TypePtr _GetEntryType(SymbolTableEntryPtr entry);
 
     /*
      * Set the current function and basic block.

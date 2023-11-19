@@ -19,8 +19,7 @@ using SymbolTableBlockPtr = SymbolTableBlock*;
 using SymbolTableBlockSmartPtr = std::shared_ptr<SymbolTableBlock>;
 
 class SymbolTableEntry;
-using SymbolTableEntryPtr = SymbolTableEntry*;
-using SymbolTableEntrySmartPtr = std::shared_ptr<SymbolTableEntry>;
+using SymbolTableEntryPtr = std::shared_ptr<SymbolTableEntry>;
 
 TOMIC_END
 
