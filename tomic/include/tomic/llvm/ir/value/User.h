@@ -41,8 +41,9 @@ protected:
     }
 
 protected:
-    class value_iterator_impl : use_base_iterator_base
+    class value_iterator_impl : public use_base_iterator_base
     {
+        friend class User;
     public:
         value_iterator_impl(_use_iterator_raw iter) : use_base_iterator_base(iter)
         {
@@ -66,6 +67,7 @@ public:
 
     value_iterator OperandBegin() { return value_iterator(_useList.begin()); }
     value_iterator OperandEnd() { return value_iterator(_useList.end()); }
+    value_iterator RemoveOperand(value_iterator iter) { return _useList.erase(iter._iter); }
 
     ValuePtr OperandAt(int index) const { return _useList[index]->GetValue(); }
     void AddOperand(ValuePtr value);

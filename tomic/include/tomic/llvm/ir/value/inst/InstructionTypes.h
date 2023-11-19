@@ -27,10 +27,12 @@ public:
         return type == ValueType::LoadInstTy || type == ValueType::UnaryOperatorTy;
     }
 
-    ValuePtr Operand() const { return OperandAt(0); }
+    ValuePtr Operand() const { return _operand; }
 
 protected:
     UnaryInstruction(ValueType valueType, TypePtr type, ValuePtr operand);
+
+    ValuePtr _operand;
 };
 
 
@@ -102,13 +104,15 @@ public:
 
     BinaryOpType OpType() const { return _opType; }
 
-    ValuePtr LeftOperand() const { return OperandAt(0); }
-    ValuePtr RightOperand() const { return OperandAt(1); }
+    ValuePtr LeftOperand() const { return _leftOperand; }
+    ValuePtr RightOperand() const { return _rightOperand; }
 
 private:
     BinaryOperator(TypePtr type, ValuePtr lhs, ValuePtr rhs, BinaryOpType opType);
 
     BinaryOpType _opType;
+    ValuePtr _leftOperand;
+    ValuePtr _rightOperand;
 };
 
 

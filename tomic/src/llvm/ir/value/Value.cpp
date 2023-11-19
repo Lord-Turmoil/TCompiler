@@ -17,11 +17,9 @@ LlvmContextPtr Value::Context() const
 }
 
 
-void Value::AddUser(UserPtr user)
+void Value::AddUser(UsePtr user)
 {
-    auto use = Use::New(user, this);
-    AddUse(use);
-    user->AddUse(use);
+    _userList.push_back(user);
 }
 
 

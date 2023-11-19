@@ -90,6 +90,9 @@ using LoadInstPtr = LoadInst*;
 class StoreInst;
 using StoreInstPtr = StoreInst*;
 
+class CallInst;
+using CallInstPtr = CallInst*;
+
 class ReturnInst;
 using ReturnInstPtr = ReturnInst*;
 

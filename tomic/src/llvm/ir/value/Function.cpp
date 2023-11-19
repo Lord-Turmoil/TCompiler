@@ -42,6 +42,11 @@ BasicBlockPtr Function::NewBasicBlock()
     return block;
 }
 
+TypePtr Function::ReturnType() const
+{
+    return GetType()->As<FunctionType>()->ReturnType();
+}
+
 Function::Function(TypePtr type, const std::string& name)
     : GlobalValue(ValueType::FunctionTy, type, name)
 {

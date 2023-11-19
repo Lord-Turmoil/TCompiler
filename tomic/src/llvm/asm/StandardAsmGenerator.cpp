@@ -259,6 +259,7 @@ ReturnInstPtr StandardAsmGenerator::_ParseReturnStatement(SyntaxNodePtr node)
     return inst;
 }
 
+
 void StandardAsmGenerator::_ParseAssignStatement(SyntaxNodePtr node)
 {
     TOMIC_ASSERT(node->Type() == SyntaxType::ST_ASSIGNMENT_STMT);
@@ -269,6 +270,7 @@ void StandardAsmGenerator::_ParseAssignStatement(SyntaxNodePtr node)
 
     _InsertInstruction(StoreInst::New(value, address));
 }
+
 
 // node is an Exp or ConstExp.
 ValuePtr StandardAsmGenerator::_ParseExpression(SyntaxNodePtr node)
@@ -365,8 +367,7 @@ ValuePtr StandardAsmGenerator::_ParseUnaryExp(SyntaxNodePtr node)
     }
     if (node->FirstChild()->Type() == SyntaxType::ST_FUNC_CALL)
     {
-        TOMIC_PANIC("Not implemented yet");
-        return nullptr;
+        return _ParseFunctionCall(node->FirstChild());
     }
 
     // UnaryOP UnaryExp
@@ -408,6 +409,29 @@ ValuePtr StandardAsmGenerator::_ParsePrimaryExp(SyntaxNodePtr node)
 }
 
 
+ValuePtr StandardAsmGenerator::_ParseFunctionCall(SyntaxNodePtr node)
+{
+    FunctionPtr function = _GetFunction(node);
+
+    // Parameters.
+    auto params = SemanticUtil::GetChildNode(node, SyntaxType::ST_FUNC_APARAMS);
+    if (params && params->HasChildren())
+    {
+        std::vector<ValuePtr> parameters;
+        for (auto it = params->FirstChild(); it; it = it->NextSibling())
+        {
+            if (it->Type() == SyntaxType::ST_FUNC_APARAM)
+            {
+                parameters.push_back(_ParseExpression(it->FirstChild()));
+            }
+        }
+        return _InsertInstruction(CallInst::New(function, std::move(parameters)));
+    }
+
+    return _InsertInstruction(CallInst::New(function));
+}
+
+
 ValuePtr StandardAsmGenerator::_ParseLVal(SyntaxNodePtr node)
 {
     // TODO: Add support for array!
@@ -417,7 +441,7 @@ ValuePtr StandardAsmGenerator::_ParseLVal(SyntaxNodePtr node)
         return nullptr;
     }
 
-     return _InsertInstruction(LoadInst::New(_GetLValValue(node)));
+    return _InsertInstruction(LoadInst::New(_GetLValValue(node)));
 }
 
 

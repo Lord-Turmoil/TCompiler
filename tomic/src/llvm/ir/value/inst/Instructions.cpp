@@ -5,7 +5,10 @@
  */
 
 #include <tomic/llvm/ir/value/inst/Instructions.h>
+#include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/LlvmContext.h>
+
+#include <utility>
 
 TOMIC_LLVM_BEGIN
 
@@ -36,7 +39,8 @@ AllocaInstPtr AllocaInst::New(TypePtr type, int alignment)
  */
 
 LoadInst::LoadInst(TypePtr type, ValuePtr address)
-    : UnaryInstruction(ValueType::LoadInstTy, type, address)
+    : UnaryInstruction(ValueType::LoadInstTy, type, address),
+    _address(address)
 {
 }
 
@@ -58,9 +62,10 @@ LoadInstPtr LoadInst::New(ValuePtr address)
     return New(address->GetType()->As<PointerType>()->ElementType(), address);
 }
 
+
 ValuePtr LoadInst::Address() const
 {
-    return OperandAt(0);
+    return _address;
 }
 
 
@@ -90,13 +95,16 @@ StoreInstPtr StoreInst::New(ValuePtr value, ValuePtr address)
  * ============================== ReturnInst ==============================
  */
 
-ReturnInst::ReturnInst(TypePtr type) : Instruction(ValueType::ReturnInstTy, type)
+ReturnInst::ReturnInst(TypePtr type) :
+    Instruction(ValueType::ReturnInstTy, type),
+    _value(nullptr)
 {
 }
 
 
 ReturnInst::ReturnInst(TypePtr type, ValuePtr value)
-    : Instruction(ValueType::ReturnInstTy, type)
+    : Instruction(ValueType::ReturnInstTy, type),
+    _value(value)
 {
     if (!value->GetType()->IsVoidTy())
     {
@@ -122,6 +130,50 @@ ReturnInstPtr ReturnInst::New(LlvmContextPtr context, ValuePtr value)
     auto inst = std::shared_ptr<ReturnInst>(new ReturnInst(type, value));
 
     context->StoreValue(inst);
+
+    return inst.get();
+}
+
+
+/*
+ * ============================== CallInst ==============================
+ */
+
+CallInst::CallInst(FunctionPtr function)
+    : Instruction(ValueType::CallInstTy, function->GetType()->As<FunctionType>()->ReturnType()),
+    _function(function)
+{
+    AddOperand(_function);
+}
+
+
+CallInst::CallInst(FunctionPtr function, std::vector<ValuePtr> parameters)
+    : Instruction(ValueType::CallInstTy, function->GetType()->As<FunctionType>()->ReturnType()),
+    _function(function), _parameters(std::move(parameters))
+{
+    AddOperand(_function);
+    for (auto param : _parameters)
+    {
+        AddOperand(param);
+    }
+}
+
+
+CallInstPtr CallInst::New(FunctionPtr function)
+{
+    auto inst = std::shared_ptr<CallInst>(new CallInst(function));
+
+    function->Context()->StoreValue(inst);
+
+    return inst.get();
+}
+
+
+CallInstPtr CallInst::New(FunctionPtr function, std::vector<ValuePtr> parameters)
+{
+    auto inst = std::shared_ptr<CallInst>(new CallInst(function, std::move(parameters)));
+
+    function->Context()->StoreValue(inst);
 
     return inst.get();
 }

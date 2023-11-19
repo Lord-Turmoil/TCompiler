@@ -34,6 +34,8 @@ public:
     virtual bool IsBinaryOperator() const { return false; }
     virtual bool IsUnaryOperator() const { return false; }
     virtual bool IsCompare() const { return false; }
+    virtual bool IsBranch() const { return false; }
+    virtual bool IsCall() const { return false; }
 
 protected:
     Instruction(ValueType valueType, TypePtr type, UseListPtr operands);

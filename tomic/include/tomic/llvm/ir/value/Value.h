@@ -29,10 +29,12 @@ class Value
 public:
     virtual ~Value() = default;
 
+
     static bool classof(ValueType type)
     {
         return true;
     }
+
 
     /*
      * I suddenly realized that, except dependency injection, I hardly
@@ -66,14 +68,21 @@ public:
     // Get the context.
     LlvmContextPtr Context() const;
 
+
+    // Check if this value is of a specific type.
+    template<typename _Ty>
+    bool Is() const { return _Ty::classof(_valueType); }
+
+
     // Cast this type to a specific type.
     // You should use this function only when you are sure that this type is
     // actually the type you want to cast to.
     template<typename _Ty>
-    _Ty* As() { return static_cast<_Ty*>(this); }
-
-    template<typename _Ty>
-    bool Is() const { return _Ty::classof(_valueType); }
+    _Ty* As()
+    {
+        TOMIC_ASSERT(Is<_Ty>());
+        return static_cast<_Ty*>(this);
+    }
 
 
     // Get and set name for this Value.
@@ -154,6 +163,8 @@ protected:
 
     class use_iterator_impl : use_base_iterator_base
     {
+        friend class Value;
+
     public:
         use_iterator_impl(_use_iterator_raw iter) : use_base_iterator_base(iter)
         {
@@ -175,6 +186,8 @@ protected:
 
     class user_iterator_impl : use_base_iterator_base
     {
+        friend class Value;
+
     public:
         user_iterator_impl(_use_iterator_raw iter) : use_base_iterator_base(iter)
         {
@@ -200,19 +213,24 @@ public:
 
     use_iterator UseBegin() { return use_iterator(_useList.begin()); }
     use_iterator UseEnd() { return use_iterator(_useList.end()); }
+    use_iterator RemoveUse(use_iterator iter) { return { _useList.erase(iter._iter) }; }
 
-    user_iterator UserBegin() { return user_iterator(_useList.begin()); }
-    user_iterator UserEnd() { return user_iterator(_useList.end()); }
+    user_iterator UserBegin() { return user_iterator(_userList.begin()); }
+    user_iterator UserEnd() { return user_iterator(_userList.end()); }
+    user_iterator RemoveUser(user_iterator iter) { return { _userList.erase(iter._iter) }; }
 
     UsePtr UseAt(int index) const { return _useList[index]; }
-    UserPtr UserAt(int index) const { return _useList[index]->GetUser(); }
+    UserPtr UserAt(int index) const { return _userList[index]->GetUser(); }
 
-    void AddUser(UserPtr user);
+    void AddUser(UsePtr user);
     void AddUse(UsePtr use);
 
 protected:
     TypePtr _type;
+
     UseList _useList;
+    UseList _userList;
+
     std::string _name;
 
 private:

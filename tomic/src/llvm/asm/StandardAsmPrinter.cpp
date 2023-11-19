@@ -73,9 +73,17 @@ void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
 {
     // Module name.
     writer->CommentBegin();
-    writer->Push("LLVM IR Module: ");
+    writer->Push("Module ID = ");
+    writer->Push('\'');
     writer->Push(module->Name());
+    writer->Push('\'');
     writer->CommentEnd();
+
+    writer->Push("source_filename = ");
+    writer->Push('\"');
+    writer->Push(module->Name());
+    writer->Push('\"');
+    writer->PushNewLine();
     writer->PushNewLine();
 
     // Global variables.

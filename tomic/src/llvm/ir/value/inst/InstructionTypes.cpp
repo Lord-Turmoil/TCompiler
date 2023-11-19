@@ -12,9 +12,10 @@ TOMIC_LLVM_BEGIN
 /*
  * ============================== Unary Instruction ==============================
  */
+//
 
 UnaryInstruction::UnaryInstruction(ValueType valueType, TypePtr type, ValuePtr operand)
-    : Instruction(valueType, type)
+    : Instruction(valueType, type), _operand(operand)
 {
     AddOperand(operand);
 }
@@ -25,7 +26,8 @@ UnaryInstruction::UnaryInstruction(ValueType valueType, TypePtr type, ValuePtr o
  */
 
 UnaryOperator::UnaryOperator(TypePtr type, ValuePtr operand, UnaryOpType opType)
-    : UnaryInstruction(ValueType::UnaryOperatorTy, type, operand), _opType(opType)
+    : UnaryInstruction(ValueType::UnaryOperatorTy, type, operand),
+    _opType(opType)
 {
 }
 
@@ -46,7 +48,10 @@ UnaryOperatorPtr UnaryOperator::New(UnaryOpType opType, ValuePtr operand)
  */
 
 BinaryOperator::BinaryOperator(TypePtr type, ValuePtr lhs, ValuePtr rhs, BinaryOpType opType)
-    : Instruction(ValueType::BinaryOperatorTy, type), _opType(opType)
+    : Instruction(ValueType::BinaryOperatorTy, type),
+    _opType(opType),
+    _leftOperand(lhs),
+    _rightOperand(rhs)
 {
     AddOperand(lhs);
     AddOperand(rhs);

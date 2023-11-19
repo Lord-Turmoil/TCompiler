@@ -55,6 +55,8 @@ public:
 
     bool IsFunction() const override { return true; }
 
+    TypePtr ReturnType() const;
+
 public:
     int ArgCount() const { return _args.size(); }
     ArgumentPtr GetArg(int argNo) const { return _args[argNo]; }

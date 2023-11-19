@@ -29,6 +29,7 @@ enum class ValueType
     GetElementPtrInstTy,
     ReturnInstTy,
     StoreInstTy,
+    CallInstTy,
 
     // === Value.User.Instruction.UnaryInstruction ===
     AllocaInstTy,

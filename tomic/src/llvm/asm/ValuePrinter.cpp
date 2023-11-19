@@ -185,11 +185,22 @@ void Function::PrintAsm(IAsmWriterPtr writer)
     // Then we assure that void function has a return.
     if (type->ReturnType()->IsVoidTy())
     {
-        auto inst = LastBasicBlock()->LastInstruction();
-        if (!inst || !inst->Is<ReturnInst>())
+        // We are sure to have at least one basic block.
+        auto block = LastBasicBlock();
+
+        if (block->InstructionCount() == 0)
         {
-            auto retInst = ReturnInst::New(inst->Context());
-            LastBasicBlock()->InsertInstruction(retInst);
+            auto retInst = ReturnInst::New(Context());
+            block->InsertInstruction(retInst);
+        }
+        else
+        {
+            auto inst = block->LastInstruction();
+            if (!inst->Is<ReturnInst>())
+            {
+                auto retInst = ReturnInst::New(inst->Context());
+                LastBasicBlock()->InsertInstruction(retInst);
+            }
         }
     }
 
@@ -207,8 +218,8 @@ void Function::PrintAsm(IAsmWriterPtr writer)
     type->ReturnType()->PrintAsm(writer);
 
     // Function name.
-    writer->PushNext('@');
-    writer->Push(GetName());
+    writer->PushSpace();
+    PrintName(writer);
 
     // Function parameters.
     writer->Push('(');
@@ -376,10 +387,10 @@ void LoadInst::PrintAsm(IAsmWriterPtr writer)
 void ReturnInst::PrintAsm(IAsmWriterPtr writer)
 {
     writer->Push("ret");
-    if (OperandsCount() > 0)
+    if (_value && !_value->GetType()->IsVoidTy())
     {
         writer->PushSpace();
-        OperandAt(0)->PrintUse(writer);
+        _value->PrintUse(writer);
     }
     else
     {
@@ -388,6 +399,42 @@ void ReturnInst::PrintAsm(IAsmWriterPtr writer)
     writer->PushNewLine();
 }
 
+
+/*
+ * ========================= CallInst ============================
+ */
+
+// %6 = call i32 @f3(i32 %4, i32 %5)
+void CallInst::PrintAsm(IAsmWriterPtr writer)
+{
+    if (!GetType()->IsVoidTy())
+    {
+        PrintName(writer);
+        writer->Push(" = ");
+    }
+
+    // Return type.
+    writer->Push("call ");
+    GetFunction()->ReturnType()->PrintAsm(writer);
+    writer->PushSpace();
+
+    // Function name.
+    GetFunction()->PrintName(writer);
+
+    // Parameters.
+    writer->Push('(');
+    for (auto it = ParamBegin(); it != ParamEnd(); it++)
+    {
+        if (it != ParamBegin())
+        {
+            writer->Push(", ");
+        }
+        (*it)->PrintUse(writer);
+    }
+    writer->Push(')');
+
+    writer->PushNewLine();
+}
 
 /*
  * ========================= OperatorInst ============================

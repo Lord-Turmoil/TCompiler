@@ -13,7 +13,7 @@ void User::AddOperand(ValuePtr value)
     auto use = Use::New(this, value);
 
     AddUse(use);
-    value->AddUse(use);
+    value->AddUser(use);
 }
 
 

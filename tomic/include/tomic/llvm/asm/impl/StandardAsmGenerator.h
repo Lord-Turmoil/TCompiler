@@ -60,6 +60,7 @@ private:
     void _AddValue(SymbolTableEntryPtr entry, ValuePtr value);
     ValuePtr _GetValue(SymbolTableEntryPtr entry);
     ValuePtr _GetLValValue(SyntaxNodePtr node);
+    FunctionPtr _GetFunction(SyntaxNodePtr node);
 
     TypePtr _GetEntryType(SymbolTableEntryPtr entry);
     TypePtr _GetNodeType(SyntaxNodePtr node);
@@ -124,7 +125,7 @@ private:
     ValuePtr _ParseUnaryExp(SyntaxNodePtr node);
 
     ValuePtr _ParsePrimaryExp(SyntaxNodePtr node);
-
+    ValuePtr _ParseFunctionCall(SyntaxNodePtr node);
     ValuePtr _ParseLVal(SyntaxNodePtr node);
     ValuePtr _ParseNumber(SyntaxNodePtr node);
 };

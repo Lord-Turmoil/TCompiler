@@ -81,6 +81,8 @@ public:
 
 private:
     LoadInst(TypePtr type, ValuePtr address);
+
+    ValuePtr _address;
 };
 
 
@@ -147,6 +149,55 @@ public:
 private:
     ReturnInst(TypePtr type, ValuePtr value);
     ReturnInst(TypePtr type);
+
+    ValuePtr _value;
+};
+
+
+/*
+ * ============================== CallInst ==============================
+ */
+
+/*
+ * A call instruction consists of a function, and its parameters.
+ * Function is standalone, and parameters are as operands.
+ * The process of getting parameters should be done by AsmGenerator.
+ */
+
+class CallInst final : public Instruction
+{
+public:
+    static CallInstPtr New(FunctionPtr function);
+    static CallInstPtr New(FunctionPtr function, std::vector<ValuePtr> parameters);
+
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::CallInstTy;
+    }
+
+    void PrintAsm(IAsmWriterPtr writer) override;
+
+    bool IsCall() const override { return true; }
+
+    FunctionPtr GetFunction() const { return _function; }
+
+public:
+    using parameter_iterator = std::vector<ValuePtr>::iterator;
+
+    int ParamCount() const { return _parameters.size(); }
+    parameter_iterator ParamBegin() { return _parameters.begin(); }
+    parameter_iterator ParamEnd() { return _parameters.end(); }
+    ValuePtr ParamAt(int index) const { return _parameters[index]; }
+
+private:
+    // Call function with no parameters.
+    CallInst(FunctionPtr function);
+
+    // Call function with parameters.
+    CallInst(FunctionPtr function, std::vector<ValuePtr> parameters);
+
+    FunctionPtr _function;
+    std::vector<ValuePtr> _parameters;
 };
 
 

@@ -4,29 +4,24 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <charconv>
 #include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
-#include <tomic/llvm/ir/Module.h>
-#include <tomic/llvm/ir/LlvmContext.h>
-#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
-#include <tomic/llvm/ir/value/Value.h>
+#include <tomic/llvm/ir/LlvmContext.h>
+#include <tomic/llvm/ir/Module.h>
+#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/value/Argument.h>
-#include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/BasicBlock.h>
-#include <tomic/llvm/ir/value/GlobalVariable.h>
-#include <tomic/llvm/ir/value/User.h>
-#include <tomic/llvm/ir/value/ConstantData.h>
+#include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
+#include <tomic/llvm/ir/value/Value.h>
 
-#include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/ast/SyntaxTree.h>
 
 #include <tomic/parser/table/SymbolTable.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
 #include <tomic/parser/table/SymbolTableEntry.h>
 
-#include <tomic/utils/SymbolTableUtil.h>
 #include <tomic/utils/SemanticUtil.h>
 
 #include <vector>
@@ -189,6 +184,7 @@ BasicBlockPtr StandardAsmGenerator::_InitFunctionParams(FunctionPtr function, Sy
     return body;
 }
 
+
 // Here, node is a BlockItem.
 bool StandardAsmGenerator::_ParseInstructions(SyntaxNodePtr node)
 {
@@ -235,6 +231,9 @@ void StandardAsmGenerator::_ParseStatement(SyntaxNodePtr node)
         break;
     case SyntaxType::ST_ASSIGNMENT_STMT:
         _ParseAssignStatement(node);
+        break;
+    case SyntaxType::ST_EXP_STMT:
+        _ParseExpression(node->FirstChild());
         break;
     default:
         TOMIC_PANIC("Not implemented yet");
@@ -288,7 +287,18 @@ ValuePtr StandardAsmGenerator::_GetLValValue(SyntaxNodePtr node)
 {
     auto block = _GetSymbolTableBlock(node);
     auto entry = block->FindEntry(node->FirstChild()->Token()->lexeme);
+
     return _GetValue(entry);
+}
+
+
+// node is a FunctionCall
+FunctionPtr StandardAsmGenerator::_GetFunction(SyntaxNodePtr node)
+{
+    auto block = _GetSymbolTableBlock(node);
+    auto entry = block->FindEntry(node->FirstChild()->Token()->lexeme);
+
+    return _GetValue(entry)->As<Function>();
 }
 
 
