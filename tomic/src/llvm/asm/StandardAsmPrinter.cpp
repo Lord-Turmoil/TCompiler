@@ -83,19 +83,11 @@ void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
     {
         _PrintGlobalVariable(writer, *globalIter);
     }
-    if (module->GlobalCount() > 0)
-    {
-        writer->PushNewLine();
-    }
 
     // Functions.
     for (auto funcIter = module->FunctionBegin(); funcIter != module->FunctionEnd(); ++funcIter)
     {
         _PrintFunction(writer, *funcIter);
-    }
-    if (module->FunctionCount() > 0)
-    {
-        writer->PushNewLine();
     }
 
     // Main function.
