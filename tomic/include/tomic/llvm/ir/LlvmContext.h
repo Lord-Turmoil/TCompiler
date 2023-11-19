@@ -64,6 +64,7 @@ public:
 
     TypePtr GetVoidTy() { return &voidTy; }
     TypePtr GetLabelTy() { return &labelTy; }
+    IntegerTypePtr GetInt8Ty() { return &int8Ty; }
     IntegerTypePtr GetInt32Ty() { return &int32Ty; }
 
     ArrayTypePtr GetArrayType(TypePtr elementType, int elementCount);
@@ -89,6 +90,7 @@ private:
     Type voidTy, labelTy;
 
     // Derived types
+    IntegerType int8Ty;
     IntegerType int32Ty;
 
     /*

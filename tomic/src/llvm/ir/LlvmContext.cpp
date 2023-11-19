@@ -13,6 +13,7 @@ TOMIC_LLVM_BEGIN
 LlvmContext::LlvmContext() :
     voidTy(this, Type::VoidTyID),
     labelTy(this, Type::LabelTyID),
+    int8Ty(this, 8),
     int32Ty(this, 32)
 {
 }
@@ -29,7 +30,7 @@ ArrayTypePtr LlvmContext::GetArrayType(TypePtr elementType, int elementCount)
     }
 
     return _arrayTypes.emplace(pair, new ArrayType(elementType, elementCount))
-                      .first->second.get();
+        .first->second.get();
 }
 
 
@@ -72,7 +73,7 @@ PointerTypePtr LlvmContext::GetPointerType(TypePtr elementType)
     }
 
     return _pointerTypes.emplace(elementType, new PointerType(elementType))
-                        .first->second.get();
+        .first->second.get();
 }
 
 

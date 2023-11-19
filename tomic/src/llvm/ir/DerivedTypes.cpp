@@ -12,11 +12,20 @@ TOMIC_LLVM_BEGIN
 /*
  * ==================== IntegerType ====================
  */
-
+//
 IntegerTypePtr IntegerType::Get(LlvmContextPtr context, unsigned bitWidth)
 {
-    TOMIC_ASSERT((bitWidth == 32) && "Unsupported bit width");
-    return context->GetInt32Ty();
+    switch (bitWidth)
+    {
+    case 8:
+        return context->GetInt8Ty();
+    case 32:
+        return context->GetInt32Ty();
+    default:
+        TOMIC_PANIC("Unsupported bit width");
+    }
+
+    return nullptr;
 }
 
 
