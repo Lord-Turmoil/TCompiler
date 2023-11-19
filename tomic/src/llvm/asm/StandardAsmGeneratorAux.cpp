@@ -154,7 +154,14 @@ ArgumentPtr StandardAsmGenerator::_ParseArgument(SyntaxNodePtr node, int argNo, 
     std::string name = node->Attribute("name");
     auto entry = block->FindEntry(name);
     TOMIC_ASSERT(entry);
-    return Argument::New(_GetEntryType(entry), name, argNo);
+    auto type = _GetEntryType(entry);
+
+    if (type->IsIntegerTy())
+    {
+        return Argument::New(type, name, argNo);
+    }
+
+    return Argument::New(PointerType::Get(type->Cast<ArrayType>()->ElementType()), name, argNo);
 }
 
 
@@ -405,11 +412,9 @@ static TypePtr _GetFunctionParamType(LlvmContextPtr context, FunctionParamProper
     case 0:
         return IntegerType::Get(context, 32);
     case 1:
-        return ArrayType::Get(IntegerType::Get(context, 32), param->size[0]);
+        return PointerType::Get(IntegerType::Get(context, 32));
     case 2:
-        return ArrayType::Get(
-            ArrayType::Get(IntegerType::Get(context, 32), param->size[1]),
-            param->size[0]);
+        return PointerType::Get(ArrayType::Get(IntegerType::Get(context, 32), param->size[1]));
     default:
         TOMIC_PANIC("Not implemented yet");
     }
