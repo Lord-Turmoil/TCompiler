@@ -7,11 +7,12 @@
 #ifndef _TOMIC_SYMBOL_TABLE_BLOCK_H_
 #define _TOMIC_SYMBOL_TABLE_BLOCK_H_
 
-#include <tomic/Shared.h>
 #include <tomic/parser/table/SymbolTableForward.h>
-#include <vector>
+#include <tomic/Shared.h>
+
 #include <memory>
 #include <string>
+#include <vector>
 
 TOMIC_BEGIN
 

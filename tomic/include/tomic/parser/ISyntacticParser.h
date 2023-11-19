@@ -8,6 +8,7 @@
 #define _TMOIC_ISYNTACTIC_PARSER_H_
 
 #include <tomic/Shared.h>
+
 #include <memory>
 
 TOMIC_BEGIN

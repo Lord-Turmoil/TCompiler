@@ -7,9 +7,9 @@
 #ifndef _TOMIC_LLVM_ASM_PRINTER_H_
 #define _TOMIC_LLVM_ASM_PRINTER_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/IrForward.h>
 #include <memory>
+#include <tomic/llvm/ir/IrForward.h>
+#include <tomic/llvm/Llvm.h>
 
 TOMIC_LLVM_BEGIN
 

@@ -7,11 +7,11 @@
 #ifndef _TOMIC_DEFAULT_LEXICAL_ANALYZER_H_
 #define _TOMIC_DEFAULT_LEXICAL_ANALYZER_H_
 
-#include <vector>
-#include <tomic/Shared.h>
+#include <memory>
 #include <tomic/lexer/ILexicalAnalyzer.h>
 #include <tomic/lexer/token/ITokenMapper.h>
-#include <memory>
+#include <tomic/Shared.h>
+#include <vector>
 
 TOMIC_BEGIN
 

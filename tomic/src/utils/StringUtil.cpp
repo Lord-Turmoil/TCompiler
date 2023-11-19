@@ -5,8 +5,9 @@
  */
 
 #include <tomic/utils/StringUtil.h>
-#include <cstring>
+
 #include <cstdio>
+#include <cstring>
 
 TOMIC_BEGIN
 

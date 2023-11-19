@@ -8,7 +8,7 @@
 #define _TOMIC_SYMBOL_TABLE_ENTRY_H_
 
 #include <tomic/Shared.h>
-#include <tomic/parser/table/SymbolTableForward.h>
+
 #include <string>
 #include <utility>
 #include <vector>

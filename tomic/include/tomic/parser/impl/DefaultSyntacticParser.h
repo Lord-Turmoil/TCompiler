@@ -7,14 +7,15 @@
 #ifndef _TOMIC_DEFAULT_SYNTACTIC_PARSER_
 #define _TOMIC_DEFAULT_SYNTACTIC_PARSER_
 
-#include <tomic/Shared.h>
-#include <tomic/parser/ISyntacticParser.h>
 #include <tomic/lexer/ILexicalParser.h>
 #include <tomic/lexer/token/ITokenMapper.h>
+#include <tomic/logger/debug/ILogger.h>
+#include <tomic/parser/ast/mapper/ISyntaxMapper.h>
 #include <tomic/parser/ast/SyntaxNode.h>
 #include <tomic/parser/ast/SyntaxTree.h>
-#include <tomic/parser/ast/mapper/ISyntaxMapper.h>
-#include <tomic/logger/debug/ILogger.h>
+#include <tomic/parser/ISyntacticParser.h>
+#include <tomic/Shared.h>
+
 #include <vector>
 
 TOMIC_BEGIN

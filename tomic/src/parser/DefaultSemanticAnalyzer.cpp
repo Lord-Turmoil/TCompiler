@@ -4,12 +4,13 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/parser/impl/DefaultSemanticAnalyzer.h>
 #include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/impl/DefaultSemanticAnalyzer.h>
 #include <tomic/parser/table/SymbolTableEntry.h>
 #include <tomic/utils/SemanticUtil.h>
 #include <tomic/utils/StringUtil.h>
 #include <tomic/utils/SymbolTableUtil.h>
+
 #include <algorithm> // for std::min
 #include <utility>
 

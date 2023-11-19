@@ -27,7 +27,6 @@
 
 #include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/Module.h>
-
 #include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/table/SymbolTable.h>
 

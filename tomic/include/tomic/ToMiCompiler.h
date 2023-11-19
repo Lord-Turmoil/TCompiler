@@ -7,9 +7,7 @@
 #ifndef _TOMIC_COMPILER_H_
 #define _TOMIC_COMPILER_H_
 
-#include <tomic/Shared.h>
 #include <tomic/Config.h>
-#include <functional>
 
 TOMIC_BEGIN
 
@@ -17,7 +15,7 @@ TOMIC_BEGIN
  * This is the main class of ToMiCompiler.
  * Uses IoC to control compilation process.
  */
-class ToMiCompilerImpl;
+    class ToMiCompilerImpl;
 
 
 class ToMiCompiler

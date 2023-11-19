@@ -7,9 +7,9 @@
 #ifndef _TOMIC_LEXICAL_PARSER_H_
 #define _TOMIC_LEXICAL_PARSER_H_
 
-#include <tomic/Shared.h>
-#include <tomic/lexer/ILexicalAnalyzer.h>
 #include <memory>
+#include <tomic/lexer/token/Token.h>
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

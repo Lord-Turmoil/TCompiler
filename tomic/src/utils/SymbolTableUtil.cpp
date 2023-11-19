@@ -4,10 +4,10 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/utils/SymbolTableUtil.h>
 #include <tomic/parser/ast/AstForward.h>
 #include <tomic/parser/table/SymbolTableEntry.h>
 #include <tomic/utils/SemanticUtil.h>
+#include <tomic/utils/SymbolTableUtil.h>
 
 
 TOMIC_BEGIN

@@ -13,14 +13,14 @@
 #ifndef _TOMIC_LLVM_VALUE_H_
 #define _TOMIC_LLVM_VALUE_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/IrForward.h>
-#include <tomic/llvm/ir/value/ValueType.h>
-#include <tomic/llvm/ir/value/Use.h>
-#include <tomic/llvm/asm/IAsmWriter.h>
-#include <vector>
 #include <memory>
 #include <string>
+#include <tomic/llvm/asm/IAsmWriter.h>
+#include <tomic/llvm/ir/IrForward.h>
+#include <tomic/llvm/ir/value/Use.h>
+#include <tomic/llvm/ir/value/ValueType.h>
+#include <tomic/llvm/Llvm.h>
+#include <vector>
 
 TOMIC_LLVM_BEGIN
 

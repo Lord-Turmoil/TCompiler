@@ -4,16 +4,16 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
-#include <tomic/llvm/ir/value/inst/Instructions.h>
-#include <tomic/llvm/ir/value/inst/InstructionTypes.h>
-#include <tomic/llvm/ir/value/ConstantData.h>
-#include <tomic/llvm/ir/value/GlobalVariable.h>
-#include <tomic/llvm/ir/value/Value.h>
-#include <tomic/llvm/ir/value/Function.h>
+#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/value/Argument.h>
 #include <tomic/llvm/ir/value/BasicBlock.h>
+#include <tomic/llvm/ir/value/ConstantData.h>
+#include <tomic/llvm/ir/value/Function.h>
+#include <tomic/llvm/ir/value/GlobalVariable.h>
+#include <tomic/llvm/ir/value/inst/Instructions.h>
+#include <tomic/llvm/ir/value/inst/InstructionTypes.h>
+#include <tomic/llvm/ir/value/Value.h>
 #include <tomic/utils/StringUtil.h>
 
 TOMIC_LLVM_BEGIN
@@ -80,6 +80,7 @@ void ConstantData::PrintAsm(IAsmWriterPtr writer)
     }
 }
 
+
 void ConstantData::PrintName(IAsmWriterPtr writer)
 {
     if (IsArray())
@@ -100,6 +101,7 @@ void ConstantData::PrintName(IAsmWriterPtr writer)
         writer->Push(StringUtil::IntToString(_value));
     }
 }
+
 
 void ConstantData::PrintUse(IAsmWriterPtr writer)
 {
@@ -436,6 +438,7 @@ void CallInst::PrintAsm(IAsmWriterPtr writer)
     writer->PushNewLine();
 }
 
+
 /*
  * ========================= OperatorInst ============================
  */
@@ -484,6 +487,7 @@ void BinaryOperator::PrintAsm(IAsmWriterPtr writer)
 
     writer->PushNewLine();
 }
+
 
 /*
  * %2 = add nsw i32 0, %1

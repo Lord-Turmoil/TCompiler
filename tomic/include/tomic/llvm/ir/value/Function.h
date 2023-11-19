@@ -7,12 +7,12 @@
 #ifndef _TOMIC_LLVM_FUNCTION_H_
 #define _TOMIC_LLVM_FUNCTION_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/value/GlobalValue.h>
-#include <tomic/llvm/ir/value/Argument.h>
-#include <tomic/llvm/ir/SlotTracker.h>
-#include <vector>
 #include <list>
+#include <tomic/llvm/ir/SlotTracker.h>
+#include <tomic/llvm/ir/value/Argument.h>
+#include <tomic/llvm/ir/value/GlobalValue.h>
+#include <tomic/llvm/Llvm.h>
+#include <vector>
 
 TOMIC_LLVM_BEGIN
 

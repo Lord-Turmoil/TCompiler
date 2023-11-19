@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/llvm/ir/value/inst/InstructionTypes.h>
 #include <tomic/llvm/ir/LlvmContext.h>
+#include <tomic/llvm/ir/value/inst/InstructionTypes.h>
 
 TOMIC_LLVM_BEGIN
 

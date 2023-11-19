@@ -7,9 +7,9 @@
 #ifndef _TOMIC_TOKEN_H_
 #define _TOMIC_TOKEN_H_
 
-#include <tomic/Shared.h>
-#include <string>
 #include <memory>
+#include <string>
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

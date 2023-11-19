@@ -11,13 +11,14 @@
 #ifndef _TOMIC_SYNTAX_NODE_H_
 #define _TOMIC_SYNTAX_NODE_H_
 
-#include <tomic/Shared.h>
 #include <tomic/lexer/token/Token.h>
-#include <tomic/parser/ast/SyntaxType.h>
 #include <tomic/parser/ast/AstForward.h>
-#include <vector>
-#include <string>
+#include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/Shared.h>
+
 #include <map>
+#include <string>
+#include <vector>
 
 TOMIC_BEGIN
 

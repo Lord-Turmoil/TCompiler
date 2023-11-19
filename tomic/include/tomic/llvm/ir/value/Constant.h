@@ -7,8 +7,8 @@
 #ifndef _TOMIC_LLVM_CONSTANT_H_
 #define _TOMIC_LLVM_CONSTANT_H_
 
-#include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/value/User.h>
+#include <tomic/llvm/Llvm.h>
 
 TOMIC_LLVM_BEGIN
 

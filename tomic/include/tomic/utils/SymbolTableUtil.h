@@ -7,10 +7,11 @@
 #ifndef _TOMIC_SYMBOL_TABLE_UTIL_H_
 #define _TOMIC_SYMBOL_TABLE_UTIL_H_
 
-#include <tomic/Shared.h>
-#include <tomic/parser/table/SymbolTableForward.h>
-#include <tomic/parser/table/SymbolTableEntry.h>
 #include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/table/SymbolTableEntry.h>
+#include <tomic/parser/table/SymbolTableForward.h>
+#include <tomic/Shared.h>
+
 #include <string>
 #include <utility>
 

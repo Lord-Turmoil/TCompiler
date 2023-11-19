@@ -7,9 +7,9 @@
 #ifndef _TOMIC_LLVM_IR_INSTRUCTION_TYPES_H_
 #define _TOMIC_LLVM_IR_INSTRUCTION_TYPES_H_
 
-#include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/IrForward.h>
 #include <tomic/llvm/ir/value/inst/Instruction.h>
+#include <tomic/llvm/Llvm.h>
 
 TOMIC_LLVM_BEGIN
 

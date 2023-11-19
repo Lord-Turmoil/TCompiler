@@ -4,10 +4,10 @@
  *   For BUAA 2023 Compiler Technology
  */
 
+#include <tomic/llvm/ir/LlvmContext.h>
 #include <tomic/llvm/ir/value/Use.h>
 #include <tomic/llvm/ir/value/User.h>
 #include <tomic/llvm/ir/value/Value.h>
-#include <tomic/llvm/ir/LlvmContext.h>
 
 TOMIC_LLVM_BEGIN
 

@@ -7,18 +7,16 @@
 #ifndef _TOMIC_DEFAULT_SEMANTIC_ANALYZER_H_
 #define _TOMIC_DEFAULT_SEMANTIC_ANALYZER_H_
 
-#include <tomic/Shared.h>
-#include <tomic/parser/ISemanticAnalyzer.h>
+#include <stack>
+#include <tomic/logger/debug/ILogger.h>
+#include <tomic/logger/error/ErrorType.h>
+#include <tomic/logger/error/IErrorLogger.h>
 #include <tomic/parser/ast/AstVisitor.h>
 #include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/ast/SyntaxType.h>
-#include <tomic/logger/error/IErrorLogger.h>
-#include <tomic/logger/error/ErrorType.h>
-#include <tomic/logger/debug/ILogger.h>
-#include <tomic/parser/table/SymbolTable.h>
+#include <tomic/parser/ISemanticAnalyzer.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
-#include <vector>
-#include <stack>
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

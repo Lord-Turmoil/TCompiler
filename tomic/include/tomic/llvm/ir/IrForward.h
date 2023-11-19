@@ -7,8 +7,8 @@
 #ifndef _TOMIC_IR_FORWARD_H_
 #define _TOMIC_IR_FORWARD_H_
 
-#include <tomic/llvm/Llvm.h>
 #include <memory>
+#include <tomic/llvm/Llvm.h>
 #include <vector>
 
 TOMIC_LLVM_BEGIN

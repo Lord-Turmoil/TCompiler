@@ -7,8 +7,8 @@
 #ifndef _TOMIC_PREPROCESSOR_H_
 #define _TOMIC_PREPROCESSOR_H_
 
-#include <tomic/Shared.h>
 #include <memory>
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

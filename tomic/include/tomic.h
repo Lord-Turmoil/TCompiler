@@ -9,8 +9,8 @@
 
 // Common header files for tomic.
 
-#include <tomic/ToMiCompiler.h>
 #include <tomic/Config.h>
+#include <tomic/ToMiCompiler.h>
 
 // lexer
 // #include <tomic/lexer/IPreprocessor.h>

@@ -7,10 +7,10 @@
 #ifndef _TOMIC_LLVM_BASIC_BLOCK_H_
 #define _TOMIC_LLVM_BASIC_BLOCK_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/value/Value.h>
-#include <tomic/llvm/ir/IrForward.h>
 #include <list>
+#include <tomic/llvm/ir/IrForward.h>
+#include <tomic/llvm/ir/value/Value.h>
+#include <tomic/llvm/Llvm.h>
 
 TOMIC_LLVM_BEGIN
 

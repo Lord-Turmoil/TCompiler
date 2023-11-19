@@ -7,8 +7,8 @@
 #ifndef _TOMIC_LLVM_STANDARD_ASM_GENERATOR_H_
 #define _TOMIC_LLVM_STANDARD_ASM_GENERATOR_H_
 
-#include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/asm/IAsmGenerator.h>
+#include <tomic/llvm/Llvm.h>
 #include <tomic/parser/ast/AstVisitor.h>
 
 #include <unordered_map>

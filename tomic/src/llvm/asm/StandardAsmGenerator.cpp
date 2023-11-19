@@ -5,21 +5,18 @@
  */
 
 #include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
-#include <tomic/llvm/ir/Module.h>
-#include <tomic/llvm/ir/LlvmContext.h>
-#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
-#include <tomic/llvm/ir/value/Value.h>
-#include <tomic/llvm/ir/value/Function.h>
+#include <tomic/llvm/ir/LlvmContext.h>
+#include <tomic/llvm/ir/Module.h>
+#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/value/BasicBlock.h>
-#include <tomic/llvm/ir/value/GlobalVariable.h>
 #include <tomic/llvm/ir/value/ConstantData.h>
+#include <tomic/llvm/ir/value/Function.h>
+#include <tomic/llvm/ir/value/GlobalVariable.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
-
+#include <tomic/llvm/ir/value/Value.h>
 #include <tomic/parser/ast/SyntaxNode.h>
-
 #include <tomic/parser/table/SymbolTableBlock.h>
-
 #include <tomic/utils/SemanticUtil.h>
 
 TOMIC_LLVM_BEGIN

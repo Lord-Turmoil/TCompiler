@@ -8,7 +8,8 @@
 #define _TOMIC_SHARED_H_
 
 #include <tomic/Defines.h>
-#include <twio.h>
+
 #include <mioc.h>
+#include <twio.h>
 
 #endif

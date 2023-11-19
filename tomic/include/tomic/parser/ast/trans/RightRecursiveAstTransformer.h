@@ -7,9 +7,10 @@
 #ifndef _TOMIC_LEFT_RECURSIVE_AST_TRANSFORMER_H_
 #define _TOMIC_LEFT_RECURSIVE_AST_TRANSFORMER_H_
 
-#include <tomic/Shared.h>
-#include <tomic/parser/ast/trans/IAstTransformer.h>
 #include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/parser/ast/trans/IAstTransformer.h>
+#include <tomic/Shared.h>
+
 #include <vector>
 
 TOMIC_BEGIN

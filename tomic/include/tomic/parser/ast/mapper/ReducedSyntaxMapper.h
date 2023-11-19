@@ -8,6 +8,7 @@
 #define _TOMIC_REDUCE_SYNTAX_MAPPER_H_
 
 #include <tomic/parser/ast/mapper/BaseSyntaxMapper.h>
+
 #include <memory>
 
 TOMIC_BEGIN

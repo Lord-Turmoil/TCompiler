@@ -7,12 +7,12 @@
 #ifndef _TOMIC_SEMANTIC_UTIL_H_
 #define _TOMIC_SEMANTIC_UTIL_H_
 
-#include <tomic/Shared.h>
-#include <tomic/parser/ast/SyntaxType.h>
 #include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/ast/SyntaxType.h>
 #include <tomic/parser/table/SymbolTableForward.h>
-#include <vector>
+
 #include <string>
+#include <vector>
 
 TOMIC_BEGIN
 

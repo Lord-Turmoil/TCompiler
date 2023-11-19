@@ -4,13 +4,14 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/parser/impl/ResilientSyntacticParser.h>
-#include <tomic/parser/ast/trans/RightRecursiveAstTransformer.h>
 #include <tomic/logger/error/ErrorType.h>
-#include <cstdio>
+#include <tomic/parser/ast/trans/RightRecursiveAstTransformer.h>
+#include <tomic/parser/impl/ResilientSyntacticParser.h>
+
 #include <cstdarg>
-#include <string>
+#include <cstdio>
 #include <sstream>
+#include <string>
 
 TOMIC_BEGIN
 

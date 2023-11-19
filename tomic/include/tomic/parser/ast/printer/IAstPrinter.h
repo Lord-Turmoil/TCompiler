@@ -15,6 +15,7 @@
 #define _TOMIC_AST_PRINTER_H_
 
 #include <tomic/Shared.h>
+
 #include <memory>
 
 TOMIC_BEGIN

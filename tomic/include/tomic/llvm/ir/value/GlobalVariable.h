@@ -7,9 +7,10 @@
 #ifndef _TOMIC_LLVM_GLOBAL_VARIABLE_H_
 #define _TOMIC_LLVM_GLOBAL_VARIABLE_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/value/GlobalValue.h>
+#include <string>
 #include <tomic/llvm/ir/value/ConstantData.h>
+#include <tomic/llvm/ir/value/GlobalValue.h>
+#include <tomic/llvm/Llvm.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -22,12 +23,7 @@ public:
     static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name,
                                  ConstantDataPtr initializer);
 
-
-    static bool classof(const ValueType type)
-    {
-        return type == ValueType::GlobalVariableTy;
-    }
-
+    static bool classof(const ValueType type) { return type == ValueType::GlobalVariableTy; }
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
@@ -40,6 +36,25 @@ private:
 
     bool _isConstant;
     ConstantDataPtr _initializer;
+};
+
+
+/*
+ * It is used for private string literals used in the program.
+ */
+class GlobalString : public GlobalValue
+{
+public:
+    ~GlobalString() override = default;
+
+    static GlobalStringPtr New(const std::string& value, const std::string& name);
+
+    static bool classof(const ValueType type) { return type == ValueType::GlobalStringTy; }
+
+    void PrintAsm(IAsmWriterPtr writer) override;
+    void PrintUse(IAsmWriterPtr writer) override;
+
+private:
 };
 
 

@@ -4,8 +4,8 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/Shared.h>
 #include <tomic/lexer/impl/HeaderPreprocessor.h>
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

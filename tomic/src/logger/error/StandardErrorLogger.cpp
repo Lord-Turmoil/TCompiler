@@ -5,6 +5,7 @@
  */
 
 #include <tomic/logger/error/impl/StandardErrorLogger.h>
+
 #include <algorithm>
 #include <string>
 

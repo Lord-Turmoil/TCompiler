@@ -9,6 +9,7 @@
 
 #include <tomic/logger/error/IErrorLogger.h>
 #include <tomic/logger/error/IErrorMapper.h>
+
 #include <memory>
 #include <string>
 #include <vector>

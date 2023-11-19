@@ -8,6 +8,7 @@
 #define _TOMIC_CONFIG_H_
 
 #include <tomic/Shared.h>
+
 #include <memory>
 #include <string>
 

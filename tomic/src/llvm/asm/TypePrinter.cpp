@@ -10,9 +10,10 @@
  * Whether a constant is included in GlobalVariable, not in type.
  */
 
-#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
+#include <tomic/llvm/ir/Type.h>
 #include <tomic/utils/StringUtil.h>
+
 #include <string>
 
 TOMIC_LLVM_BEGIN

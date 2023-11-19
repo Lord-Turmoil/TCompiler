@@ -7,8 +7,8 @@
 #ifndef _TOMIC_AST_VISITOR_H_
 #define _TOMIC_AST_VISITOR_H_
 
-#include <tomic/Shared.h>
 #include <tomic/parser/ast/AstForward.h>
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

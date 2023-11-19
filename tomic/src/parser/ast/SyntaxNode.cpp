@@ -4,9 +4,9 @@
  *   For BUAA 2023 Compiler Technology
  */
 
+#include <tomic/parser/ast/AstVisitor.h>
 #include <tomic/parser/ast/SyntaxNode.h>
 #include <tomic/parser/ast/SyntaxTree.h>
-#include <tomic/parser/ast/AstVisitor.h>
 #include <tomic/utils/StringUtil.h>
 
 TOMIC_BEGIN

@@ -13,10 +13,10 @@
 #ifndef _TOMIC_LLVM_DERIVED_TYPE_H_
 #define _TOMIC_LLVM_DERIVED_TYPE_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/Type.h>
 #include <memory>
 #include <tomic/llvm/asm/IAsmWriter.h>
+#include <tomic/llvm/ir/Type.h>
+#include <tomic/llvm/Llvm.h>
 
 TOMIC_LLVM_BEGIN
 

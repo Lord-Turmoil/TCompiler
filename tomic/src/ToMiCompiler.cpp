@@ -4,44 +4,44 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/Shared.h>
-#include <tomic/ToMiCompiler.h>
 #include <tomic/Config.h>
-#include <tomic/lexer/IPreprocessor.h>
-#include <tomic/logger/debug/impl/DefaultLogger.h>
-#include <tomic/logger/debug/impl/DumbLogger.h>
-#include <tomic/logger/error/IErrorMapper.h>
-#include <tomic/logger/error/IErrorLogger.h>
-#include <tomic/logger/error/impl/VerboseErrorLogger.h>
-#include <tomic/logger/error/impl/StandardErrorMapper.h>
-#include <tomic/logger/error/impl/VerboseErrorMapper.h>
-#include <tomic/logger/error/impl/StandardErrorLogger.h>
-#include <tomic/lexer/token/ITokenMapper.h>
 #include <tomic/lexer/ILexicalAnalyzer.h>
 #include <tomic/lexer/ILexicalParser.h>
-#include <tomic/lexer/impl/DefaultPreprocessor.h>
-#include <tomic/lexer/impl/HeaderPreprocessor.h>
 #include <tomic/lexer/impl/DefaultLexicalAnalyzer.h>
 #include <tomic/lexer/impl/DefaultLexicalParser.h>
+#include <tomic/lexer/impl/DefaultPreprocessor.h>
+#include <tomic/lexer/impl/HeaderPreprocessor.h>
 #include <tomic/lexer/impl/token/DefaultTokenMapper.h>
-#include <tomic/parser/ast/mapper/ISyntaxMapper.h>
+#include <tomic/lexer/IPreprocessor.h>
+#include <tomic/lexer/token/ITokenMapper.h>
+#include <tomic/llvm/asm/IAsmGenerator.h>
+#include <tomic/llvm/asm/IAsmPrinter.h>
+#include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
+#include <tomic/llvm/asm/impl/StandardAsmPrinter.h>
+#include <tomic/logger/debug/impl/DefaultLogger.h>
+#include <tomic/logger/debug/impl/DumbLogger.h>
+#include <tomic/logger/error/IErrorLogger.h>
+#include <tomic/logger/error/IErrorMapper.h>
+#include <tomic/logger/error/impl/StandardErrorLogger.h>
+#include <tomic/logger/error/impl/StandardErrorMapper.h>
+#include <tomic/logger/error/impl/VerboseErrorLogger.h>
+#include <tomic/logger/error/impl/VerboseErrorMapper.h>
 #include <tomic/parser/ast/mapper/CompleteSyntaxMapper.h>
+#include <tomic/parser/ast/mapper/ISyntaxMapper.h>
 #include <tomic/parser/ast/mapper/ReducedSyntaxMapper.h>
-#include <tomic/parser/ISyntacticParser.h>
+#include <tomic/parser/ast/printer/IAstPrinter.h>
+#include <tomic/parser/ast/printer/JsonAstPrinter.h>
+#include <tomic/parser/ast/printer/StandardAstPrinter.h>
+#include <tomic/parser/ast/printer/XmlAstPrinter.h>
+#include <tomic/parser/impl/DefaultSemanticAnalyzer.h>
+#include <tomic/parser/impl/DefaultSemanticParser.h>
 #include <tomic/parser/impl/ResilientSyntacticParser.h>
 #include <tomic/parser/ISemanticAnalyzer.h>
 #include <tomic/parser/ISemanticParser.h>
-#include <tomic/parser/impl/DefaultSemanticParser.h>
-#include <tomic/parser/impl/DefaultSemanticAnalyzer.h>
+#include <tomic/parser/ISyntacticParser.h>
+#include <tomic/Shared.h>
+#include <tomic/ToMiCompiler.h>
 #include <tomic/utils/StringUtil.h>
-#include <tomic/parser/ast/printer/IAstPrinter.h>
-#include <tomic/parser/ast/printer/JsonAstPrinter.h>
-#include <tomic/parser/ast/printer/XmlAstPrinter.h>
-#include <tomic/parser/ast/printer/StandardAstPrinter.h>
-#include <tomic/llvm/asm/IAsmGenerator.h>
-#include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
-#include <tomic/llvm/asm/IAsmPrinter.h>
-#include <tomic/llvm/asm/impl/StandardAsmPrinter.h>
 
 TOMIC_BEGIN
 

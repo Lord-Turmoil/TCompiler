@@ -7,9 +7,9 @@
 #ifndef _TOMIC_LLVM_MODULE_H_
 #define _TOMIC_LLVM_MODULE_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/IrForward.h>
 #include <string>
+#include <tomic/llvm/ir/IrForward.h>
+#include <tomic/llvm/Llvm.h>
 #include <vector>
 
 TOMIC_LLVM_BEGIN

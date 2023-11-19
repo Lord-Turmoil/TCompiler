@@ -8,6 +8,7 @@
 #define _TOMIC_DEFAULT_LOGGER_H_
 
 #include <tomic/logger/debug/ILogger.h>
+
 #include <memory>
 
 TOMIC_BEGIN

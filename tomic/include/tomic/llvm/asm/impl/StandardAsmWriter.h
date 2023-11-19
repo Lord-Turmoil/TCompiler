@@ -7,8 +7,8 @@
 #ifndef _TOMIC_LLVM_STANDARD_ASM_WRITER_H_
 #define _TOMIC_LLVM_STANDARD_ASM_WRITER_H_
 
-#include <tomic/llvm/asm/IAsmWriter.h>
 #include <memory>
+#include <tomic/llvm/asm/IAsmWriter.h>
 
 TOMIC_LLVM_BEGIN
 

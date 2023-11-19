@@ -4,9 +4,9 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/llvm/ir/value/inst/Instruction.h>
 #include <tomic/llvm/ir/value/BasicBlock.h>
 #include <tomic/llvm/ir/value/Function.h>
+#include <tomic/llvm/ir/value/inst/Instruction.h>
 
 TOMIC_LLVM_BEGIN
 

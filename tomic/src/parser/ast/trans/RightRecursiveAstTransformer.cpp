@@ -4,9 +4,10 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/parser/ast/trans/RightRecursiveAstTransformer.h>
 #include <tomic/parser/ast/SyntaxNode.h>
 #include <tomic/parser/ast/SyntaxTree.h>
+#include <tomic/parser/ast/trans/RightRecursiveAstTransformer.h>
+
 #include <vector>
 
 TOMIC_BEGIN

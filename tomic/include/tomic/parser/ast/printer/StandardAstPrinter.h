@@ -7,12 +7,11 @@
 #ifndef _TOMIC_STANDARD_AST_PRINTER_H_
 #define _TOMIC_STANDARD_AST_PRINTER_H_
 
-#include <tomic/Shared.h>
-#include <tomic/parser/ast/printer/IAstPrinter.h>
-#include <tomic/parser/ast/SyntaxType.h>
+#include <tomic/lexer/token/ITokenMapper.h>
 #include <tomic/parser/ast/AstVisitor.h>
 #include <tomic/parser/ast/mapper/ISyntaxMapper.h>
-#include <tomic/lexer/token/ITokenMapper.h>
+#include <tomic/parser/ast/printer/IAstPrinter.h>
+#include <tomic/Shared.h>
 
 TOMIC_BEGIN
 

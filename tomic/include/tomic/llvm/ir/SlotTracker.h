@@ -7,9 +7,8 @@
 #ifndef _TOMIC_LLVM_SLOT_TRACKER_H_
 #define _TOMIC_LLVM_SLOT_TRACKER_H_
 
-#include <tomic/llvm/Llvm.h>
 #include <tomic/llvm/ir/IrForward.h>
-
+#include <tomic/llvm/Llvm.h>
 #include <unordered_map>
 
 TOMIC_LLVM_BEGIN

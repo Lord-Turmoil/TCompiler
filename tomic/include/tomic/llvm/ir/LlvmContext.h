@@ -7,11 +7,11 @@
 #ifndef _TOMIC_LLVM_LLVM_CONTEXT_H_
 #define _TOMIC_LLVM_LLVM_CONTEXT_H_
 
-#include <tomic/llvm/Llvm.h>
-#include <tomic/llvm/ir/Type.h>
-#include <tomic/llvm/ir/IrForward.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
+#include <tomic/llvm/ir/IrForward.h>
+#include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/value/Value.h>
+#include <tomic/llvm/Llvm.h>
 #include <unordered_map>
 #include <utility>
 

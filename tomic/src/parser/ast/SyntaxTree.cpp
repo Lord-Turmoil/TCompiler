@@ -4,9 +4,10 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/Shared.h>
-#include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/ast/SyntaxNode.h>
+#include <tomic/parser/ast/SyntaxTree.h>
+#include <tomic/Shared.h>
+
 #include <algorithm>
 
 TOMIC_BEGIN

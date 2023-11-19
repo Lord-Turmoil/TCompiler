@@ -14,16 +14,12 @@
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
 #include <tomic/llvm/ir/value/Value.h>
-
 #include <tomic/parser/ast/SyntaxNode.h>
 #include <tomic/parser/ast/SyntaxTree.h>
-
 #include <tomic/parser/table/SymbolTable.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
 #include <tomic/parser/table/SymbolTableEntry.h>
-
 #include <tomic/utils/SemanticUtil.h>
-
 #include <vector>
 
 TOMIC_LLVM_BEGIN

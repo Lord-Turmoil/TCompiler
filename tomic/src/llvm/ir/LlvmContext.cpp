@@ -4,9 +4,9 @@
  *   For BUAA 2023 Compiler Technology
  */
 
+#include <tomic/llvm/ir/DerivedTypes.h>
 #include <tomic/llvm/ir/LlvmContext.h>
 #include <tomic/llvm/ir/Type.h>
-#include <tomic/llvm/ir/DerivedTypes.h>
 
 TOMIC_LLVM_BEGIN
 

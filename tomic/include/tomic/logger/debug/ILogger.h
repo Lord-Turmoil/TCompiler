@@ -8,6 +8,7 @@
 #define _TOMIC_LOGGER_H_
 
 #include <tomic/Shared.h>
+
 #include <memory>
 
 TOMIC_BEGIN

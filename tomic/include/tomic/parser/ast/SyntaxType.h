@@ -8,9 +8,6 @@
 #define _TOMIC_SYNTAX_TYPE_H_
 
 #include <tomic/Shared.h>
-#include <tomic/Config.h>
-#include <unordered_map>
-#include <memory>
 
 TOMIC_BEGIN
 
