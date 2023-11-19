@@ -177,7 +177,7 @@ void Function::PrintAsm(IAsmWriterPtr writer)
 {
     auto rawType = GetType();
     TOMIC_ASSERT(rawType->IsFunctionTy());
-    auto type = rawType->Cast<FunctionType>();
+    auto type = rawType->As<FunctionType>();
 
     // First, we trace all the slot.
     GetSlotTracker()->Trace(this);

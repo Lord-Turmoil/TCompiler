@@ -70,7 +70,7 @@ public:
     // You should use this function only when you are sure that this type is
     // actually the type you want to cast to.
     template<typename _Ty>
-    _Ty* Cast() { return static_cast<_Ty*>(this); }
+    _Ty* As() { return static_cast<_Ty*>(this); }
 
 protected:
     // Prohibit direct instantiation.

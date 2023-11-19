@@ -161,7 +161,7 @@ ArgumentPtr StandardAsmGenerator::_ParseArgument(SyntaxNodePtr node, int argNo, 
         return Argument::New(type, name, argNo);
     }
 
-    return Argument::New(PointerType::Get(type->Cast<ArrayType>()->ElementType()), name, argNo);
+    return Argument::New(PointerType::Get(type->As<ArrayType>()->ElementType()), name, argNo);
 }
 
 

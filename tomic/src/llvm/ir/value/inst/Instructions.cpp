@@ -55,7 +55,7 @@ LoadInstPtr LoadInst::New(ValuePtr address)
 {
     TOMIC_ASSERT(address->GetType()->IsPointerTy() && "Address must be a pointer!");
 
-    return New(address->GetType()->Cast<PointerType>()->ElementType(), address);
+    return New(address->GetType()->As<PointerType>()->ElementType(), address);
 }
 
 ValuePtr LoadInst::Address() const
