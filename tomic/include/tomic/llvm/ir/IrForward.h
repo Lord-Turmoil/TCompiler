@@ -99,6 +99,12 @@ using CallInstPtr = CallInst*;
 class ReturnInst;
 using ReturnInstPtr = ReturnInst*;
 
+class InputInst;
+using InputInstPtr = InputInst*;
+
+class OutputInst;
+using OutputInstPtr = OutputInst*;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Use Forward Declaration
 class Use;

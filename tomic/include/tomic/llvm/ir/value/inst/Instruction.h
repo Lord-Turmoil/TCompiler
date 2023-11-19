@@ -36,6 +36,8 @@ public:
     virtual bool IsCompare() const { return false; }
     virtual bool IsBranch() const { return false; }
     virtual bool IsCall() const { return false; }
+    virtual bool IsInput() const { return false; }
+    virtual bool IsOutput() const { return false; }
 
 protected:
     Instruction(ValueType valueType, TypePtr type, UseListPtr operands);

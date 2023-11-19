@@ -11,6 +11,7 @@
 #include <tomic/llvm/ir/value/ConstantData.h>
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/GlobalVariable.h>
+#include <tomic/llvm/ir/value/inst/ExtendedInstructions.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
 #include <tomic/llvm/ir/value/inst/InstructionTypes.h>
 #include <tomic/llvm/ir/value/Value.h>
@@ -565,5 +566,25 @@ void UnaryOperator::PrintAsm(IAsmWriterPtr writer)
     writer->PushNewLine();
 }
 
+
+/*
+ * ========================= Extended Inst ===========================
+ */
+
+// %2 = call i32 (...) @getint()
+void InputInst::PrintAsm(IAsmWriterPtr writer)
+{
+    PrintName(writer);
+    writer->PushNext("= call ");
+
+    GetType()->PrintAsm(writer);
+    writer->PushNext("(...)");
+
+    writer->PushNext("@");
+    writer->Push(_name.c_str());
+    writer->Push("()");
+
+    writer->PushNewLine();
+}
 
 TOMIC_LLVM_END

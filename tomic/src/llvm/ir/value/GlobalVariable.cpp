@@ -8,7 +8,7 @@
 #include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/value/GlobalVariable.h>
 
-#include "tomic/utils/StringUtil.h"
+#include <tomic/utils/StringUtil.h>
 
 TOMIC_LLVM_BEGIN
 

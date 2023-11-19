@@ -8,6 +8,7 @@
 #define _TOMIC_DEFAULT_SEMANTIC_PARSER_H_
 
 #include <tomic/logger/debug/ILogger.h>
+#include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/ISemanticAnalyzer.h>
 #include <tomic/parser/ISemanticParser.h>
 

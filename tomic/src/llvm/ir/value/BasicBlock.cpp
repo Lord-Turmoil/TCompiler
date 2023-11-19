@@ -23,7 +23,7 @@ BasicBlockPtr BasicBlock::New(FunctionPtr parent)
 
 BasicBlock::BasicBlock(FunctionPtr parent)
     : Value(ValueType::BasicBlockTy, parent->Context()->GetLabelTy()),
-      _parent(parent)
+    _parent(parent)
 {
 }
 

@@ -15,6 +15,7 @@ TOMIC_LLVM_BEGIN
  * ValueType is an enum class that represents the type of Value.
  * ... Too many types to list here. :(
  */
+//
 enum class ValueType
 {
     // === Value ===
@@ -30,6 +31,8 @@ enum class ValueType
     ReturnInstTy,
     StoreInstTy,
     CallInstTy,
+    InputInstTy,
+    OutputInstTy,
 
     // === Value.User.Instruction.UnaryInstruction ===
     AllocaInstTy,

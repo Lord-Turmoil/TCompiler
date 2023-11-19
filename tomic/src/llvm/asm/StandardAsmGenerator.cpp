@@ -14,6 +14,7 @@
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/GlobalVariable.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
+#include <tomic/llvm/ir/value/inst/ExtendedInstructions.h>
 #include <tomic/llvm/ir/value/Value.h>
 #include <tomic/parser/ast/SyntaxNode.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
@@ -265,6 +266,16 @@ void StandardAsmGenerator::_ParseAssignStatement(SyntaxNodePtr node)
     // Notice that the last child is semicolon.
     auto value = _ParseExpression(node->LastChild()->PrevSibling());
 
+    _InsertInstruction(StoreInst::New(value, address));
+}
+
+
+void StandardAsmGenerator::_ParseInputStatement(SyntaxNodePtr node)
+{
+    auto value = InputInst::New(_module->Context());
+    _InsertInstruction(value);
+
+    auto address = _GetLValValue(node->FirstChild());
     _InsertInstruction(StoreInst::New(value, address));
 }
 
