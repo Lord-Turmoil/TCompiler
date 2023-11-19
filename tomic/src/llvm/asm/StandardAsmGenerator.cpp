@@ -10,22 +10,16 @@
 #include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
 #include <tomic/llvm/ir/value/Value.h>
-#include <tomic/llvm/ir/value/Argument.h>
 #include <tomic/llvm/ir/value/Function.h>
 #include <tomic/llvm/ir/value/BasicBlock.h>
 #include <tomic/llvm/ir/value/GlobalVariable.h>
-#include <tomic/llvm/ir/value/User.h>
 #include <tomic/llvm/ir/value/ConstantData.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
 
-#include <tomic/parser/ast/SyntaxTree.h>
 #include <tomic/parser/ast/SyntaxNode.h>
 
-#include <tomic/parser/table/SymbolTable.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
-#include <tomic/parser/table/SymbolTableEntry.h>
 
-#include <tomic/utils/SymbolTableUtil.h>
 #include <tomic/utils/SemanticUtil.h>
 
 TOMIC_LLVM_BEGIN
@@ -96,7 +90,9 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalVarDef(SyntaxNodePtr node)
     // Get variable name.
     const std::string& name = node->FirstChild()->Token()->lexeme;
     auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
-    auto type = _GetEntryType(entry);
+
+    // Warning: Global values must be pointer type.
+    auto type = _module->Context()->GetPointerType(_GetEntryType(entry));
     GlobalVariablePtr value;
 
     if (node->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
@@ -123,7 +119,8 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalConstantDef(SyntaxNodePtr no
     // Get constant name.
     const std::string& name = node->FirstChild()->Token()->lexeme;
     auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
-    auto type = _GetEntryType(entry);
+    // Warning: Global values must be pointer type.
+    auto type = _module->Context()->GetPointerType(_GetEntryType(entry));
     GlobalVariablePtr value;
 
     if (node->LastChild()->Type() == SyntaxType::ST_CONST_INIT_VAL)
@@ -208,21 +205,21 @@ AllocaInstPtr StandardAsmGenerator::_ParseVariableDef(SyntaxNodePtr node)
     const std::string& name = node->FirstChild()->Token()->lexeme;
     auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
     auto type = _GetEntryType(entry);
-    AllocaInstPtr value = AllocaInst::New(type);
+    AllocaInstPtr address = AllocaInst::New(type);
 
-    _InsertInstruction(value);
+    _InsertInstruction(address);
     if ((node->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
         || (node->LastChild()->Type() == SyntaxType::ST_CONST_INIT_VAL))
     {
         // with init value
-        auto initValue = _ParseExpression(node->LastChild());
-        _InsertInstruction(StoreInst::New(initValue, value));
+        auto value = _ParseExpression(node->LastChild()->FirstChild());
+        _InsertInstruction(StoreInst::New(value, address));
     }
 
     // Add the value to the symbol table and module.
-    _AddValue(entry, value);
+    _AddValue(entry, address);
 
-    return value;
+    return address;
 }
 
 
@@ -262,7 +259,18 @@ ReturnInstPtr StandardAsmGenerator::_ParseReturnStatement(SyntaxNodePtr node)
     return inst;
 }
 
+void StandardAsmGenerator::_ParseAssignStatement(SyntaxNodePtr node)
+{
+    TOMIC_ASSERT(node->Type() == SyntaxType::ST_ASSIGNMENT_STMT);
 
+    auto address = _GetLValValue(node->FirstChild());
+    // Notice that the last child is semicolon.
+    auto value = _ParseExpression(node->LastChild()->PrevSibling());
+
+    _InsertInstruction(StoreInst::New(value, address));
+}
+
+// node is an Exp or ConstExp.
 ValuePtr StandardAsmGenerator::_ParseExpression(SyntaxNodePtr node)
 {
     auto context = _module->Context();
@@ -274,9 +282,154 @@ ValuePtr StandardAsmGenerator::_ParseExpression(SyntaxNodePtr node)
         return ConstantData::New(type, value);
     }
 
-    TOMIC_PANIC("Not implemented yet");
+    return _ParseAddExp(node->FirstChild());
+}
+
+
+ValuePtr StandardAsmGenerator::_ParseAddExp(SyntaxNodePtr node)
+{
+    auto context = _module->Context();
+
+    if (node->BoolAttribute("det"))
+    {
+        int value = node->IntAttribute("value");
+        auto type = context->GetInt32Ty();
+        return ConstantData::New(type, value);
+    }
+
+    if (node->HasManyChildren())
+    {
+        // AddExp + MulExp
+        auto lhs = _ParseAddExp(node->FirstChild());
+        auto op = node->ChildAt(1)->Token()->lexeme.c_str();
+        auto rhs = _ParseMulExp(node->LastChild());
+        switch (op[0])
+        {
+        case '+':
+            return _InsertInstruction(BinaryOperator::New(BinaryOpType::Add, lhs, rhs));
+        case '-':
+            return _InsertInstruction(BinaryOperator::New(BinaryOpType::Sub, lhs, rhs));
+        default:
+            TOMIC_PANIC("Illegal operator");
+        }
+        return nullptr;
+    }
+
+    // MulExp
+    return _ParseMulExp(node->FirstChild());
+}
+
+
+ValuePtr StandardAsmGenerator::_ParseMulExp(SyntaxNodePtr node)
+{
+    auto context = _module->Context();
+
+    if (node->BoolAttribute("det"))
+    {
+        int value = node->IntAttribute("value");
+        auto type = context->GetInt32Ty();
+        return ConstantData::New(type, value);
+    }
+
+    if (node->HasManyChildren())
+    {
+        // MulExp * UnaryExp
+        auto lhs = _ParseMulExp(node->FirstChild());
+        auto op = node->ChildAt(1)->Token()->lexeme.c_str();
+        auto rhs = _ParseUnaryExp(node->LastChild());
+
+        switch (op[0])
+        {
+        case '*':
+            return _InsertInstruction(BinaryOperator::New(BinaryOpType::Mul, lhs, rhs));
+        case '/':
+            return _InsertInstruction(BinaryOperator::New(BinaryOpType::Div, lhs, rhs));
+        case '%':
+            return _InsertInstruction(BinaryOperator::New(BinaryOpType::Mod, lhs, rhs));
+        default:
+            TOMIC_PANIC("Illegal operator");
+        }
+        return nullptr;
+    }
+
+    // UnaryExp
+    return _ParseUnaryExp(node->FirstChild());
+}
+
+
+ValuePtr StandardAsmGenerator::_ParseUnaryExp(SyntaxNodePtr node)
+{
+    if (node->FirstChild()->Type() == SyntaxType::ST_PRIMARY_EXP)
+    {
+        return _ParsePrimaryExp(node->FirstChild());
+    }
+    if (node->FirstChild()->Type() == SyntaxType::ST_FUNC_CALL)
+    {
+        TOMIC_PANIC("Not implemented yet");
+        return nullptr;
+    }
+
+    // UnaryOP UnaryExp
+    switch (node->FirstChild()->Attribute("op")[0])
+    {
+    case '+':
+        return _ParseUnaryExp(node->LastChild());
+    case '-':
+        return _InsertInstruction(UnaryOperator::New(UnaryOpType::Neg, _ParseUnaryExp(node->LastChild())));
+    case '!':
+        TOMIC_PANIC("Not implemented yet");
+        return nullptr;
+    default:
+        TOMIC_PANIC("Illegal operator");
+        return nullptr;
+    }
+}
+
+
+ValuePtr StandardAsmGenerator::_ParsePrimaryExp(SyntaxNodePtr node)
+{
+    if (node->HasManyChildren())
+    {
+        // ( Exp )
+        return _ParseExpression(node->ChildAt(1));
+    }
+    if (node->FirstChild()->Type() == SyntaxType::ST_LVAL)
+    {
+        return _ParseLVal(node->FirstChild());
+    }
+    if (node->FirstChild()->Type() == SyntaxType::ST_NUMBER)
+    {
+        return _ParseNumber(node->FirstChild());
+    }
+
+    TOMIC_PANIC("Illegal child type for PrimaryExp");
 
     return nullptr;
+}
+
+
+ValuePtr StandardAsmGenerator::_ParseLVal(SyntaxNodePtr node)
+{
+    // TODO: Add support for array!
+    if (node->IntAttribute("dim") != 0)
+    {
+        TOMIC_PANIC("Not implemented yet");
+        return nullptr;
+    }
+
+    return _InsertInstruction(LoadInst::New(_GetLValValue(node)));
+}
+
+
+ValuePtr StandardAsmGenerator::_ParseNumber(SyntaxNodePtr node)
+{
+    if (!node->BoolAttribute("det"))
+    {
+        TOMIC_PANIC("Number must be deterministic");
+        return nullptr;
+    }
+
+    return ConstantData::New(_module->Context()->GetInt32Ty(), node->IntAttribute("value"));
 }
 
 

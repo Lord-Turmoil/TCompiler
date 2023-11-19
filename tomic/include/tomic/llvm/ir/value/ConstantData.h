@@ -20,8 +20,12 @@ public:
     static ConstantDataPtr New(TypePtr type, int value);
     static ConstantDataPtr New(std::vector<ConstantDataPtr> values);
 
-    // ConstantData has no name.
     void PrintAsm(IAsmWriterPtr writer) override;
+    /*
+     * ConstantData has no name. But to be compatible with value, we
+     * make its name print value without type.
+     */
+    void PrintName(IAsmWriterPtr writer) override;
     void PrintUse(IAsmWriterPtr writer) override;
 
     bool IsAllZero() const { return _isAllZero; }

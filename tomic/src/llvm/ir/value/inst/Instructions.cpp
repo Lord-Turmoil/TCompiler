@@ -12,8 +12,9 @@ TOMIC_LLVM_BEGIN
 /*
  * ============================== AllocaInst ==============================
  */
+//
 AllocaInst::AllocaInst(TypePtr type, int alignment)
-    : Instruction(ValueType::AllocaInstTy, type)
+    : Instruction(ValueType::AllocaInstTy, type->Context()->GetPointerType(type))
 {
     _allocatedType = type;
     _alignment = alignment;
@@ -22,11 +23,9 @@ AllocaInst::AllocaInst(TypePtr type, int alignment)
 
 AllocaInstPtr AllocaInst::New(TypePtr type, int alignment)
 {
-    auto context = type->Context();
-    auto inst = std::shared_ptr<AllocaInst>(
-        new AllocaInst(context->GetPointerType(type), alignment));
+    auto inst = std::shared_ptr<AllocaInst>(new AllocaInst(type, alignment));
 
-    context->StoreValue(inst);
+    type->Context()->StoreValue(inst);
 
     return inst.get();
 }
@@ -49,6 +48,19 @@ LoadInstPtr LoadInst::New(TypePtr type, ValuePtr address)
     type->Context()->StoreValue(inst);
 
     return inst.get();
+}
+
+
+LoadInstPtr LoadInst::New(ValuePtr address)
+{
+    TOMIC_ASSERT(address->GetType()->IsPointerTy() && "Address must be a pointer!");
+
+    return New(address->GetType()->Cast<PointerType>()->ElementType(), address);
+}
+
+ValuePtr LoadInst::Address() const
+{
+    return OperandAt(0);
 }
 
 

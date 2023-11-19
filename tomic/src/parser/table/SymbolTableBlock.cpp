@@ -16,7 +16,7 @@ SymbolTableBlockPtr SymbolTableBlock::NewChild()
 }
 
 
-SymbolTableBlockPtr SymbolTableBlock::AddEntry(SymbolTableEntryPtr entry)
+SymbolTableBlockPtr SymbolTableBlock::AddEntry(SymbolTableEntrySmartPtr entry)
 {
     TOMIC_ASSERT(entry);
 
@@ -26,7 +26,7 @@ SymbolTableBlockPtr SymbolTableBlock::AddEntry(SymbolTableEntryPtr entry)
 }
 
 
-SymbolTableEntryPtr SymbolTableBlock::FindEntry(const std::string& name) const
+SymbolTableEntrySmartPtr SymbolTableBlock::FindEntry(const std::string& name) const
 {
     auto entry = FindLocalEntry(name);
     if (entry)
@@ -43,7 +43,7 @@ SymbolTableEntryPtr SymbolTableBlock::FindEntry(const std::string& name) const
 }
 
 
-SymbolTableEntryPtr SymbolTableBlock::FindLocalEntry(const std::string& name) const
+SymbolTableEntrySmartPtr SymbolTableBlock::FindLocalEntry(const std::string& name) const
 {
     for (auto entry : _entries)
     {

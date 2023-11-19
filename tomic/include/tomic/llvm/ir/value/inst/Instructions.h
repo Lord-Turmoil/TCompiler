@@ -36,6 +36,8 @@ public:
 
     void PrintAsm(IAsmWriterPtr writer) override;
 
+    TypePtr AllocatedType() const { return _allocatedType; }
+
 private:
     AllocaInst(TypePtr type, int alignment);
 
@@ -56,6 +58,13 @@ public:
     ~LoadInst() override = default;
 
     static LoadInstPtr New(TypePtr type, ValuePtr address);
+
+    // Auto resolve type.
+    static LoadInstPtr New(ValuePtr address);
+
+    void PrintAsm(IAsmWriterPtr writer) override;
+
+    ValuePtr Address() const;
 
 private:
     LoadInst(TypePtr type, ValuePtr address);

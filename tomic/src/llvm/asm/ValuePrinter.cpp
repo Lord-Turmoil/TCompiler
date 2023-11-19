@@ -7,6 +7,7 @@
 #include <tomic/llvm/ir/Type.h>
 #include <tomic/llvm/ir/DerivedTypes.h>
 #include <tomic/llvm/ir/value/inst/Instructions.h>
+#include <tomic/llvm/ir/value/inst/InstructionTypes.h>
 #include <tomic/llvm/ir/value/ConstantData.h>
 #include <tomic/llvm/ir/value/GlobalVariable.h>
 #include <tomic/llvm/ir/value/Value.h>
@@ -21,7 +22,7 @@ TOMIC_LLVM_BEGIN
  * ============================== Value ==============================
  */
 
-void Value::PrintAsm(IAsmWriterPtr writer)
+    void Value::PrintAsm(IAsmWriterPtr writer)
 {
     TOMIC_PANIC("Not implemented!");
 }
@@ -79,13 +80,11 @@ void ConstantData::PrintAsm(IAsmWriterPtr writer)
     }
 }
 
-
-void ConstantData::PrintUse(IAsmWriterPtr writer)
+void ConstantData::PrintName(IAsmWriterPtr writer)
 {
-    GetType()->PrintAsm(writer);
     if (IsArray())
     {
-        writer->PushNext('[');
+        writer->Push('[');
         for (auto valueIter = _values.begin(); valueIter != _values.end(); ++valueIter)
         {
             if (valueIter != _values.begin())
@@ -98,8 +97,15 @@ void ConstantData::PrintUse(IAsmWriterPtr writer)
     }
     else
     {
-        writer->PushNext(StringUtil::IntToString(_value));
+        writer->Push(StringUtil::IntToString(_value));
     }
+}
+
+void ConstantData::PrintUse(IAsmWriterPtr writer)
+{
+    GetType()->PrintAsm(writer);
+    writer->PushSpace();
+    PrintName(writer);
 }
 
 
@@ -317,7 +323,7 @@ void AllocaInst::PrintAsm(IAsmWriterPtr writer)
     writer->PushNext('=');
     writer->PushNext("alloca");
     writer->PushSpace();
-    GetType()->PrintAsm(writer);
+    AllocatedType()->PrintAsm(writer);
     writer->PushNewLine();
 }
 
@@ -336,6 +342,21 @@ void StoreInst::PrintAsm(IAsmWriterPtr writer)
 }
 
 
+// %3 = load i32, i32* %1, align 4
+void LoadInst::PrintAsm(IAsmWriterPtr writer)
+{
+    PrintName(writer);
+
+    writer->PushNext("= load ");
+    GetType()->PrintAsm(writer);
+    writer->Push(", ");
+
+    Address()->PrintUse(writer);
+
+    writer->PushNewLine();
+}
+
+
 /*
  * ========================== ReturnInst =============================
  */
@@ -348,6 +369,90 @@ void ReturnInst::PrintAsm(IAsmWriterPtr writer)
         writer->PushSpace();
         OperandAt(0)->PrintUse(writer);
     }
+    writer->PushNewLine();
+}
+
+
+/*
+ * ========================= OperatorInst ============================
+ */
+
+/*
+ * %11 = add nsw i32 %9, %10
+ * %18 = sub nsw i32 0, %7
+ * %13 = mul nsw i32 %12, 2
+ * %15 = sdiv i32 %14, 2
+ * %17 = srem i32 %16, 2
+ */
+void BinaryOperator::PrintAsm(IAsmWriterPtr writer)
+{
+    const char* op;
+    switch (OpType())
+    {
+    case BinaryOpType::Add:
+        op = "add nsw";
+        break;
+    case BinaryOpType::Sub:
+        op = "sub nsw";
+        break;
+    case BinaryOpType::Mul:
+        op = "mul nsw";
+        break;
+    case BinaryOpType::Div:
+        op = "sdiv";
+        break;
+    case BinaryOpType::Mod:
+        op = "srem";
+        break;
+    }
+
+    PrintName(writer);
+    writer->PushNext("=");
+    writer->PushNext(op);
+    writer->PushSpace();
+
+    // Only one type.
+    GetType()->PrintAsm(writer);
+    writer->PushSpace();
+
+    LeftOperand()->PrintName(writer);
+    writer->Push(", ");
+    RightOperand()->PrintName(writer);
+
+    writer->PushNewLine();
+}
+
+/*
+ * %2 = add nsw i32 0, %1
+ * %2 = sub nsw i32 0, %1
+ */
+void UnaryOperator::PrintAsm(IAsmWriterPtr writer)
+{
+    const char* op;
+
+    switch (OpType())
+    {
+    case UnaryOpType::Pos:
+        op = "add nsw";
+        break;
+    case UnaryOpType::Neg:
+        op = "sub nsw";
+        break;
+    default:
+        TOMIC_PANIC("Not supported");
+        return;
+    }
+
+    PrintName(writer);
+    writer->PushNext("=");
+    writer->PushNext(op);
+    writer->PushSpace();
+
+    GetType()->PrintAsm(writer);
+    writer->PushNext('0');
+    writer->Push(", ");
+    Operand()->PrintName(writer);
+
     writer->PushNewLine();
 }
 

@@ -33,7 +33,7 @@ TOMIC_LLVM_BEGIN
 /*
  * ==================== Overall Parsing ====================
  */
-
+//
 bool StandardAsmGenerator::VisitEnter(SyntaxNodePtr node)
 {
     if (node->Type() == SyntaxType::ST_BLOCK_ITEM)
@@ -148,9 +148,16 @@ bool StandardAsmGenerator::_ParseInstructions(SyntaxNodePtr node)
 // Here the node is a specific statement.
 void StandardAsmGenerator::_ParseStatement(SyntaxNodePtr node)
 {
-    if (node->Type() == SyntaxType::ST_RETURN_STMT)
+    switch (node->Type())
     {
+    case  SyntaxType::ST_RETURN_STMT:
         _ParseReturnStatement(node);
+        break;
+    case SyntaxType::ST_ASSIGNMENT_STMT:
+        _ParseAssignStatement(node);
+        break;
+    default:
+        TOMIC_PANIC("Not implemented yet");
     }
 }
 
@@ -159,7 +166,7 @@ void StandardAsmGenerator::_ParseStatement(SyntaxNodePtr node)
  * ==================== Utility Functions ====================
  */
 
-SymbolTableBlockPtr StandardAsmGenerator::_GetSymbolTableBlock(SyntaxNodePtr node)
+SymbolTableBlockPtr StandardAsmGenerator::_GetSymbolTableBlock(SyntaxNodePtr node) const
 {
     TOMIC_ASSERT(node);
 
@@ -172,18 +179,18 @@ SymbolTableBlockPtr StandardAsmGenerator::_GetSymbolTableBlock(SyntaxNodePtr nod
 }
 
 
-void StandardAsmGenerator::_AddValue(SymbolTableEntryPtr entry, ValuePtr value)
+void StandardAsmGenerator::_AddValue(SymbolTableEntrySmartPtr entry, ValuePtr value)
 {
     TOMIC_ASSERT(entry && value);
-    _valueMap[entry] = value;
+    _valueMap[entry.get()] = value;
 }
 
 
-ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntryPtr entry)
+ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntrySmartPtr entry)
 {
     TOMIC_ASSERT(entry);
 
-    auto it = _valueMap.find(entry);
+    auto it = _valueMap.find(entry.get());
 
     if (it != _valueMap.end())
     {
@@ -195,6 +202,13 @@ ValuePtr StandardAsmGenerator::_GetValue(SymbolTableEntryPtr entry)
     return nullptr;
 }
 
+// node is a LVal
+ValuePtr StandardAsmGenerator::_GetLValValue(SyntaxNodePtr node)
+{
+    auto block = _GetSymbolTableBlock(node);
+    auto entry = block->FindEntry(node->FirstChild()->Token()->lexeme);
+    return _GetValue(entry);
+}
 
 /*
  * SymbolTableEntry to LLVM type.
@@ -206,7 +220,7 @@ static TypePtr _GetFunctionEntryType(LlvmContextPtr context, FunctionEntryPtr en
 static TypePtr _GetFunctionParamType(LlvmContextPtr context, FunctionParamPropertyPtr param);
 
 
-TypePtr StandardAsmGenerator::_GetEntryType(SymbolTableEntryPtr entry)
+TypePtr StandardAsmGenerator::_GetEntryType(SymbolTableEntrySmartPtr entry)
 {
     auto context = _module->Context();
 

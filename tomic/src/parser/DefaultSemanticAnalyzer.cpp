@@ -123,7 +123,7 @@ SymbolTableBlockPtr DefaultSemanticAnalyzer::_GetOrCreateBlock(SyntaxNodePtr nod
 }
 
 
-bool DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntryPtr entry)
+bool DefaultSemanticAnalyzer::_AddToSymbolTable(SymbolTableEntrySmartPtr entry)
 {
     TOMIC_ASSERT(entry);
     TOMIC_ASSERT(_currentBlock);
@@ -784,7 +784,7 @@ bool DefaultSemanticAnalyzer::_ExitLVal(SyntaxNodePtr node)
 {
     SyntaxNodePtr ident = node->FirstChild();
     const char* name = ident->Token()->lexeme.c_str();
-    SymbolTableEntryPtr rawEntry = _currentBlock->FindEntry(name);
+    SymbolTableEntrySmartPtr rawEntry = _currentBlock->FindEntry(name);
 
     // In case any error occurs, we set the type to int by default.
     node->SetIntAttribute("type", static_cast<int>(SymbolValueType::VT_INT));

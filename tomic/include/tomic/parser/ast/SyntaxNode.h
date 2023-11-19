@@ -59,6 +59,8 @@ public:
     SyntaxNodePtr NextSibling() const { return _next; }
     SyntaxNodePtr PrevSibling() const { return _prev; }
 
+    SyntaxNodePtr ChildAt(int index) const;
+
 private:
     void _InsertChildPreamble(SyntaxNodePtr child);
     SyntaxNodePtr _Unlink(SyntaxNodePtr child);

@@ -32,7 +32,8 @@ protected:
 enum class UnaryOpType
 {
     Not,
-    Neg
+    Neg,
+    Pos
 };
 
 
@@ -46,6 +47,8 @@ public:
     ~UnaryOperator() override = default;
 
     static UnaryOperatorPtr New(UnaryOpType opType, ValuePtr operand);
+
+    void PrintAsm(IAsmWriterPtr writer) override;
 
     UnaryOpType OpType() const { return _opType; }
 
@@ -76,6 +79,8 @@ public:
     ~BinaryOperator() override = default;
 
     static BinaryOperatorPtr New(BinaryOpType opType, ValuePtr lhs, ValuePtr rhs);
+
+    void PrintAsm(IAsmWriterPtr writer) override;
 
     BinaryOpType OpType() const { return _opType; }
 

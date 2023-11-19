@@ -24,6 +24,7 @@ TOMIC_LLVM_BEGIN
  * this time basic iteration will also be used, since we have already
  * known the structure of the SyntaxTree.
  */
+// ? If missing, class will be improperly indented.
 class StandardAsmGenerator : public IAsmGenerator, private AstVisitor
 {
 public:
@@ -49,16 +50,18 @@ private:
 
     /**
      * Maintain a map from SymbolTableEntry to Value.
+     * Do not use smart pointer here since it is not consistent!
      */
     std::unordered_map<SymbolTableEntryPtr, ValuePtr> _valueMap;
 
 private:
-    SymbolTableBlockPtr _GetSymbolTableBlock(SyntaxNodePtr node);
+    SymbolTableBlockPtr _GetSymbolTableBlock(SyntaxNodePtr node) const;
 
-    void _AddValue(SymbolTableEntryPtr entry, ValuePtr value);
-    ValuePtr _GetValue(SymbolTableEntryPtr entry);
+    void _AddValue(SymbolTableEntrySmartPtr entry, ValuePtr value);
+    ValuePtr _GetValue(SymbolTableEntrySmartPtr entry);
+    ValuePtr _GetLValValue(SyntaxNodePtr node);
 
-    TypePtr _GetEntryType(SymbolTableEntryPtr entry);
+    TypePtr _GetEntryType(SymbolTableEntrySmartPtr entry);
 
     /*
      * Set the current function and basic block.
@@ -101,8 +104,26 @@ private:
     AllocaInstPtr _ParseVariableDef(SyntaxNodePtr node);
     AllocaInstPtr _ParseArrayDef(SyntaxNodePtr node);
 
+    // Statement.
     ReturnInstPtr _ParseReturnStatement(SyntaxNodePtr node);
+    void _ParseAssignStatement(SyntaxNodePtr node);
+
+    // Expression.
     ValuePtr _ParseExpression(SyntaxNodePtr node);
+    ValuePtr _ParseAddExp(SyntaxNodePtr node);
+    ValuePtr _ParseMulExp(SyntaxNodePtr node);
+
+    /*
+     * For UnaryExp, there is a problem for nesting. e.g. +-+-a, or !!!!b.
+     * It is solved by an AST transformer optimizer, so we won't need to
+     * consider it here.
+     */
+    ValuePtr _ParseUnaryExp(SyntaxNodePtr node);
+
+    ValuePtr _ParsePrimaryExp(SyntaxNodePtr node);
+
+    ValuePtr _ParseLVal(SyntaxNodePtr node);
+    ValuePtr _ParseNumber(SyntaxNodePtr node);
 };
 
 
