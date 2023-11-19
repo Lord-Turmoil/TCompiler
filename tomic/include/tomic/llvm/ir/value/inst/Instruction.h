@@ -27,6 +27,14 @@ public:
     FunctionPtr ParentFunction() const;
     ModulePtr ParentModule() const;
 
+    virtual bool IsReturn() const { return false; }
+    virtual bool IsAlloca() const { return false; }
+    virtual bool IsLoad() const { return false; }
+    virtual bool IsStore() const { return false; }
+    virtual bool IsBinaryOperator() const { return false; }
+    virtual bool IsUnaryOperator() const { return false; }
+    virtual bool IsCompare() const { return false; }
+
 protected:
     Instruction(ValueType valueType, TypePtr type, UseListPtr operands);
     Instruction(ValueType valueType, TypePtr type);

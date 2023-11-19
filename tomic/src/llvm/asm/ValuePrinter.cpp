@@ -182,6 +182,17 @@ void Function::PrintAsm(IAsmWriterPtr writer)
     // First, we trace all the slot.
     GetSlotTracker()->Trace(this);
 
+    // Then we assure that void function has a return.
+    if (type->ReturnType()->IsVoidTy())
+    {
+        auto inst = LastBasicBlock()->LastInstruction();
+        if (!inst || !inst->Is<ReturnInst>())
+        {
+            auto retInst = ReturnInst::New(inst->Context());
+            LastBasicBlock()->InsertInstruction(retInst);
+        }
+    }
+
     // Blank line.
     writer->PushNewLine();
 
@@ -201,10 +212,10 @@ void Function::PrintAsm(IAsmWriterPtr writer)
 
     // Function parameters.
     writer->Push('(');
-    for (auto argIter = ArgBegin(); argIter != ArgEnd(); ++argIter)
+    for (auto it = ArgBegin(); it != ArgEnd(); ++it)
     {
-        auto arg = *argIter;
-        if (argIter != ArgBegin())
+        auto arg = *it;
+        if (it != ArgBegin())
         {
             writer->Push(", ");
         }
@@ -220,9 +231,9 @@ void Function::PrintAsm(IAsmWriterPtr writer)
     writer->PushNewLine();
 
     // Basic blocks.
-    for (auto blockIter = BasicBlockBegin(); blockIter != BasicBlockEnd(); ++blockIter)
+    for (auto it = BasicBlockBegin(); it != BasicBlockEnd(); ++it)
     {
-        (*blockIter)->PrintAsm(writer);
+        (*it)->PrintAsm(writer);
     }
 
     // End of function.
@@ -275,7 +286,6 @@ void BasicBlock::PrintAsm(IAsmWriterPtr writer)
         writer->PushSpaces(4);
         (*instIter)->PrintAsm(writer);
     }
-
 }
 
 
@@ -370,6 +380,10 @@ void ReturnInst::PrintAsm(IAsmWriterPtr writer)
     {
         writer->PushSpace();
         OperandAt(0)->PrintUse(writer);
+    }
+    else
+    {
+        writer->PushNext("void");
     }
     writer->PushNewLine();
 }

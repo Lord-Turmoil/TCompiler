@@ -16,10 +16,16 @@ TOMIC_LLVM_BEGIN
  * I don't know how to implement this. The original LLVM implementation
  * is too complicated. :(
  */
+//
 class Constant : public User
 {
 public:
     ~Constant() override = default;
+
+    static bool classof(const ValueType type)
+    {
+        return type >= ValueType::ConstantTy;
+    }
 
 protected:
     Constant(ValueType valueType, TypePtr type, UseListPtr operands)

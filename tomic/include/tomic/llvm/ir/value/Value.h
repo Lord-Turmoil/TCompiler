@@ -29,6 +29,11 @@ class Value
 public:
     virtual ~Value() = default;
 
+    static bool classof(ValueType type)
+    {
+        return true;
+    }
+
     /*
      * I suddenly realized that, except dependency injection, I hardly
      * ever used Object-Oriented method in the whole project. Perhaps
@@ -66,6 +71,9 @@ public:
     // actually the type you want to cast to.
     template<typename _Ty>
     _Ty* Cast() { return static_cast<_Ty*>(this); }
+
+    template<typename _Ty>
+    bool Is() const { return _Ty::classof(_valueType); }
 
 
     // Get and set name for this Value.

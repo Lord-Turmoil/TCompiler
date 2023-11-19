@@ -34,7 +34,13 @@ public:
 
     static AllocaInstPtr New(TypePtr type, int alignment = 0);
 
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::AllocaInstTy;
+    }
+
     void PrintAsm(IAsmWriterPtr writer) override;
+    bool IsAlloca() const override { return true; }
 
     TypePtr AllocatedType() const { return _allocatedType; }
 
@@ -62,7 +68,14 @@ public:
     // Auto resolve type.
     static LoadInstPtr New(ValuePtr address);
 
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::LoadInstTy;
+    }
+
     void PrintAsm(IAsmWriterPtr writer) override;
+
+    bool IsLoad() const override { return true; }
 
     ValuePtr Address() const;
 
@@ -91,7 +104,14 @@ public:
 
     static StoreInstPtr New(ValuePtr value, ValuePtr address);
 
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::StoreInstTy;
+    }
+
     void PrintAsm(IAsmWriterPtr writer) override;
+
+    bool IsStore() const override { return true; }
 
 private:
     StoreInst(ValuePtr value, ValuePtr address);
@@ -115,7 +135,14 @@ public:
     static ReturnInstPtr New(LlvmContextPtr context, ValuePtr value);
     static ReturnInstPtr New(LlvmContextPtr context);
 
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::ReturnInstTy;
+    }
+
     void PrintAsm(IAsmWriterPtr writer) override;
+
+    bool IsReturn() const override { return true; }
 
 private:
     ReturnInst(TypePtr type, ValuePtr value);

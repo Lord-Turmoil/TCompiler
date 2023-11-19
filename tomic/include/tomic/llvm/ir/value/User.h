@@ -17,6 +17,11 @@ class User : public Value
 public:
     ~User() override = default;
 
+    static bool classof(ValueType type)
+    {
+        return type >= ValueType::BinaryOperatorTy;
+    }
+
     bool IsUser() const override { return true; }
 
     // Get the number of operands.

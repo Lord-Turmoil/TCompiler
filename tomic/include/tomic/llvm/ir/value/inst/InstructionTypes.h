@@ -16,11 +16,16 @@ TOMIC_LLVM_BEGIN
 /*
  * ============================== Unary Instruction =============================
  */
-
+//
 class UnaryInstruction : public Instruction
 {
 public:
     ~UnaryInstruction() override = default;
+
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::LoadInstTy || type == ValueType::UnaryOperatorTy;
+    }
 
     ValuePtr Operand() const { return OperandAt(0); }
 
@@ -48,7 +53,14 @@ public:
 
     static UnaryOperatorPtr New(UnaryOpType opType, ValuePtr operand);
 
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::UnaryOperatorTy;
+    }
+
     void PrintAsm(IAsmWriterPtr writer) override;
+
+    bool IsUnaryOperator() const override { return true; }
 
     UnaryOpType OpType() const { return _opType; }
 
@@ -80,7 +92,13 @@ public:
 
     static BinaryOperatorPtr New(BinaryOpType opType, ValuePtr lhs, ValuePtr rhs);
 
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::BinaryOperatorTy;
+    }
+
     void PrintAsm(IAsmWriterPtr writer) override;
+    bool IsBinaryOperator() const override { return true; }
 
     BinaryOpType OpType() const { return _opType; }
 
@@ -115,6 +133,13 @@ public:
     ~CompareInstruction() override = default;
 
     static CompareInstructionPtr New(PredicateType predicateType, ValuePtr lhs, ValuePtr rhs);
+
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::CompareInstTy;
+    }
+
+    bool IsCompare() const override { return true; }
 
     PredicateType GetPredicateType() const { return _predicateType; }
 

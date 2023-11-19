@@ -36,12 +36,18 @@ class Function final : public GlobalValue
 {
 public:
     using block_iterator = std::list<BasicBlockPtr>::iterator;
+    using block_reverse_iterator = std::list<BasicBlockPtr>::reverse_iterator;
     using argument_iterator = std::vector<ArgumentPtr>::iterator;
 
     ~Function() override = default;
 
     static FunctionPtr New(TypePtr returnType, const std::string& name);
     static FunctionPtr New(TypePtr returnType, const std::string& name, std::vector<ArgumentPtr> args);
+
+    static bool classof(const ValueType type)
+    {
+        return type == ValueType::FunctionTy;
+    }
 
     BasicBlockPtr NewBasicBlock();
 
@@ -58,6 +64,10 @@ public:
     int BasicBlockCount() const { return _basicBlocks.size(); }
     block_iterator BasicBlockBegin() { return _basicBlocks.begin(); }
     block_iterator BasicBlockEnd() { return _basicBlocks.end(); }
+    block_reverse_iterator BasicBlockRBegin() { return _basicBlocks.rbegin(); }
+    block_reverse_iterator BasicBlockREnd() { return _basicBlocks.rend(); }
+    BasicBlockPtr FirstBasicBlock() { return _basicBlocks.front(); }
+    BasicBlockPtr LastBasicBlock() { return _basicBlocks.back(); }
 
     // Insert a basic block at the end of the function.
     FunctionPtr InsertBasicBlock(BasicBlockPtr block);

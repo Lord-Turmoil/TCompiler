@@ -37,7 +37,9 @@ FunctionPtr Function::New(TypePtr returnType, const std::string& name, std::vect
 
 BasicBlockPtr Function::NewBasicBlock()
 {
-    return BasicBlock::New(this);
+    auto block = BasicBlock::New(this);
+    InsertBasicBlock(block);
+    return block;
 }
 
 Function::Function(TypePtr type, const std::string& name)
