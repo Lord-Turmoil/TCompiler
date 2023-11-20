@@ -32,10 +32,9 @@ static bool HandleLongOpt(const char* opt, const char* arg, ConfigPtr config);
 int main(int argc, char* argv[])
 {
 #ifdef INTERNAL
-    printf("ToMiCompiler v1.0\n");
-    printf("For BUAA 2023 Compiler Technology\n");
-    printf("Copyright (C) Tony's Studio 2018 - 2023\n");
-    printf("________________________________________\n");
+    printf("Tony's Mini Compiler (ToMiC) [Version %s]\n", TOMIC_VERSION);
+    printf("(C) Tony's Studio 2018 - 2023. All rights reserved.\n");
+    printf("For BUAA 2023 Compiler Technology\n\n");
 #endif
 
 #ifndef INTERNAL
