@@ -125,13 +125,13 @@ void VerboseAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
 /*
  * This only prints the library function declaration... :(
  *
- * declare dso_local i32 @getint(...)
+ * declare dso_local i32 @getint()
  * declare dso_local void @putstr(i8*)
  * declare dso_local void @putint(i32)
  */
 void VerboseAsmPrinter::_PrintDeclaration(IAsmWriterPtr writer)
 {
-    writer->Push("declare dso_local i32 @getint(...)");
+    writer->Push("declare dso_local i32 @getint()");
     writer->PushNewLine();
     writer->Push("declare dso_local void @putstr(i8*)");
     writer->PushNewLine();

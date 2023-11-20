@@ -573,7 +573,6 @@ void InputInst::PrintAsm(IAsmWriterPtr writer)
     writer->PushNext("= call ");
 
     GetType()->PrintAsm(writer);
-    writer->PushNext("(...)");
 
     writer->PushNext("@");
     writer->Push(GetName());

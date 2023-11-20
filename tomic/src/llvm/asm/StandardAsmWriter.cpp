@@ -25,7 +25,7 @@ StandardAsmWriterPtr StandardAsmWriter::New(twio::IWriterPtr writer)
 
 void StandardAsmWriter::Push(char ch)
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }
@@ -36,7 +36,7 @@ void StandardAsmWriter::Push(char ch)
 
 void StandardAsmWriter::Push(const char* format, ...)
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }
@@ -51,7 +51,7 @@ void StandardAsmWriter::Push(const char* format, ...)
 
 void StandardAsmWriter::PushNext(char ch)
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }
@@ -63,7 +63,7 @@ void StandardAsmWriter::PushNext(char ch)
 
 void StandardAsmWriter::PushNext(const char* format, ...)
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }
@@ -79,7 +79,7 @@ void StandardAsmWriter::PushNext(const char* format, ...)
 
 void StandardAsmWriter::PushSpace()
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }
@@ -90,7 +90,7 @@ void StandardAsmWriter::PushSpace()
 
 void StandardAsmWriter::PushSpaces(int repeat)
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }
@@ -104,7 +104,7 @@ void StandardAsmWriter::PushSpaces(int repeat)
 
 void StandardAsmWriter::PushNewLine()
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }
@@ -115,7 +115,7 @@ void StandardAsmWriter::PushNewLine()
 
 void StandardAsmWriter::PushNewLines(int repeat)
 {
-    if (!isCommenting)
+    if (!_isCommenting)
     {
         return;
     }

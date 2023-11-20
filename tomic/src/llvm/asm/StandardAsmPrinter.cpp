@@ -71,7 +71,7 @@ void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
  */
 void StandardAsmPrinter::_PrintDeclaration(IAsmWriterPtr writer)
 {
-    writer->Push("declare dso_local i32 @getint(...)");
+    writer->Push("declare dso_local i32 @getint()");
     writer->PushNewLine();
     writer->Push("declare dso_local void @putstr(i8*)");
     writer->PushNewLine();
