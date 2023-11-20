@@ -96,7 +96,7 @@ void VerboseAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
     }
 
     // Global string constants.
-    if (module->GlobalCount() > 0)
+    if (module->GlobalStringCount() > 0)
     {
         writer->PushNewLine();
         for (auto it = module->GlobalStringBegin(); it != module->GlobalStringEnd(); ++it)
@@ -131,12 +131,13 @@ void VerboseAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
  */
 void VerboseAsmPrinter::_PrintDeclaration(IAsmWriterPtr writer)
 {
-    writer->Push("declare dso_local i32 @getint()");
+    writer->Push("declare i32 @getint()");
     writer->PushNewLine();
-    writer->Push("declare dso_local void @putstr(i8*)");
+    writer->Push("declare void @putint(i32)");
     writer->PushNewLine();
-    writer->Push("declare dso_local void @putint(i32)");
-    writer->PushNewLines(3);
+    writer->Push("declare void @putstr(i8*)");
+    writer->PushNewLine();
+    writer->PushNewLine();
 }
 
 

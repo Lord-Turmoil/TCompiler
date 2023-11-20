@@ -494,13 +494,13 @@ void BinaryOperator::PrintAsm(IAsmWriterPtr writer)
     switch (OpType())
     {
     case BinaryOpType::Add:
-        op = "add nsw";
+        op = "add";
         break;
     case BinaryOpType::Sub:
-        op = "sub nsw";
+        op = "sub";
         break;
     case BinaryOpType::Mul:
-        op = "mul nsw";
+        op = "mul";
         break;
     case BinaryOpType::Div:
         op = "sdiv";
@@ -538,7 +538,7 @@ void UnaryOperator::PrintAsm(IAsmWriterPtr writer)
     switch (OpType())
     {
     case UnaryOpType::Pos:
-        op = "add nsw";
+        op = "add";
         break;
     case UnaryOpType::Neg:
         op = "sub nsw";
