@@ -366,7 +366,7 @@ static const char* _SplitFormat(const char* format)
     }
     _formatBuffer[i] = '\0';
 
-    return _formatBuffer;
+    return (i == 0) ? nullptr : _formatBuffer;
 }
 
 // node is an Exp or ConstExp.
