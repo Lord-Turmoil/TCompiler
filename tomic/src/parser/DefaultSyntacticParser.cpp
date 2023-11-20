@@ -2176,7 +2176,7 @@ SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryExp()
 
 SyntaxNodePtr DefaultSyntacticParser::_ParseUnaryOp()
 {
-    auto checkpoint = _lexicalParser->SetCheckPoint();
+    // auto checkpoint = _lexicalParser->SetCheckPoint();
     auto root = _tree->NewNonTerminalNode(SyntaxType::ST_UNARY_OP);
 
     // UnaryOp -> '+'
