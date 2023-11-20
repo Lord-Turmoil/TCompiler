@@ -25,10 +25,10 @@ ResilientSyntacticParser::ResilientSyntacticParser(
     IErrorLoggerPtr errorLogger,
     ILoggerPtr logger)
     : _lexicalParser(lexicalParser),
-      _syntaxMapper(syntaxMapper),
-      _tokenMapper(tokenMapper),
-      _errorLogger(errorLogger),
-      _logger(logger)
+    _syntaxMapper(syntaxMapper),
+    _tokenMapper(tokenMapper),
+    _errorLogger(errorLogger),
+    _logger(logger)
 {
 }
 
@@ -388,7 +388,7 @@ bool ResilientSyntacticParser::_MatchFuncDef()
     }
 
     return _Match(TokenType::TK_IDENTIFIER, _Lookahead(2)) &&
-            _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
+        _Match(TokenType::TK_LEFT_PARENTHESIS, _Lookahead(3));
 }
 
 
@@ -1778,6 +1778,18 @@ SyntaxNodePtr ResilientSyntacticParser::_ParseExpStmt()
         //     return nullptr;
         // }
         // root->InsertEndChild(exp);
+
+        /*
+         * 2023/11/20 TS: BUG
+         * Here, an infinite loop may occur if we failed to parse an expression.
+         * So we can read in a token to break the loop. And notice that this
+         * token read is not ';', so the error will still be reported.
+         */
+        if (!exp)
+        {
+            _lexicalParser->Rollback(checkpoint);
+            _Next();    // read in a junk token.
+        }
     }
 
     // ';'
