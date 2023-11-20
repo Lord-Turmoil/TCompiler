@@ -29,8 +29,10 @@ ArrayTypePtr LlvmContext::GetArrayType(TypePtr elementType, int elementCount)
         return iter->second.get();
     }
 
-    return _arrayTypes.emplace(pair, new ArrayType(elementType, elementCount))
-                      .first->second.get();
+    auto type = std::shared_ptr<ArrayType>(new ArrayType(elementType, elementCount));
+    _arrayTypes.emplace(pair, type);
+
+    return type.get();
 }
 
 
@@ -44,7 +46,9 @@ FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType, const std::vect
         }
     }
 
-    auto type = _functionTypes.emplace_back(new FunctionType(returnType, paramTypes));
+    auto type = std::shared_ptr<FunctionType>(new FunctionType(returnType, paramTypes));
+    _functionTypes.emplace_back(type);
+
     return type.get();
 }
 
@@ -59,7 +63,9 @@ FunctionTypePtr LlvmContext::GetFunctionType(TypePtr returnType)
         }
     }
 
-    auto type = _functionTypes.emplace_back(new FunctionType(returnType));
+    auto type = std::shared_ptr<FunctionType>(new FunctionType(returnType));
+    _functionTypes.emplace_back(type);
+
     return type.get();
 }
 
@@ -72,8 +78,10 @@ PointerTypePtr LlvmContext::GetPointerType(TypePtr elementType)
         return it->second.get();
     }
 
-    return _pointerTypes.emplace(elementType, new PointerType(elementType))
-                        .first->second.get();
+    auto type = std::shared_ptr<PointerType>(new PointerType(elementType));
+    _pointerTypes.emplace(elementType, type);
+
+    return type.get();
 }
 
 

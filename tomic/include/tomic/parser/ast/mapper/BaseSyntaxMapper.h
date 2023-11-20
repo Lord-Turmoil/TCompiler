@@ -9,6 +9,8 @@
 
 #include <tomic/parser/ast/mapper/ISyntaxMapper.h>
 
+#include <unordered_map>
+
 TOMIC_BEGIN
 
 // Still abstract.
