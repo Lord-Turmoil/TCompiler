@@ -16,18 +16,22 @@ static bool HandleLongOpt(const char* opt, const char* arg, ConfigPtr config);
 
 /*
  * Usage: ToMiCompiler <input> [-o output]
+ *           --help
  *           --target=syntactic
  *           --enable-logger[=filename]
  *           --enable-error[=filename] --verbose-error
  *           --emit-ast[=filename] --complete-ast
+ *           --emit-llvm[=filename] --verbose-llvm
  *
+ *   --help, -h:           show help
  *   --target, -t:         specify the target type
  *   --enable-logger, -l:  enable logger
  *   --enable-error, -e:   enable error
  *   --verbose-error, -v:  verbose error
  *   --emit-ast, -a:       emit ast
  *   --complete-ast, -c:   complete ast
- *   --help, -h:           show help
+ *   --emit-llvm, -i:      emit llvm ir
+ *   --verbose-llvm:       verbose llvm ir (-v occupied by verbose error)
  */
 int main(int argc, char* argv[])
 {
@@ -224,6 +228,10 @@ static bool HandleLongOpt(const char* opt, const char* arg, ConfigPtr config)
     {
         config->EmitLlvm = true;
         config->LlvmOutput = IsNullOrEmpty(arg) ? "llvm.ll" : arg;
+    }
+    else if (Equals(opt, "verbose-llvm"))
+    {
+        config->EnableVerboseLlvm = true;
     }
     else if (Equals(opt, "help"))
     {

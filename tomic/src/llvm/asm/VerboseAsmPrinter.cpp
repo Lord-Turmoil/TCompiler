@@ -117,8 +117,6 @@ void VerboseAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
     {
         module->GetMainFunction()->PrintAsm(writer);
     }
-
-    writer->PushNewLine();
 }
 
 
