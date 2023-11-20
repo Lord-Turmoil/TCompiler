@@ -44,8 +44,7 @@ TokenPtr DefaultLexicalAnalyzer::Next()
     do
     {
         token = _Next();
-    }
-    while (!token);
+    } while (!token);
 
     return token;
 }
@@ -71,8 +70,7 @@ TokenPtr DefaultLexicalAnalyzer::_Next()
     do
     {
         lookahead = _reader->Read();
-    }
-    while (StringUtil::Contains(_WHITESPACES, lookahead));
+    } while (StringUtil::Contains(_WHITESPACES, lookahead));
 
     // If end of file is reached, return a terminator token.
     if (lookahead == EOF)
@@ -118,9 +116,9 @@ bool NumberLexicalTask::EndsWith(int end) const
 {
     // blank, or delimiter, or operator
     return (end == EOF) ||
-            StringUtil::Contains(_WHITESPACES, end) ||
-            StringUtil::Contains(_DELIMITERS, end) ||
-            StringUtil::Contains(_OPERATORS, end);
+        StringUtil::Contains(_WHITESPACES, end) ||
+        StringUtil::Contains(_DELIMITERS, end) ||
+        StringUtil::Contains(_OPERATORS, end);
 }
 
 
@@ -173,9 +171,9 @@ bool IdentifierLexicalTask::EndsWith(int end) const
 {
     // blank, or delimiter, or operator
     return (end == EOF) ||
-            StringUtil::Contains(_WHITESPACES, end) ||
-            StringUtil::Contains(_DELIMITERS, end) ||
-            StringUtil::Contains(_OPERATORS, end);
+        StringUtil::Contains(_WHITESPACES, end) ||
+        StringUtil::Contains(_DELIMITERS, end) ||
+        StringUtil::Contains(_OPERATORS, end);
 }
 
 
@@ -255,8 +253,12 @@ TokenPtr StringLexicalTask::Analyse(const twio::IAdvancedReaderPtr& reader)
         }
         else if (_IsNewLineChar(ch, reader))
         {
-            lexeme += ch;
-            lexeme += reader->Read();
+            reader->Read();
+            /*
+             * 2023/11/20 TS:
+             * To make it easier to recognize, we just combine it to the real '\n'.
+             */
+            lexeme += '\n';
         }
         else if (_IsFormatChar(ch, reader))
         {

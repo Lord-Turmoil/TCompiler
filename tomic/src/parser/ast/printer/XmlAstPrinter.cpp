@@ -135,21 +135,23 @@ void XmlAstPrinter::_VisitTerminal(SyntaxNodePtr node)
     _writer->Write(" lexeme=\'");
     for (const char* p = lexeme; *p; p++)
     {
-        if (*p == '&')
+        switch (*p)
         {
+        case '&':
             _writer->Write("&amp;");
-        }
-        else if (*p == '<')
-        {
+            break;
+        case '<':
             _writer->Write("&lt;");
-        }
-        else if (*p == '>')
-        {
+            break;
+        case '>':
             _writer->Write("&gt;");
-        }
-        else
-        {
+            break;
+        case '\n':
+            _writer->Write("\\n");
+            break;
+        default:
             _writer->WriteFormat("%c", *p);
+            break;
         }
     }
     _writer->Write("\'");
