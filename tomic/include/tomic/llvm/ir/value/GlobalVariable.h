@@ -19,8 +19,8 @@ class GlobalVariable : public GlobalValue
 public:
     ~GlobalVariable() override = default;
 
-    static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name);
-    static GlobalVariablePtr New(TypePtr type, bool isConstant, const std::string& name,
+    static GlobalVariablePtr New(TypePtr valueType, bool isConstant, const std::string& name);
+    static GlobalVariablePtr New(TypePtr valueType, bool isConstant, const std::string& name,
                                  ConstantDataPtr initializer);
 
     static bool classof(const ValueType type) { return type == ValueType::GlobalVariableTy; }

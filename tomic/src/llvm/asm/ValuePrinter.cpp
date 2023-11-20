@@ -173,28 +173,22 @@ void GlobalString::PrintAsm(IAsmWriterPtr writer)
     writer->PushNext('=');
     writer->PushNext("private unnamed_addr constant ");
 
-    GetType()->PrintAsm(writer);
+    GetType()->As<PointerType>()->ElementType()->PrintAsm(writer);
     writer->PushSpace();
 
     // Here, we have to format the value with escape characters.
     writer->Push('c');
     writer->Push('"');
+
     for (auto ch : _value)
     {
-        switch (ch)
+        if (ch == '\n')
         {
-        case '\n':
             writer->Push("\\0A");
-            break;
-        case '\t':
-            writer->Push("\\09");
-            break;
-        case '\r':
-            writer->Push("\\0D");
-            break;
-        default:
+        }
+        else
+        {
             writer->Push(ch);
-            break;
         }
     }
     writer->Push("\\00");
@@ -581,8 +575,38 @@ void InputInst::PrintAsm(IAsmWriterPtr writer)
     writer->PushNext("(...)");
 
     writer->PushNext("@");
-    writer->Push(_name.c_str());
+    writer->Push(GetName());
     writer->Push("()");
+
+    writer->PushNewLine();
+}
+
+// call void @putstr(i8* getelementptr inbounds ([14 x i8], [14 x i8]* @.str, i64 0, i64 0))
+// call void @putint(i32 %3)
+void OutputInst::PrintAsm(IAsmWriterPtr writer)
+{
+    writer->Push("call ");
+    GetType()->PrintAsm(writer);
+    writer->PushSpace();
+
+    writer->Push("@");
+    writer->Push(GetName());
+
+    writer->Push("(");
+    if (IsInteger())
+    {
+        GetValue()->PrintUse(writer);
+    }
+    else
+    {
+        writer->Push("i8* getelementptr inbounds (");
+        // Well, global string is indeed a pointer.
+        GetValue()->GetType()->As<PointerType>()->ElementType()->PrintAsm(writer);
+        writer->Push(", ");
+        GetValue()->PrintUse(writer);
+        writer->Push(", i64 0, i64 0)");
+    }
+    writer->Push(")");
 
     writer->PushNewLine();
 }

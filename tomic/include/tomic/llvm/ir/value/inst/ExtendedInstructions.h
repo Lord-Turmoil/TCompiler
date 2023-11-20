@@ -15,7 +15,7 @@
 
 #include <tomic/llvm/ir/IrForward.h>
 #include <tomic/llvm/ir/value/inst/Instruction.h>
-
+#include <tomic/llvm/ir/value/inst/InstructionTypes.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -37,8 +37,41 @@ public:
 
 private:
     InputInst(TypePtr type);
+};
 
-    std::string _name;
+
+/*
+ * ============================== OutputInst ==============================
+ */
+
+/*
+ * Output instruction do need one and only one parameter, so it is a unary
+ * instruction. :P
+ */
+class OutputInst final : public UnaryInstruction
+{
+public:
+    ~OutputInst() override = default;
+
+    static OutputInstPtr New(ValuePtr value);
+
+    static bool classof(const ValueType type) { return type == ValueType::OutputInstTy; }
+
+    void PrintAsm(IAsmWriterPtr writer) override;
+    bool IsOutput() const override { return true; }
+
+    ValuePtr GetValue() const { return _value; }
+
+    // A utility function to test if it output integer or string..
+    bool IsInteger() const;
+
+private:
+    OutputInst(ValuePtr value);
+
+    /*
+     * It can be an integer, or an anonymous string.
+     */
+    ValuePtr _value;
 };
 
 

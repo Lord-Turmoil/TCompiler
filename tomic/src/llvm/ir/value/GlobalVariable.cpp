@@ -15,7 +15,7 @@ TOMIC_LLVM_BEGIN
 /*
  * ==================== GlobalVariable ====================
  */
-
+//
 GlobalVariable::GlobalVariable(TypePtr type, bool isConstant, const std::string& name)
     : GlobalValue(ValueType::GlobalVariableTy, type, name), _isConstant(isConstant), _initializer(nullptr)
 {
@@ -28,26 +28,28 @@ GlobalVariable::GlobalVariable(TypePtr type, bool isConstant, const std::string&
 }
 
 
-GlobalVariablePtr GlobalVariable::New(TypePtr type, bool isConstant, const std::string& name)
+GlobalVariablePtr GlobalVariable::New(TypePtr valueType, bool isConstant, const std::string& name)
 {
-    auto globalVariable = std::shared_ptr<GlobalVariable>(new GlobalVariable(type, isConstant, name));
+    auto type = PointerType::Get(valueType);
+    auto value = std::shared_ptr<GlobalVariable>(new GlobalVariable(type, isConstant, name));
 
-    type->Context()->StoreValue(globalVariable);
+    type->Context()->StoreValue(value);
 
-    return globalVariable.get();
+    return value.get();
 }
 
 
-GlobalVariablePtr GlobalVariable::New(TypePtr type,
+GlobalVariablePtr GlobalVariable::New(TypePtr valueType,
                                       bool isConstant,
                                       const std::string& name,
                                       ConstantDataPtr initializer)
 {
-    auto globalVariable = std::shared_ptr<GlobalVariable>(new GlobalVariable(type, isConstant, name, initializer));
+    auto type = PointerType::Get(valueType);
+    auto value = std::shared_ptr<GlobalVariable>(new GlobalVariable(type, isConstant, name, initializer));
 
-    type->Context()->StoreValue(globalVariable);
+    type->Context()->StoreValue(value);
 
-    return globalVariable.get();
+    return value.get();
 }
 
 
@@ -64,9 +66,9 @@ GlobalString::GlobalString(TypePtr type, std::string value, const std::string& n
 GlobalStringPtr GlobalString::New(LlvmContextPtr context, const std::string& value)
 {
     // Generate random name.
-    static int idx = 0;
+    static int idx = -1;
     std::string name = ".str";
-    if (idx++ > 0)
+    if (++idx > 0)
     {
         name.push_back('.');
         name.append(StringUtil::IntToString(idx));
@@ -74,9 +76,9 @@ GlobalStringPtr GlobalString::New(LlvmContextPtr context, const std::string& val
 
     // Get the type.
     int size = static_cast<int>(value.length()) + 1;
-    auto type = ArrayType::Get(IntegerType::Get(context, 8), size);
+    auto type = PointerType::Get(ArrayType::Get(IntegerType::Get(context, 8), size));
 
-    auto globalString = std::shared_ptr<GlobalString>(new GlobalString(type, value, "str"));
+    auto globalString = std::shared_ptr<GlobalString>(new GlobalString(type, value, name));
     context->StoreValue(globalString);
 
     return globalString.get();

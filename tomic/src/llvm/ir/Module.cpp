@@ -47,6 +47,13 @@ void Module::AddGlobalVariable(GlobalVariablePtr globalVariable)
 }
 
 
+void Module::AddGlobalString(GlobalStringPtr globalString)
+{
+    globalString->SetParent(this);
+    _globalStrings.push_back(globalString);
+}
+
+
 void Module::AddFunction(FunctionPtr function)
 {
     function->SetParent(this);

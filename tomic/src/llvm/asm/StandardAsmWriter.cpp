@@ -82,7 +82,7 @@ void StandardAsmWriter::PushNewLines(int repeat)
 {
     for (int i = 0; i < repeat; i++)
     {
-        _writer->Write(' ');
+        _writer->Write('\n');
     }
 }
 

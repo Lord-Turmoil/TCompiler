@@ -90,36 +90,35 @@ void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
     _PrintDeclaration(writer);
 
     // Global variables.
-    for (auto globalIter = module->GlobalBegin(); globalIter != module->GlobalEnd(); ++globalIter)
+    for (auto it = module->GlobalBegin(); it != module->GlobalEnd(); ++it)
     {
-        _PrintGlobalVariable(writer, *globalIter);
+        (*it)->PrintAsm(writer);
+    }
+
+    // Global string constants.
+    if (module->GlobalCount() > 0)
+    {
+        writer->PushNewLine();
+        for (auto it = module->GlobalStringBegin(); it != module->GlobalStringEnd(); ++it)
+        {
+            (*it)->PrintAsm(writer);
+        }
+        writer->PushNewLine();
     }
 
     // Functions.
-    for (auto funcIter = module->FunctionBegin(); funcIter != module->FunctionEnd(); ++funcIter)
+    for (auto it = module->FunctionBegin(); it != module->FunctionEnd(); ++it)
     {
-        _PrintFunction(writer, *funcIter);
+        (*it)->PrintAsm(writer);
     }
 
     // Main function.
     if (module->GetMainFunction())
     {
-        _PrintFunction(writer, module->GetMainFunction());
+        module->GetMainFunction()->PrintAsm(writer);
     }
 
     writer->PushNewLine();
-}
-
-
-void StandardAsmPrinter::_PrintGlobalVariable(IAsmWriterPtr writer, GlobalVariablePtr globalVariable)
-{
-    globalVariable->PrintAsm(writer);
-}
-
-
-void StandardAsmPrinter::_PrintFunction(IAsmWriterPtr writer, FunctionPtr function)
-{
-    function->PrintAsm(writer);
 }
 
 
@@ -137,8 +136,7 @@ void StandardAsmPrinter::_PrintDeclaration(IAsmWriterPtr writer)
     writer->Push("declare dso_local void @putstr(i8*)");
     writer->PushNewLine();
     writer->Push("declare dso_local void @putint(i32)");
-    writer->PushNewLine();
-    writer->PushNewLine();
+    writer->PushNewLines(3);
 }
 
 

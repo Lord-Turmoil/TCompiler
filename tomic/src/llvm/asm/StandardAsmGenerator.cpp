@@ -19,6 +19,7 @@
 #include <tomic/parser/ast/SyntaxNode.h>
 #include <tomic/parser/table/SymbolTableBlock.h>
 #include <tomic/utils/SemanticUtil.h>
+#include <tomic/utils/StringUtil.h>
 
 TOMIC_LLVM_BEGIN
 
@@ -89,8 +90,12 @@ GlobalVariablePtr StandardAsmGenerator::_ParseGlobalVarDef(SyntaxNodePtr node)
     const std::string& name = node->FirstChild()->Token()->lexeme;
     auto entry = _GetSymbolTableBlock(node)->FindEntry(name);
 
-    // Warning: Global values must be pointer type.
-    auto type = _module->Context()->GetPointerType(_GetEntryType(entry));
+    /*
+     * Warning: Global values must be pointer type.
+     * This is done automatically in constructor, so we don't need to
+     * do this explicitly.
+     */
+    auto type = _GetEntryType(entry);
     GlobalVariablePtr value;
 
     if (node->LastChild()->Type() == SyntaxType::ST_INIT_VAL)
@@ -279,6 +284,90 @@ void StandardAsmGenerator::_ParseInputStatement(SyntaxNodePtr node)
     _InsertInstruction(StoreInst::New(value, address));
 }
 
+/*
+ * A helper function to split format string.
+ * For example, it will split "Execute Order %d.\n" into:
+ *   - "Execute Order "
+ *   - "%d"
+ *   - ".\n"
+ *   - nullptr
+ * WARNING: This function is not re-entrant.
+ */
+
+// Guess 1024 is big enough?
+static char _formatBuffer[1024];
+static const char* _SplitFormat(const char* format);
+
+void StandardAsmGenerator::_ParseOutputStatement(SyntaxNodePtr node)
+{
+    auto context = _module->Context();
+    const char* format = node->ChildAt(2)->Token()->lexeme.c_str();
+    int paramNo = 0;
+
+    const char* str = _SplitFormat(format);
+    while (str)
+    {
+        if (StringUtil::Equals(str, "%d"))
+        {
+            auto exp = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_EXP, ++paramNo);
+            auto value = _ParseExpression(exp);
+            _InsertInstruction(OutputInst::New(value));
+        }
+        else
+        {
+            auto value = GlobalString::New(context, str);
+            _module->AddGlobalString(value);
+            _InsertInstruction(OutputInst::New(value));
+        }
+
+        str = _SplitFormat(nullptr);
+    }
+}
+
+static const char* _SplitFormat(const char* format)
+{
+    static const char* _format = nullptr;
+    if (format)
+    {
+        // Reset buffer, and clear leading '\"'.
+        _format = format;
+        while (*_format == '\"')
+        {
+            _format++;
+        }
+    }
+
+    if (!_format || *_format == '\0')
+    {
+        return nullptr;
+    }
+
+    // Check if it is a format control.
+    if (*_format == '%')
+    {
+        // We are sure '%' is not the last character.
+        _formatBuffer[0] = *_format++;
+        _formatBuffer[1] = *_format++;
+        _formatBuffer[2] = '\0';
+        return _formatBuffer;
+    }
+
+    int i = 0;
+    while (*_format && (*_format != '%'))
+    {
+        if (*_format == '\"')
+        {
+            _format++;
+            continue;
+        }
+
+        _formatBuffer[i++] = *_format++;
+        TOMIC_ASSERT((i < 1024) && "Format buffer overflow!");
+    }
+    _formatBuffer[i] = '\0';
+
+    return _formatBuffer;
+}
 
 // node is an Exp or ConstExp.
 ValuePtr StandardAsmGenerator::_ParseExpression(SyntaxNodePtr node)

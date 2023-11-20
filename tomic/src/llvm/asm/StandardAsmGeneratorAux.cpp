@@ -234,6 +234,9 @@ void StandardAsmGenerator::_ParseStatement(SyntaxNodePtr node)
     case SyntaxType::ST_IN_STMT:
         _ParseInputStatement(node);
         break;
+    case SyntaxType::ST_OUT_STMT:
+        _ParseOutputStatement(node);
+        break;
     default:
         TOMIC_PANIC("Not implemented yet");
     }

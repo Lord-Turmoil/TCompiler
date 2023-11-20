@@ -48,13 +48,13 @@ BUG: getint() didn't report missing ) and ;
 Task for intermediate representation generation:
 
 Step 1.
-    1. For simple variable and constant declaration.
-    2. For expression.
-    3. For assignment.
+  * 1. For simple variable and constant declaration.
+  * 2. For expression.
+  * 3. For assignment.
 
 Step 2.
-    1. For function definition.
-    2. For function call.
+  * 1. For function definition.
+  * 2. For function call.
 
 Step 3.
     1. For for loop.

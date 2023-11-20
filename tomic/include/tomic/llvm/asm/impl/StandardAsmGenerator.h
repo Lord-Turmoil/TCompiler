@@ -112,6 +112,7 @@ private:
     ReturnInstPtr _ParseReturnStatement(SyntaxNodePtr node);
     void _ParseAssignStatement(SyntaxNodePtr node);
     void _ParseInputStatement(SyntaxNodePtr node);
+    void _ParseOutputStatement(SyntaxNodePtr node);
 
     // Expression.
     ValuePtr _ParseExpression(SyntaxNodePtr node);

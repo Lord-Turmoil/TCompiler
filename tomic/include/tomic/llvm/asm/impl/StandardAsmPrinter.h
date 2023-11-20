@@ -25,9 +25,6 @@ private:
     void _PrintFooter(IAsmWriterPtr writer);
 
     void _PrintModule(IAsmWriterPtr writer, ModulePtr module);
-    void _PrintGlobalVariable(IAsmWriterPtr writer, GlobalVariablePtr globalVariable);
-    void _PrintFunction(IAsmWriterPtr writer, FunctionPtr function);
-
     void _PrintDeclaration(IAsmWriterPtr writer);
 };
 
