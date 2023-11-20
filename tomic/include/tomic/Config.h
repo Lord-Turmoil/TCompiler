@@ -16,8 +16,6 @@ TOMIC_BEGIN
 
 class Config
 {
-    friend class ToMiCompiler;
-
 public:
     enum class TargetType
     {
@@ -50,6 +48,7 @@ public:
 
     // LLVM IR
     bool EmitLlvm;
+    bool EnableVerboseLlvm; // comments and extra info in LLVM
     std::string LlvmOutput;
 
     // logger

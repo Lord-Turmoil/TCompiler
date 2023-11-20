@@ -13,6 +13,7 @@ Config::Config()
       EnableCompleteAst(false),
       EmitAst(false),
       EmitLlvm(false),
+      EnableVerboseLlvm(false),
       EnableLog(false),
       EnableError(false),
       EnableVerboseError(false)

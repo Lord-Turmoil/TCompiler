@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/llvm/asm/impl/StandardAsmWriter.h>
+#include <tomic/llvm/asm/impl/VerboseAsmWriter.h>
 
 #include <cstdarg>
 
@@ -17,7 +17,7 @@ VerboseAsmWriter::VerboseAsmWriter(twio::IWriterPtr writer)
 }
 
 
-StandardAsmWriterPtr VerboseAsmWriter::New(twio::IWriterPtr writer)
+VerboseAsmWriterPtr VerboseAsmWriter::New(twio::IWriterPtr writer)
 {
     return std::make_shared<VerboseAsmWriter>(writer);
 }

@@ -4,27 +4,25 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_LLVM_STANDARD_ASM_WRITER_H_
-#define _TOMIC_LLVM_STANDARD_ASM_WRITER_H_
+#ifndef _TOMIC_LLVM_VERBOSE_ASM_WRITER_H_
+#define _TOMIC_LLVM_VERBOSE_ASM_WRITER_H_
 
 #include <memory>
 #include <tomic/llvm/asm/IAsmWriter.h>
 
 TOMIC_LLVM_BEGIN
 
-class StandardAsmWriter;
-using StandardAsmWriterPtr = std::shared_ptr<StandardAsmWriter>;
+class VerboseAsmWriter;
+using VerboseAsmWriterPtr = std::shared_ptr<VerboseAsmWriter>;
 
-/*
- * It will not output comments.
- */
-class StandardAsmWriter : public IAsmWriter
+
+class VerboseAsmWriter : public IAsmWriter
 {
 public:
-    StandardAsmWriter(twio::IWriterPtr writer);
-    ~StandardAsmWriter() override = default;
+    VerboseAsmWriter(twio::IWriterPtr writer);
+    ~VerboseAsmWriter() override = default;
 
-    static StandardAsmWriterPtr New(twio::IWriterPtr writer);
+    static VerboseAsmWriterPtr New(twio::IWriterPtr writer);
 
     void Push(char ch) override;
     void Push(const char* format, ...) override;
@@ -43,10 +41,9 @@ public:
 
 private:
     twio::IWriterPtr _writer;
-    bool _isCommenting;
 };
 
 
 TOMIC_LLVM_END
 
-#endif // _TOMIC_LLVM_STANDARD_ASM_WRITER_H_
+#endif // _TOMIC_LLVM_VERBOSE_ASM_WRITER_H_

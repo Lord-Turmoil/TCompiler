@@ -18,6 +18,7 @@
 #include <tomic/llvm/asm/IAsmPrinter.h>
 #include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
 #include <tomic/llvm/asm/impl/VerboseAsmPrinter.h>
+#include <tomic/llvm/asm/impl/StandardAsmPrinter.h>
 #include <tomic/logger/debug/impl/DefaultLogger.h>
 #include <tomic/logger/debug/impl/DumbLogger.h>
 #include <tomic/logger/error/IErrorLogger.h>
@@ -154,41 +155,23 @@ void ToMiCompiler::Compile()
         if (config->EnableVerboseError)
         {
             container->AddSingleton<IErrorMapper, VerboseErrorMapper>()
-                     ->AddSingleton<IErrorLogger, VerboseErrorLogger, IErrorMapper>();
+                ->AddSingleton<IErrorLogger, VerboseErrorLogger, IErrorMapper>();
         }
         else
         {
             container->AddSingleton<IErrorMapper, StandardErrorMapper>()
-                     ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
+                ->AddSingleton<IErrorLogger, StandardErrorLogger, IErrorMapper>();
         }
     });
     // Lexical
     _impl->Configure([=](mioc::ServiceContainerPtr container) {
         container->AddSingleton<ITokenMapper, DefaultTokenMapper>()
-                 ->AddTransient<IPreprocessor, HeaderPreprocessor>()
-                 //->AddTransient<IPreprocessor, DefaultPreprocessor>()
-                 ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
-                 ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
+            ->AddTransient<IPreprocessor, HeaderPreprocessor>()
+            //->AddTransient<IPreprocessor, DefaultPreprocessor>()
+            ->AddTransient<ILexicalAnalyzer, DefaultLexicalAnalyzer, ITokenMapper>()
+            ->AddTransient<ILexicalParser, DefaultLexicalParser, ILexicalAnalyzer, IErrorLogger, ILogger>();
     });
-    // Syntactic
-    _impl->Configure([=](mioc::ServiceContainerPtr container) {
-        if (config->EnableCompleteAst)
-        {
-            container->AddSingleton<ISyntaxMapper, CompleteSyntaxMapper>();
-        }
-        else
-        {
-            container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
-        }
-        container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper,
-                                IErrorLogger, ILogger>();
-    });
-    // Semantic
-    _impl->Configure([=](mioc::ServiceContainerPtr container) {
-        container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger, ILogger>();
-        container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
-    });
-    // Ast printer
+    // Ast printer (Might be used by Syntactic and Semantic.
     _impl->Configure([=](mioc::ServiceContainerPtr container) {
         if (config->EmitAst)
         {
@@ -211,10 +194,35 @@ void ToMiCompiler::Compile()
             }
         }
     });
+    // Syntactic
+    _impl->Configure([=](mioc::ServiceContainerPtr container) {
+        if (config->EnableCompleteAst)
+        {
+            container->AddSingleton<ISyntaxMapper, CompleteSyntaxMapper>();
+        }
+        else
+        {
+            container->AddSingleton<ISyntaxMapper, ReducedSyntaxMapper>();
+        }
+        container->AddTransient<ISyntacticParser, ResilientSyntacticParser, ILexicalParser, ISyntaxMapper, ITokenMapper,
+            IErrorLogger, ILogger>();
+    });
+    // Semantic
+    _impl->Configure([=](mioc::ServiceContainerPtr container) {
+        container->AddTransient<ISemanticAnalyzer, DefaultSemanticAnalyzer, IErrorLogger, ILogger>();
+        container->AddTransient<ISemanticParser, DefaultSemanticParser, ISemanticAnalyzer, ILogger>();
+    });
     // LLVM
     _impl->Configure([=](mioc::ServiceContainerPtr container) {
         container->AddTransient<llvm::IAsmGenerator, llvm::StandardAsmGenerator>();
-        container->AddTransient<llvm::IAsmPrinter, llvm::VerboseAsmPrinter>();
+        if (config->EnableVerboseLlvm)
+        {
+            container->AddTransient<llvm::IAsmPrinter, llvm::VerboseAsmPrinter>();
+        }
+        else
+        {
+            container->AddTransient<llvm::IAsmPrinter, llvm::StandardAsmPrinter>();
+        }
     });
 
     _impl->Compile();
