@@ -37,15 +37,10 @@ int main(int argc, char* argv[])
     printf("For BUAA 2023 Compiler Technology\n\n");
 #endif
 
-#ifndef INTERNAL
-    if (argc != 1)
-    {
-        return -1;
-    }
-#endif
-
     auto config = Config::New();
 
+#ifdef INTERNAL
+    // Only parse args in internal mode... :(
     if (!ParseArgs(argc, argv, config))
     {
         return 1;
@@ -56,8 +51,7 @@ int main(int argc, char* argv[])
         ShowHelp();
         return 0;
     }
-
-#ifndef INTERNAL
+#else
     // Override default config...
 #endif
 
