@@ -10,26 +10,26 @@
 
 TOMIC_LLVM_BEGIN
 
-StandardAsmWriter::StandardAsmWriter(twio::IWriterPtr writer)
+VerboseAsmWriter::VerboseAsmWriter(twio::IWriterPtr writer)
     : _writer(writer)
 {
     TOMIC_ASSERT(writer);
 }
 
 
-StandardAsmWriterPtr StandardAsmWriter::New(twio::IWriterPtr writer)
+StandardAsmWriterPtr VerboseAsmWriter::New(twio::IWriterPtr writer)
 {
-    return std::make_shared<StandardAsmWriter>(writer);
+    return std::make_shared<VerboseAsmWriter>(writer);
 }
 
 
-void StandardAsmWriter::Push(char ch)
+void VerboseAsmWriter::Push(char ch)
 {
     _writer->Write(ch);
 }
 
 
-void StandardAsmWriter::Push(const char* format, ...)
+void VerboseAsmWriter::Push(const char* format, ...)
 {
     va_list args;
 
@@ -39,14 +39,14 @@ void StandardAsmWriter::Push(const char* format, ...)
 }
 
 
-void StandardAsmWriter::PushNext(char ch)
+void VerboseAsmWriter::PushNext(char ch)
 {
     PushSpace();
     Push(ch);
 }
 
 
-void StandardAsmWriter::PushNext(const char* format, ...)
+void VerboseAsmWriter::PushNext(const char* format, ...)
 {
     va_list args;
 
@@ -57,13 +57,13 @@ void StandardAsmWriter::PushNext(const char* format, ...)
 }
 
 
-void StandardAsmWriter::PushSpace()
+void VerboseAsmWriter::PushSpace()
 {
     _writer->Write(' ');
 }
 
 
-void StandardAsmWriter::PushSpaces(int repeat)
+void VerboseAsmWriter::PushSpaces(int repeat)
 {
     for (int i = 0; i < repeat; i++)
     {
@@ -72,13 +72,13 @@ void StandardAsmWriter::PushSpaces(int repeat)
 }
 
 
-void StandardAsmWriter::PushNewLine()
+void VerboseAsmWriter::PushNewLine()
 {
     _writer->Write('\n');
 }
 
 
-void StandardAsmWriter::PushNewLines(int repeat)
+void VerboseAsmWriter::PushNewLines(int repeat)
 {
     for (int i = 0; i < repeat; i++)
     {
@@ -87,7 +87,7 @@ void StandardAsmWriter::PushNewLines(int repeat)
 }
 
 
-void StandardAsmWriter::PushComment(const char* format, ...)
+void VerboseAsmWriter::PushComment(const char* format, ...)
 {
     va_list args;
 
@@ -101,14 +101,14 @@ void StandardAsmWriter::PushComment(const char* format, ...)
 }
 
 
-void StandardAsmWriter::CommentBegin()
+void VerboseAsmWriter::CommentBegin()
 {
     _writer->Write(';');
     PushSpace();
 }
 
 
-void StandardAsmWriter::CommentEnd()
+void VerboseAsmWriter::CommentEnd()
 {
     PushNewLine();
 }

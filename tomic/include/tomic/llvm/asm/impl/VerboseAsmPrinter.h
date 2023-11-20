@@ -4,19 +4,19 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#ifndef _TOMIC_LLVM_STANDARD_ASM_PRINTER_H_
-#define _TOMIC_LLVM_STANDARD_ASM_PRINTER_H_
+#ifndef _TOMIC_LLVM_VERBOSE_ASM_PRINTER_H_
+#define _TOMIC_LLVM_VERBOSE_ASM_PRINTER_H_
 
 #include <tomic/llvm/asm/IAsmPrinter.h>
 #include <tomic/llvm/asm/IAsmWriter.h>
 
 TOMIC_LLVM_BEGIN
 
-class StandardAsmPrinter : public IAsmPrinter
+class VerboseAsmPrinter : public IAsmPrinter
 {
 public:
-    StandardAsmPrinter() = default;
-    ~StandardAsmPrinter() override = default;
+    VerboseAsmPrinter() = default;
+    ~VerboseAsmPrinter() override = default;
 
     void Print(ModulePtr module, twio::IWriterPtr writer) override;
 
@@ -31,4 +31,4 @@ private:
 
 TOMIC_LLVM_END
 
-#endif // _TOMIC_LLVM_STANDARD_ASM_PRINTER_H_
+#endif // _TOMIC_LLVM_VERBOSE_ASM_PRINTER_H_

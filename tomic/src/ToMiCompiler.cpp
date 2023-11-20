@@ -17,7 +17,7 @@
 #include <tomic/llvm/asm/IAsmGenerator.h>
 #include <tomic/llvm/asm/IAsmPrinter.h>
 #include <tomic/llvm/asm/impl/StandardAsmGenerator.h>
-#include <tomic/llvm/asm/impl/StandardAsmPrinter.h>
+#include <tomic/llvm/asm/impl/VerboseAsmPrinter.h>
 #include <tomic/logger/debug/impl/DefaultLogger.h>
 #include <tomic/logger/debug/impl/DumbLogger.h>
 #include <tomic/logger/error/IErrorLogger.h>
@@ -214,7 +214,7 @@ void ToMiCompiler::Compile()
     // LLVM
     _impl->Configure([=](mioc::ServiceContainerPtr container) {
         container->AddTransient<llvm::IAsmGenerator, llvm::StandardAsmGenerator>();
-        container->AddTransient<llvm::IAsmPrinter, llvm::StandardAsmPrinter>();
+        container->AddTransient<llvm::IAsmPrinter, llvm::VerboseAsmPrinter>();
     });
 
     _impl->Compile();

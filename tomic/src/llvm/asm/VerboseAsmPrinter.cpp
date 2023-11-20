@@ -4,7 +4,7 @@
  *   For BUAA 2023 Compiler Technology
  */
 
-#include <tomic/llvm/asm/impl/StandardAsmPrinter.h>
+#include <tomic/llvm/asm/impl/VerboseAsmPrinter.h>
 #include <tomic/llvm/asm/impl/StandardAsmWriter.h>
 #include <tomic/llvm/ir/Module.h>
 #include <tomic/llvm/ir/value/Function.h>
@@ -12,9 +12,9 @@
 
 TOMIC_LLVM_BEGIN
 
-void StandardAsmPrinter::Print(ModulePtr module, twio::IWriterPtr writer)
+void VerboseAsmPrinter::Print(ModulePtr module, twio::IWriterPtr writer)
 {
-    auto asmWriter = StandardAsmWriter::New(writer);
+    auto asmWriter = VerboseAsmWriter::New(writer);
 
     _PrintHeader(asmWriter);
     _PrintModule(asmWriter, module);
@@ -29,7 +29,7 @@ void StandardAsmPrinter::Print(ModulePtr module, twio::IWriterPtr writer)
  * ; LLVM IR Version: {llvm-version}
  * (blank line)
  */
-void StandardAsmPrinter::_PrintHeader(IAsmWriterPtr writer)
+void VerboseAsmPrinter::_PrintHeader(IAsmWriterPtr writer)
 {
     writer->CommentBegin();
     writer->Push("Tony's Mini Compiler (ToMiC) [Version ");
@@ -55,7 +55,7 @@ void StandardAsmPrinter::_PrintHeader(IAsmWriterPtr writer)
 /*
  * ; End of LLVM IR
  */
-void StandardAsmPrinter::_PrintFooter(IAsmWriterPtr writer)
+void VerboseAsmPrinter::_PrintFooter(IAsmWriterPtr writer)
 {
     writer->PushNewLine();
     writer->PushComment("End of LLVM IR");
@@ -69,7 +69,7 @@ void StandardAsmPrinter::_PrintFooter(IAsmWriterPtr writer)
  * (blank line)
  * {functions}
  */
-void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
+void VerboseAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
 {
     // Module name.
     writer->CommentBegin();
@@ -129,7 +129,7 @@ void StandardAsmPrinter::_PrintModule(IAsmWriterPtr writer, ModulePtr module)
  * declare dso_local void @putstr(i8*)
  * declare dso_local void @putint(i32)
  */
-void StandardAsmPrinter::_PrintDeclaration(IAsmWriterPtr writer)
+void VerboseAsmPrinter::_PrintDeclaration(IAsmWriterPtr writer)
 {
     writer->Push("declare dso_local i32 @getint(...)");
     writer->PushNewLine();
