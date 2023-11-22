@@ -18,7 +18,7 @@ TOMIC_BEGIN
 
 DefaultSemanticAnalyzer::DefaultSemanticAnalyzer(IErrorLoggerPtr errorLogger, ILoggerPtr logger)
     : _errorLogger(errorLogger), _logger(logger),
-      _currentBlock(nullptr), _errorCandidate(nullptr)
+    _currentBlock(nullptr), _errorCandidate(nullptr)
 {
     TOMIC_ASSERT(_errorLogger);
     TOMIC_ASSERT(_logger);
@@ -292,7 +292,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-               ->Size(size);
+            ->Size(size);
     }
     else if (dim == 2)
     {
@@ -300,7 +300,7 @@ bool DefaultSemanticAnalyzer::_ExitConstDef(SyntaxNodePtr node)
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
         builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-               ->Size(size1, size2);
+            ->Size(size1, size2);
     }
     else
     {
@@ -437,14 +437,14 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
     if (dim == 0)
     {
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                       ->Build();
+            ->Build();
     }
     else if (dim == 1)
     {
         int size = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP));
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                       ->Size(size)
-                       ->Build();
+            ->Size(size)
+            ->Build();
     }
     else if (dim == 2)
     {
@@ -452,8 +452,8 @@ bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
         int size2 = _ValidateConstSubscription(SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_EXP, 2));
 
         entry = builder.Type(static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type")))
-                       ->Size(size1, size2)
-                       ->Build();
+            ->Size(size1, size2)
+            ->Build();
     }
     else
     {
@@ -975,10 +975,16 @@ bool DefaultSemanticAnalyzer::_ExitReturnStmt(SyntaxNodePtr node)
     {
         type = SymbolValueType::VT_VOID;
     }
-    node->SetIntAttribute("type", static_cast<int>(type));
+
+    /*
+     * Set type attribute after get inherited attribute, since get inherited
+     * attribute will look for the type attribute in it self.
+     */
 
     // Check return value in void function.
     SymbolValueType funcType = static_cast<SymbolValueType>(SemanticUtil::GetInheritedIntAttribute(node, "type"));
+    node->SetIntAttribute("type", static_cast<int>(type));
+
     // if (funcType == ValueType::VT_VOID && ((type != ValueType::VT_VOID) || exp))
     if (funcType == SymbolValueType::VT_VOID && (type != SymbolValueType::VT_VOID))
     {
