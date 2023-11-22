@@ -151,8 +151,9 @@ void GlobalVariable::PrintAsm(IAsmWriterPtr writer)
     else
     {
         // Notice that the initial value is not a pointer. :)
-        GetType()->As<PointerType>()->ElementType()->PrintAsm(writer);
-        if (GetType()->IsArrayTy())
+        auto type = GetType()->As<PointerType>()->ElementType();
+        type->PrintAsm(writer);
+        if (type->IsArrayTy())
         {
             writer->PushNext("zeroinitializer");
         }
