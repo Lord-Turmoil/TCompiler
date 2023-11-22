@@ -64,7 +64,7 @@ TokenPtr ResilientSyntacticParser::_Lookahead(int n)
     TOMIC_ASSERT(n > 0);
 
     int i;
-    TokenPtr token;
+    TokenPtr token = nullptr;
 
     // Read n tokens.
     for (i = 0; i < n; i++)

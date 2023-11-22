@@ -512,13 +512,16 @@ std::string SerializeArray(const std::vector<std::vector<int>>& array)
     std::string str;
     for (auto& row : array)
     {
+        bool first = true;
         for (auto& col : row)
         {
-            str += std::to_string(col);
-            if (col != row.back())
+            if (!first)
             {
                 str += ',';
             }
+            
+            str += std::to_string(col);
+            first = false;
         }
         str += ';';
     }

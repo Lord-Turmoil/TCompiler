@@ -407,7 +407,7 @@ bool DefaultSemanticAnalyzer::_ExitConstInitVal(SyntaxNodePtr node)
 
 bool DefaultSemanticAnalyzer::_ExitVarDef(SyntaxNodePtr node)
 {
-    SyntaxNodePtr initVal = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_CONST_INIT_VAL);
+    SyntaxNodePtr initVal = SemanticUtil::GetDirectChildNode(node, SyntaxType::ST_INIT_VAL);
     bool global = SemanticUtil::GetInheritedBoolAttribute(node, "global");
 
     if (global)
@@ -798,8 +798,8 @@ bool DefaultSemanticAnalyzer::_ExitLVal(SyntaxNodePtr node)
         return true;
     }
 
-    int expectedDim = 0;
-    int size;
+    int expectedDim;
+    int size = 0;
     if (rawEntry->EntryType() == SymbolTableEntryType::ET_CONSTANT)
     {
         node->SetBoolAttribute("const", true);
